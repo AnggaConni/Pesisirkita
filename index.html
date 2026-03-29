@@ -66,33 +66,6 @@
         </div>
     </div>
 
-    <!-- MODAL FULLSCREEN DRAW PETA TANAM -->
-    <div id="map-tanam-wrapper" class="hidden fixed inset-0 z-[100] bg-white flex-col">
-        <div class="p-4 bg-teal-600 text-white flex justify-between items-center shadow-md z-10">
-            <div>
-                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold text-xl"></i> Area Tanam</h3>
-                <p class="text-xs text-teal-100 mt-1">Gunakan ikon segilima untuk menggambar area.</p>
-            </div>
-            <button onclick="closeMapTanam()" class="font-bold text-teal-900 bg-white hover:bg-gray-100 px-5 py-2 rounded-xl transition-colors shadow-sm active:scale-95">Selesai</button>
-        </div>
-        <div id="map-tanam-container" class="w-full flex-1 relative z-0 bg-gray-200"></div>
-        <div class="p-3 bg-gray-50 flex justify-end border-t border-gray-200">
-            <button onclick="downloadGeoJSON(currentGeoJSONTanam)" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
-        </div>
-    </div>
-
-    <!-- MODAL FULLSCREEN DRAW PETA LAPANGAN -->
-    <div id="map-lapangan-wrapper" class="hidden fixed inset-0 z-[100] bg-white flex-col">
-        <div class="p-4 bg-blue-600 text-white flex justify-between items-center shadow-md z-10">
-            <div>
-                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold text-xl"></i> Area Sapuan</h3>
-                <p class="text-xs text-blue-100 mt-1">Gambarkan batas lahan yang disisir hari ini.</p>
-            </div>
-            <button type="button" onclick="closeMapLapangan()" class="font-bold text-blue-900 bg-white hover:bg-gray-100 px-5 py-2 rounded-xl transition-colors shadow-sm active:scale-95">Selesai</button>
-        </div>
-        <div id="map-lapangan-container" class="w-full flex-1 relative z-0 bg-gray-200"></div>
-    </div>
-
     <!-- PRINT AREA (TEMPLATE LAPORAN LENGKAP) -->
     <div id="print-area" class="hidden p-8 max-w-3xl mx-auto bg-white text-black">
         <div class="border-b-4 border-teal-600 pb-4 mb-6 text-center">
@@ -311,6 +284,22 @@
                                     </select>
                                 </div>
                             </div>
+                            
+                            <!-- Peta Tanam Wrapper (bisa Fullscreen, bisa Inline) -->
+                            <div id="map-tanam-wrapper" class="hidden bg-white flex-col transition-all">
+                                <div class="p-3 bg-teal-600 text-white flex justify-between items-center z-10">
+                                    <div>
+                                        <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold"></i> Peta Area</h3>
+                                    </div>
+                                    <button onclick="closeMapTanam()" id="btn-tanam-selesai" class="font-bold text-teal-900 bg-white hover:bg-gray-100 px-4 py-1.5 rounded-lg transition-colors text-sm shadow-sm active:scale-95">Selesai</button>
+                                    <button onclick="openMapTanam()" id="btn-tanam-expand" class="hidden font-bold text-white bg-teal-800 hover:bg-teal-900 px-3 py-1.5 rounded-lg transition-colors text-sm shadow-sm active:scale-95"><i class="ph-bold ph-corners-out"></i> Perbesar</button>
+                                </div>
+                                <div id="map-tanam-container" class="w-full flex-1 relative z-0 bg-gray-200 min-h-[250px]"></div>
+                                <div class="p-2 bg-gray-50 flex justify-end border-t border-gray-200">
+                                    <button onclick="downloadGeoJSON(currentGeoJSONTanam)" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
+                                </div>
+                            </div>
+
                             <div class="mt-6 p-5 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
                                 <p class="text-emerald-800 text-sm font-semibold mb-1">Kebutuhan Bibit Ideal:</p>
                                 <p class="text-4xl font-black text-emerald-600"><span id="lbl-bibit">100</span> <span class="text-lg font-normal">Bibit</span></p>
@@ -429,7 +418,7 @@
                                 </div>
                                 
                                 <!-- Area Polygon / GeoJSON (BARU) -->
-                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-2">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm font-bold text-blue-800 flex items-center gap-2"><i class="ph-fill ph-bounding-box"></i> Area Sapuan (Ha)</span>
                                         <button type="button" onclick="openMapLapangan()" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 active:scale-95 shadow-sm">Gambar Peta</button>
@@ -437,6 +426,18 @@
                                     <p id="form-area-status" class="text-xs text-blue-600 font-medium">0 Hektar</p>
                                     <input type="hidden" id="form-area-ha" value="0">
                                 </div>
+                            </div>
+
+                            <!-- Peta Lapangan Wrapper (bisa Fullscreen, bisa Inline) -->
+                            <div id="map-lapangan-wrapper" class="hidden bg-white flex-col transition-all mb-4">
+                                <div class="p-3 bg-blue-600 text-white flex justify-between items-center z-10">
+                                    <div>
+                                        <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold"></i> Area Sapuan</h3>
+                                    </div>
+                                    <button type="button" onclick="closeMapLapangan()" id="btn-lapangan-selesai" class="font-bold text-blue-900 bg-white hover:bg-gray-100 px-4 py-1.5 rounded-lg transition-colors text-sm shadow-sm active:scale-95">Selesai</button>
+                                    <button type="button" onclick="openMapLapangan()" id="btn-lapangan-expand" class="hidden font-bold text-white bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg transition-colors text-sm shadow-sm active:scale-95"><i class="ph-bold ph-corners-out"></i> Perbesar</button>
+                                </div>
+                                <div id="map-lapangan-container" class="w-full flex-1 relative z-0 bg-gray-200 min-h-[250px]"></div>
                             </div>
 
                             <!-- Foto Input -->
@@ -595,7 +596,7 @@
             }
         }
 
-        // --- Logic Peta Tanam (Fullscreen) ---
+        // --- Logic Peta Tanam (Fullscreen ke Inline) ---
         function initMapTanam() {
             if (mapTanam) { mapTanam.invalidateSize(); mapTanam.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsTanam = new L.FeatureGroup();
@@ -611,6 +612,7 @@
             const btnManual = document.getElementById('btn-manual-tanam'); 
             const btnMap = document.getElementById('btn-map-tanam');
             const inputLuas = document.getElementById('input-luas');
+            const mapWrap = document.getElementById('map-tanam-wrapper');
             
             if (mode === 'map') {
                 btnMap.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-teal-600 text-white flex items-center justify-center gap-1 border border-teal-700 shadow-sm";
@@ -623,22 +625,32 @@
                 btnMap.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center gap-1 border border-gray-200 shadow-sm";
                 inputLuas.removeAttribute('readonly'); 
                 inputLuas.classList.remove('bg-gray-100');
+                mapWrap.className = 'hidden'; // Sembunyikan jika manual
             }
         }
 
         function openMapTanam() {
             const mapWrap = document.getElementById('map-tanam-wrapper');
-            mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+            // Jadikan Fullscreen
+            mapWrap.className = 'fixed inset-0 z-[100] bg-white flex flex-col transition-all';
+            document.getElementById('btn-tanam-selesai').classList.remove('hidden');
+            document.getElementById('btn-tanam-expand').classList.add('hidden');
+            
             setTimeout(() => { initMapTanam(); if(mapTanam) mapTanam.invalidateSize(); }, 200); 
         }
 
         function closeMapTanam() {
             forceFinishDrawing(); // Integrasi penutupan otomatis area
-            document.getElementById('map-tanam-wrapper').classList.add('hidden');
-            document.getElementById('map-tanam-wrapper').classList.remove('flex');
+            const mapWrap = document.getElementById('map-tanam-wrapper');
+            // Jadikan Inline dalam Form
+            mapWrap.className = 'relative w-full h-[350px] rounded-xl overflow-hidden border-2 border-teal-200 mt-4 flex flex-col transition-all shadow-sm';
+            document.getElementById('btn-tanam-selesai').classList.add('hidden');
+            document.getElementById('btn-tanam-expand').classList.remove('hidden');
+            
+            setTimeout(() => { if(mapTanam) mapTanam.invalidateSize(); }, 200);
         }
 
-        // --- Logic Peta Lapangan (Fullscreen) ---
+        // --- Logic Peta Lapangan (Fullscreen ke Inline) ---
         function initMapLapangan() {
             if (mapLapangan) { mapLapangan.invalidateSize(); mapLapangan.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsLapangan = new L.FeatureGroup();
@@ -654,14 +666,23 @@
 
         function openMapLapangan() {
             const mapWrap = document.getElementById('map-lapangan-wrapper');
-            mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+            // Jadikan Fullscreen
+            mapWrap.className = 'fixed inset-0 z-[100] bg-white flex flex-col transition-all';
+            document.getElementById('btn-lapangan-selesai').classList.remove('hidden');
+            document.getElementById('btn-lapangan-expand').classList.add('hidden');
+            
             setTimeout(() => { initMapLapangan(); if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
         }
 
         function closeMapLapangan() {
             forceFinishDrawing(); // Integrasi penutupan otomatis area
-            document.getElementById('map-lapangan-wrapper').classList.add('hidden');
-            document.getElementById('map-lapangan-wrapper').classList.remove('flex');
+            const mapWrap = document.getElementById('map-lapangan-wrapper');
+            // Jadikan Inline dalam Form
+            mapWrap.className = 'relative w-full h-[350px] rounded-xl overflow-hidden border-2 border-blue-200 mb-4 flex flex-col transition-all shadow-sm';
+            document.getElementById('btn-lapangan-selesai').classList.add('hidden');
+            document.getElementById('btn-lapangan-expand').classList.remove('hidden');
+            
+            setTimeout(() => { if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
         }
 
         function downloadGeoJSON(geojsonData) {
@@ -745,7 +766,7 @@
               "properties": {},
               "geometry": {
                 "type": "Polygon",
-                "coordinates": [[[116.8350, -1.2180], [116.8370, -1.2180], [116.8370, -1.2190], [116.8350, -1.2190], [116.8350, -1.2180]]]
+                "coordinates": [[[117.5361,-0.812366],[117.536207,-0.812248],[117.536475,-0.812366],[117.536797,-0.812376],[117.537065,-0.812462],[117.537419,-0.812382],[117.537704,-0.812258],[117.538025,-0.812151],[117.538192,-0.812055],[117.538369,-0.812081],[117.53853,-0.812242],[117.538251,-0.812398],[117.538015,-0.812548],[117.537569,-0.812811],[117.537709,-0.813052],[117.53765,-0.813256],[117.537548,-0.813449],[117.537253,-0.81331],[117.536952,-0.813556],[117.536754,-0.813449],[117.536604,-0.813202],[117.536368,-0.812827],[117.536314,-0.812655],[117.535982,-0.812779],[117.5361,-0.812366]]]
               }
             };
             
@@ -944,6 +965,7 @@
             document.getElementById('form-area-ha').value = '0'; document.getElementById('form-area-status').innerText = '0 Hektar';
             document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
             currentGeoJSONLapangan = null; if(drawnItemsLapangan) drawnItemsLapangan.clearLayers();
+            document.getElementById('map-lapangan-wrapper').className = 'hidden'; // Hide map completely when reset
             toggleFormInputs(); removePhoto();
         }
 

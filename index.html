@@ -1591,83 +1591,99 @@ function exportLaporanLengkap() {
                     const typeName = isCleanup ? 'Pembersihan Pesisir' : (isPlanting ? 'Penanaman Mangrove' : 'Observasi Ekosistem');
                     const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
                     
+
                     // --- LOGIK PERHITUNGAN IMPACT PER REPORT ---
                     let impactBox = '';
                     
                     if (isPlanting && r.bibit) {
                         const co2Report = Number(r.bibit) * 12;
                         impactBox = `
-                        <div class="mt-5 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                            <h5 class="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-1.5 border-b border-emerald-200 pb-2"><i class="ph-fill ph-plant text-lg"></i> Kalkulasi Dampak Penanaman</h5>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-white p-3 rounded-lg border border-emerald-100 flex-1">
-                                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Potensi Serapan Karbon</p>
-                                    <p class="text-xl font-black text-emerald-700 mt-1">${co2Report} <span class="text-xs font-semibold text-emerald-600">Kg CO₂ / Tahun</span></p>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Penjelasan Singkat</p>
-                                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
-                                        Perhitungan berdasarkan <strong>${r.bibit} bibit</strong> yang ditanam. Rata-rata 1 pohon mangrove muda dapat menyerap <strong>12 kg karbon dioksida</strong> setiap tahunnya untuk membantu mengurangi pemanasan global.
-                                    </p>
-                                </div>
+                        <div class="mt-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl px-5 py-4 text-white shadow-sm text-center relative overflow-hidden print:shadow-none">
+                            <h4 class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">Pahlawan Iklim!</h4>
+                            <p class="text-sm z-10 relative">Melalui penanaman ini, tim kamu menyumbang potensi serapan karbon sebesar:</p>
+                            
+                            <!-- Angka Utama Dibuat Compact -->
+                            <div class="text-4xl font-black my-2 z-10 relative drop-shadow-sm">${co2Report} <span class="text-lg font-medium">Kg CO₂/Thn</span></div>
+                            
+                            <!-- Kotak Bawah Dibuat Lebih Rapat -->
+                            <div class="bg-black/20 rounded-lg p-2.5 mt-3 text-xs border border-white/10 z-10 relative leading-relaxed">
+                                Keren! 🌱 <strong>${r.bibit} Bibit</strong> ini akan tumbuh menjadi benteng alami penahan abrasi dan rumah bagi ribuan biota laut di masa depan.
                             </div>
                         </div>`;
                     } 
                     else if (isCleanup && r.amount) {
+                        // SMART LOGIC: Deteksi jenis sampah dari catatan laporan
+                        let tahunUrai = 400; // Default plastik umum
+                        const notesLower = (r.notes || '').toLowerCase();
+                        
+                        if(notesLower.includes('kaca')) tahunUrai = 4000;
+                        else if(notesLower.includes('jaring') || notesLower.includes('senar')) tahunUrai = 600;
+                        else if(notesLower.includes('botol') || notesLower.includes('pet') || notesLower.includes('plastik')) tahunUrai = 450;
+                        else if(notesLower.includes('kaleng')) tahunUrai = 200;
+                        else if(notesLower.includes('sterofoam') || notesLower.includes('styrofoam')) tahunUrai = 50;
+                        else if(notesLower.includes('kresek')) tahunUrai = 20;
+
+                        const generasi = Math.ceil(tahunUrai / 25); // 1 Generasi = 25 Tahun
+
                         impactBox = `
-                        <div class="mt-5 bg-orange-50 border border-orange-200 rounded-xl p-4">
-                            <h5 class="text-sm font-bold text-orange-800 mb-3 flex items-center gap-1.5 border-b border-orange-200 pb-2"><i class="ph-fill ph-recycle text-lg"></i> Kalkulasi Dampak Pembersihan</h5>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-white p-3 rounded-lg border border-orange-100 flex-1">
-                                    <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wider">Penyelamatan Ekosistem</p>
-                                    <p class="text-xl font-black text-orange-700 mt-1">${r.amount} <span class="text-xs font-semibold text-orange-600">Kg Sampah Diangkat</span></p>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wider">Penjelasan Singkat</p>
-                                    <p class="text-xs text-orange-800 mt-1 leading-relaxed">
-                                        Tim berhasil mencegah masuknya <strong>${r.amount} kg material berbahaya</strong> ke laut. Hal ini mencegah sampah terurai menjadi mikroplastik yang merusak terumbu karang dan meracuni biota laut dalam rantai makanan.
-                                    </p>
-                                </div>
+                        <div class="mt-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl px-5 py-4 text-white shadow-sm text-center relative overflow-hidden print:shadow-none">
+                            <h4 class="text-orange-100 text-xs font-bold uppercase tracking-wider mb-1">Pahlawan Lautan!</h4>
+                            <p class="text-sm z-10 relative">Di area ini, kamu mencegah <strong class="text-yellow-300">${r.amount} Kg</strong> sampah mencemari laut!</p>
+                            <p class="text-[11px] text-orange-50 z-10 relative mt-0.5">Dampak terburuk dari temuanmu memiliki waktu urai hingga:</p>
+                            
+                            <!-- Angka Utama Dibuat Compact -->
+                            <div class="text-4xl font-black my-2 z-10 relative drop-shadow-sm">${tahunUrai} <span class="text-lg font-medium">Tahun</span></div>
+                            
+                            <!-- Kotak Bawah Dibuat Lebih Rapat -->
+                            <div class="bg-black/20 rounded-lg p-2.5 mt-3 text-xs border border-white/10 z-10 relative leading-relaxed">
+                                GILA SIH! 😱 Sampah terburukmu baru hancur setelah <strong class="text-yellow-300 text-sm">${generasi} Generasi</strong> keturunanmu lahir!
                             </div>
                         </div>`;
                     }
 
                     return `
-                    <div class="border border-gray-200 rounded-xl overflow-hidden no-break shadow-sm">
+                    <div class="border border-gray-200 rounded-2xl overflow-hidden no-break shadow-sm mb-6">
                         <!-- Card Header -->
                         <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
                             <div>
-                                <h4 class="font-bold text-gray-800 text-base">${typeName}</h4>
+                                <h4 class="font-bold text-gray-800 text-base flex items-center gap-2">
+                                    ${isCleanup ? '<i class="ph-fill ph-trash text-orange-500"></i>' : (isPlanting ? '<i class="ph-fill ph-plant text-emerald-500"></i>' : '<i class="ph-fill ph-binoculars text-blue-500"></i>')}
+                                    ${typeName}
+                                </h4>
                                 <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mt-0.5">${date}</p>
                             </div>
                             <div class="text-right">
-                                ${r.amount ? `<span class="bg-orange-100 text-orange-800 font-bold px-3 py-1 rounded-full text-sm border border-orange-200">${r.amount} Kg</span>` : ''}
-                                ${r.bibit ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm border border-emerald-200">${r.bibit} Bibit</span>` : ''}
+                                ${r.amount ? `<span class="bg-white text-orange-700 font-bold px-3 py-1.5 rounded-full text-sm border border-orange-200 shadow-sm">${r.amount} Kg</span>` : ''}
+                                ${r.bibit ? `<span class="bg-white text-emerald-700 font-bold px-3 py-1.5 rounded-full text-sm border border-emerald-200 shadow-sm">${r.bibit} Bibit</span>` : ''}
                             </div>
                         </div>
                         
                         <!-- Card Body -->
                         <div class="p-5">
                             <!-- Jika Ada Peta -->
-                            ${r.geojson ? `<div id="print-map-${r.id}" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mb-4 border border-gray-300"></div>` : ''}
+                            ${r.geojson ? `<div id="print-map-${r.id}" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mb-4 border border-gray-300 shadow-inner"></div>` : ''}
 
-                            <p class="text-sm text-gray-700 leading-relaxed text-justify mb-2"><strong>Catatan Lapangan:</strong> ${r.notes || '-'}</p>
+                            <!-- Catatan Lapangan -->
+                            <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-notebook"></i> Catatan Lapangan</span>
+                                <p class="text-sm text-slate-700 leading-relaxed text-justify">${r.notes || 'Tidak ada catatan khusus.'}</p>
+                            </div>
 
-                            <!-- INJEKSI KOTAK IMPACT DI SINI -->
+                            <!-- INJEKSI KOTAK IMPACT GAMIFIKASI DI SINI -->
                             ${impactBox}
 
                             <!-- Atribut Tambahan (Metadata GPS & Luas) -->
                             <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
                                 ${parseFloat(r.areaHa) > 0 ? `
-                                <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 rounded flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> Luas Area: ${r.areaHa} Ha</span>
+                                <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1.5 rounded flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> Luas Area: ${r.areaHa} Ha</span>
                                 ` : ''}
 
                                 ${isPlanting && r.jenis ? `
-                                <span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded flex items-center gap-1"><i class="ph-bold ph-tree"></i> Flora: ${r.jenis} (Jarak ${r.jarak || '-'} m)</span>
+                                <span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-1.5 rounded flex items-center gap-1"><i class="ph-bold ph-tree"></i> Flora: ${r.jenis} (Jarak ${r.jarak || '-'} m)</span>
                                 ` : ''}
 
                                 ${r.lat ? `
-                                <span class="text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded font-mono flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> GPS: ${r.lat}, ${r.lng}</span>
+                                <span class="text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1.5 rounded font-mono flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> GPS: ${r.lat}, ${r.lng}</span>
                                 ` : ''}
                             </div>
                         </div>

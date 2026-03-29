@@ -703,14 +703,16 @@ const kamusData =[
             return mapInstance;
         }
 
-        // --- SISTEM PENYELESAIAN PETA OTOMATIS (MENGGANTI TOMBOL FINISH BAWAAN) ---
+// --- SISTEM PENYELESAIAN PETA OTOMATIS (MENGGANTI TOMBOL FINISH BAWAAN) ---
         function forceFinishDrawing() {
             const actionLinks = document.querySelectorAll('.leaflet-draw-actions a');
             let finished = false;
             
-            // 1. Coba klik Finish (jika titik >= 3)
+            // 1. Coba klik Finish atau Save (PENTING: untuk mode Edit/Delete)
             actionLinks.forEach(link => {
-                if((link.title && link.title.toLowerCase().includes('finish')) || link.innerText.toLowerCase().includes('finish')) {
+                const text = link.innerText.toLowerCase();
+                const title = (link.title || '').toLowerCase();
+                if(title.includes('finish') || text.includes('finish') || title.includes('save') || text.includes('save')) {
                     if (link.parentElement && link.parentElement.style.display !== 'none') {
                         link.click();
                         finished = true;
@@ -718,10 +720,12 @@ const kamusData =[
                 }
             });
 
-            // 2. Jika tidak bisa di-finish (titik < 3), klik Cancel agar tool tidak nyangkut
+            // 2. Jika tidak bisa di-finish/save, baru klik Cancel
             if (!finished) {
                 actionLinks.forEach(link => {
-                    if((link.title && link.title.toLowerCase().includes('cancel')) || link.innerText.toLowerCase().includes('cancel')) {
+                    const text = link.innerText.toLowerCase();
+                    const title = (link.title || '').toLowerCase();
+                    if(title.includes('cancel') || text.includes('cancel')) {
                         link.click();
                     }
                 });
@@ -736,6 +740,31 @@ const kamusData =[
                 drawnItemsTanam.clearLayers(); drawnItemsTanam.addLayer(e.layer);
                 currentGeoJSONTanam = e.layer.toGeoJSON();
                 document.getElementById('input-luas').value = Math.round(turf.area(currentGeoJSONTanam));
+                hitungTanam();
+            });
+
+            // TAMBAHAN FIX: Bersihkan map & data saat mulai gambar baru agar tidak menumpuk/revert
+            mapTanam.on(L.Draw.Event.DRAWSTART, function (e) {
+                drawnItemsTanam.clearLayers();
+                currentGeoJSONTanam = null;
+                document.getElementById('input-luas').value = 0;
+                hitungTanam();
+            });
+
+            // TAMBAHAN: Update angka otomatis saat poligon DIEDIT ukurannya
+            mapTanam.on(L.Draw.Event.EDITED, function (e) {
+                const layers = drawnItemsTanam.getLayers();
+                if (layers.length > 0) {
+                    currentGeoJSONTanam = layers[0].toGeoJSON();
+                    document.getElementById('input-luas').value = Math.round(turf.area(currentGeoJSONTanam));
+                    hitungTanam();
+                }
+            });
+
+            // TAMBAHAN: Reset angka ke 0 saat poligon DIHAPUS
+            mapTanam.on(L.Draw.Event.DELETED, function (e) {
+                currentGeoJSONTanam = null;
+                document.getElementById('input-luas').value = 0;
                 hitungTanam();
             });
         }
@@ -782,7 +811,7 @@ const kamusData =[
             setTimeout(() => { if(mapTanam) mapTanam.invalidateSize(); }, 200);
         }
 
-        // --- Logic Peta Lapangan (Fullscreen ke Inline) ---
+// --- Logic Peta Lapangan (Fullscreen ke Inline) ---
         function initMapLapangan() {
             if (mapLapangan) { mapLapangan.invalidateSize(); mapLapangan.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsLapangan = new L.FeatureGroup();
@@ -793,6 +822,34 @@ const kamusData =[
                 document.getElementById('form-area-ha').value = areaHectares;
                 document.getElementById('form-area-status').innerText = `${areaHectares} Hektar`;
                 document.getElementById('form-area-status').className = 'text-xs text-green-600 font-bold';
+            });
+
+            mapLapangan.on(L.Draw.Event.DRAWSTART, function (e) {
+                drawnItemsLapangan.clearLayers();
+                currentGeoJSONLapangan = null;
+                document.getElementById('form-area-ha').value = 0;
+                document.getElementById('form-area-status').innerText = '0 Hektar';
+                document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
+            });
+
+            // TAMBAHAN: Update Hektar saat peta DIEDIT
+            mapLapangan.on(L.Draw.Event.EDITED, function (e) {
+                const layers = drawnItemsLapangan.getLayers();
+                if (layers.length > 0) {
+                    currentGeoJSONLapangan = layers[0].toGeoJSON();
+                    const areaHectares = (turf.area(currentGeoJSONLapangan) / 10000).toFixed(3);
+                    document.getElementById('form-area-ha').value = areaHectares;
+                    document.getElementById('form-area-status').innerText = `${areaHectares} Hektar`;
+                    document.getElementById('form-area-status').className = 'text-xs text-green-600 font-bold';
+                }
+            });
+
+            // TAMBAHAN: Reset Hektar saat peta DIHAPUS
+            mapLapangan.on(L.Draw.Event.DELETED, function (e) {
+                currentGeoJSONLapangan = null;
+                document.getElementById('form-area-ha').value = 0;
+                document.getElementById('form-area-status').innerText = '0 Hektar';
+                document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
             });
         }
 
@@ -814,7 +871,16 @@ const kamusData =[
             document.getElementById('btn-lapangan-selesai').classList.add('hidden');
             document.getElementById('btn-lapangan-expand').classList.remove('hidden');
             
-            setTimeout(() => { if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
+            setTimeout(() => { if(mapLapangan) mapLapangan.invalidateSize(); 
+
+                if (currentGeoJSONLapangan) {
+                drawnItemsLapangan.clearLayers();
+                L.geoJSON(currentGeoJSONLapangan).eachLayer(function(layer) {
+                    drawnItemsLapangan.addLayer(layer);
+                });
+                try { mapLapangan.fitBounds(drawnItemsLapangan.getBounds(), {padding: [20,20], maxZoom: 18}); } catch(e){}
+            }
+            }, 200);
         }
 
         function downloadGeoJSON(geojsonData) {
@@ -897,6 +963,12 @@ function loadSampleData() {
                 "type": "Feature", "properties": {},
                 "geometry": { "type": "Polygon", "coordinates": [[[117.5361,-0.812366],[117.536207,-0.812248],[117.536475,-0.812366],[117.536797,-0.812376],[117.537065,-0.812462],[117.537419,-0.812382],[117.537704,-0.812258],[117.538025,-0.812151],[117.538192,-0.812055],[117.538369,-0.812081],[117.53853,-0.812242],[117.538251,-0.812398],[117.538015,-0.812548],[117.537569,-0.812811],[117.537709,-0.813052],[117.53765,-0.813256],[117.537548,-0.813449],[117.537253,-0.81331],[117.536952,-0.813556],[117.536754,-0.813449],[117.536604,-0.813202],[117.536368,-0.812827],[117.536314,-0.812655],[117.535982,-0.812779],[117.5361,-0.812366]]] }
             };
+
+            const sampleGeoJSON1 = {
+                "type": "Feature", "properties": {},
+                "geometry": { "type": "Polygon", "coordinates": [[[117.563152,-0.647257],[117.563496,-0.64701],[117.563592,-0.647697],[117.563528,-0.648394],[117.563367,-0.648662],[117.563034,-0.648694],[117.563292,-0.648973],[117.56297,-0.64981],[117.562433,-0.649424],[117.562047,-0.649574],[117.562112,-0.649252],[117.562702,-0.647944],[117.562873,-0.647493],[117.563152,-0.647257]]] }
+            };
+
             const now = Date.now();
             
             // 1. Data Laporan Lapangan
@@ -923,7 +995,7 @@ function loadSampleData() {
                         lat: '-1.2150', 
                         lng: '116.8400', 
                         areaHa: '0.5', 
-                        geojson: null, 
+                        geojson: sampleGeoJSON1, 
                         photo: null, 
                         bibit: '150', 
                         jarak: '1.5', 

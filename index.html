@@ -900,17 +900,66 @@ function loadSampleData() {
             const now = Date.now();
             
             // 1. Data Laporan Lapangan
-            reports =[
-                { id: now, timestamp: new Date(now).toISOString(), type: 'cleanup', amount: '125', notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Didominasi botol plastik dan jaring nelayan rusak.', lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null },
-                { id: now - 1000, timestamp: new Date(now - 86400000).toISOString(), type: 'planting', amount: '', notes: 'Penanaman bibit bersama warga lokal di area lumpur yang stabil. Jarak tanam direnggangkan.', lat: '-1.2150', lng: '116.8400', areaHa: '0.5', geojson: null, photo: null, bibit: '150', jarak: '1.5', jenis: 'Rhizophora' },
-                { id: now - 2000, timestamp: new Date(now - 172800000).toISOString(), type: 'observation', amount: '', notes: 'Berhasil melihat 3 ekor Bekantan sedang makan pucuk daun Pedada (Sonneratia) sore ini!', lat: '-1.2195', lng: '116.8355', areaHa: '0', geojson: null, photo: null }
-            ];
+                reports = [
+                    { 
+                        id: now, 
+                        timestamp: new Date(now).toISOString(), 
+                        type: 'cleanup', 
+                        amount: '125', 
+                        notes: 'Tim melakukan kegiatan pembersihan di kawasan Hutan Mangrove Graha Indah, Balikpapan. Area yang disisir berada di sepanjang jalur air pasang dengan kondisi lumpur cukup dalam. Sampah yang ditemukan didominasi oleh botol plastik air mineral, kantong kresek, serta beberapa jaring nelayan yang sudah rusak dan tersangkut di akar mangrove. Keberadaan jaring ini cukup berbahaya karena berpotensi menjebak biota kecil seperti ikan dan kepiting. Selama kegiatan, tim juga menemukan beberapa area yang relatif bersih, menandakan adanya kesadaran masyarakat di titik tertentu. Cuaca cerah dan air sedang surut, sehingga memudahkan proses pengumpulan sampah.', 
+                        lat: '-1.2185', 
+                        lng: '116.8361', 
+                        areaHa: '2.14', 
+                        geojson: sampleGeoJSON, 
+                        photo: null 
+                    },
+
+                    { 
+                        id: now - 1000, 
+                        timestamp: new Date(now - 86400000).toISOString(), 
+                        type: 'planting', 
+                        amount: '', 
+                        notes: 'Kegiatan penanaman bibit mangrove dilakukan bersama warga lokal di area dengan substrat lumpur yang cukup stabil dan minim gangguan ombak. Jenis mangrove yang ditanam adalah Rhizophora karena cocok untuk kondisi pesisir tersebut. Tim memutuskan menggunakan jarak tanam sekitar 1.5 meter untuk memberi ruang pertumbuhan akar tunjang di masa depan. Sebelum penanaman, dilakukan pengecekan sederhana terhadap kondisi tanah dan pasang surut air. Warga setempat juga memberikan informasi bahwa area ini sebelumnya pernah mengalami kegagalan tanam akibat penanaman terlalu rapat. Kegiatan berlangsung lancar dan diharapkan memiliki tingkat keberhasilan yang lebih tinggi.', 
+                        lat: '-1.2150', 
+                        lng: '116.8400', 
+                        areaHa: '0.5', 
+                        geojson: null, 
+                        photo: null, 
+                        bibit: '150', 
+                        jarak: '1.5', 
+                        jenis: 'Rhizophora' 
+                    },
+
+                    { 
+                        id: now - 2000, 
+                        timestamp: new Date(now - 172800000).toISOString(), 
+                        type: 'observation', 
+                        amount: '', 
+                        notes: 'Selama observasi sore hari di sekitar area mangrove, tim berhasil melihat 3 ekor bekantan sedang beraktivitas di atas pohon Sonneratia (Pedada). Bekantan terlihat memakan pucuk daun muda, yang merupakan salah satu sumber makanan utamanya. Aktivitas ini terjadi sekitar pukul 16.30 saat kondisi air mulai pasang. Lingkungan sekitar relatif tenang dengan sedikit gangguan manusia. Selain itu, tim juga mengamati keberadaan beberapa burung air di kejauhan. Observasi ini menunjukkan bahwa area tersebut masih menjadi habitat aktif bagi satwa liar.', 
+                        lat: '-1.2195', 
+                        lng: '116.8355', 
+                        areaHa: '0', 
+                        geojson: null, 
+                        photo: null 
+                    }
+                ];
             
             // 2. Data Ide Hackathon
-            ideas =[
-                { id: now + 1, masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove.', alasan: 'Tumpukan sampah akan memblokir akar napas dan membuat mangrove mati lemas.', solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk.' },
-                { id: now + 2, masalah: 'Masyarakat sering membuang sampah sembarangan di sekitar ekowisata.', alasan: 'Tanpa kesadaran warga, sebanyak apapun kita membersihkan, sampah akan terus menumpuk.', solusi: 'Bikin kampanye TikTok bareng Karang Taruna berhadiah saldo E-Wallet.' }
-            ];
+                ideas = [
+                    { 
+                        id: now + 1, 
+                        masalah: 'Sampah plastik dari laut sering terbawa arus pasang dan tersangkut di akar mangrove, terutama di area yang menjadi jalur masuk air. Jenis sampah yang paling sering ditemukan adalah botol plastik, kantong kresek, dan potongan jaring yang sulit terurai.', 
+                        alasan: 'Jika dibiarkan, tumpukan sampah ini dapat menutup akar napas (pneumatofora) mangrove sehingga menghambat pertukaran oksigen. Dalam jangka panjang, hal ini bisa menyebabkan mangrove stres, pertumbuhannya terganggu, bahkan mati. Selain itu, sampah yang tersangkut juga bisa menjebak biota kecil seperti ikan dan kepiting, sehingga merusak keseimbangan ekosistem.', 
+                        solusi: 'Tim mengusulkan pemasangan Trash Boom (jaring apung sederhana) di jalur air masuk menuju area mangrove. Alat ini dapat dibuat dari botol plastik bekas yang dirangkai dan diberi jaring untuk menahan sampah sebelum masuk lebih jauh. Pemasangan dilakukan di titik strategis saat air surut agar lebih mudah. Sampah yang terkumpul kemudian bisa diangkat secara berkala oleh tim atau warga sekitar, sehingga lebih efisien dibanding harus menyisir seluruh area mangrove.' 
+                    },
+
+                    { 
+                        id: now + 2, 
+                        masalah: 'Masih banyak pengunjung dan sebagian masyarakat sekitar yang membuang sampah sembarangan di area ekowisata mangrove, terutama di jalur tracking dan dekat spot foto.', 
+                        alasan: 'Kurangnya kesadaran dan kebiasaan menjaga kebersihan membuat sampah terus muncul kembali meskipun sudah dibersihkan. Jika hal ini terus terjadi, lingkungan mangrove akan terlihat kotor, menurunkan daya tarik wisata, dan berpotensi merusak ekosistem serta mencemari air di sekitarnya.', 
+                        solusi: 'Tim mengusulkan kampanye kreatif berbasis media sosial, khususnya TikTok dan Instagram Reels, dengan melibatkan Karang Taruna setempat. Konten bisa berupa challenge seperti “1 orang 1 sampah” atau video before-after saat membersihkan area mangrove. Untuk meningkatkan partisipasi, diberikan insentif seperti hadiah saldo e-wallet atau merchandise sederhana. Kampanye ini diharapkan dapat membangun kebiasaan positif sekaligus menjangkau lebih banyak anak muda agar peduli terhadap lingkungan.' 
+                    }
+                ];
 
             // 3. Data Keranjang Sampah Kalkulator
             listSampahUrai =[
@@ -1278,36 +1327,49 @@ function hitungKarbon() {
             }
 
             return `
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3 hover:border-teal-200 transition-colors">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4 hover:border-teal-300 transition-colors">
+                
+                <!-- Header Kartu -->
                 <div class="flex justify-between items-start">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-xl ${iconClass.split(' ').slice(1).join(' ')}"><i class="ph-fill ${iconClass.split(' ')[0]} text-xl"></i></div>
                         <div>
-                            <h3 class="font-bold text-gray-800 text-sm">${title}</h3>
-                            <p class="text-xs text-gray-500">${date}</p>
+                            <h3 class="font-bold text-gray-900 text-base">${title}</h3>
+                            <p class="text-xs text-gray-500 font-medium">${date}</p>
                         </div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right flex flex-col items-end gap-1">
                         ${highlightStat}
                         ${areaBadge}
                     </div>
                 </div>
-                ${!compact && r.notes ? `<p class="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg truncate mt-1">${r.notes}</p>` : ''}
+
+                <!-- KOTAK THUMBNAIL PETA (Hanya muncul jika ada data peta & di menu Lapangan) -->
+                ${!compact && r.geojson ? `<div id="map-thumb-${r.id}" class="w-full h-40 rounded-xl overflow-hidden border border-gray-200 z-0 relative pointer-events-none shadow-sm"></div>` : ''}
+
+                <!-- CATATAN LAPANGAN (Anti-Terpotong) -->
+                ${!compact && r.notes ? `
+                <div class="bg-slate-50/70 border border-slate-100 p-3 rounded-xl">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1 flex items-center gap-1"><i class="ph-fill ph-notebook"></i> Catatan Lapangan</span>
+                    <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${r.notes}</p>
+                </div>
+                ` : ''}
+
+                <!-- CATATAN DASHBOARD COMPACT (Baru Terpotong) -->
+                ${compact && r.notes ? `<p class="text-sm text-gray-600 truncate bg-gray-50 p-2 rounded-lg">${r.notes}</p>` : ''}
+                
                 ${extraDetail}
                 
-                <!-- 👇 KOTAK THUMBNAIL PETA (Hanya muncul jika ada data peta & di menu Lapangan) 👇 -->
-                ${!compact && r.geojson ? `<div id="map-thumb-${r.id}" class="w-full h-32 mt-2 rounded-xl overflow-hidden border-2 border-gray-200 z-0 relative pointer-events-none shadow-inner"></div>` : ''}
-
+                <!-- Footer Action Buttons -->
                 ${!compact ? `
-                <div class="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
+                <div class="flex justify-between items-center mt-1 pt-4 border-t border-gray-100">
                     <div class="flex items-center gap-2 text-xs text-gray-400 font-medium">
                         <span class="${r.lat ? 'text-teal-600' : ''}"><i class="ph-bold ph-map-pin"></i> GPS</span>
                         <span class="${r.geojson ? 'text-blue-600' : ''}"><i class="ph-bold ph-polygon"></i> Area</span>
                         
                         ${r.geojson ? `
-                            <button type="button" onclick="viewMap(${reportIndex})" class="ml-2 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100 transition-colors cursor-pointer relative z-10"><i class="ph-bold ph-map-trifold"></i> Lihat Peta</button>
-                            <!-- 👇 TOMBOL EXPORT GEOJSON 👇 -->
-                            <button type="button" onclick="exportReportGeoJSON(${r.id})" class="ml-1 text-[10px] font-bold text-teal-600 bg-teal-50 border border-teal-200 px-2 py-1 rounded hover:bg-teal-100 transition-colors cursor-pointer relative z-10"><i class="ph-bold ph-download-simple"></i> GeoJSON</button>
+                            <button type="button" onclick="viewMap(${reportIndex})" class="ml-2 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer relative z-10 flex items-center gap-1"><i class="ph-bold ph-map-trifold"></i> Buka Peta</button>
+                            <button type="button" onclick="exportReportGeoJSON(${r.id})" class="ml-1 text-[10px] font-bold text-teal-600 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors cursor-pointer relative z-10 flex items-center gap-1"><i class="ph-bold ph-download-simple"></i> GeoJSON</button>
                         ` : ''}
                     </div>
                     
@@ -1721,7 +1783,7 @@ function hitungKarbon() {
         // --- Helper: Generate Tampilan Kartu Ide (Digunakan di Hackathon & Dashboard) ---
         function generateIdeaCard(idea, compact = false) {
             return `
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-200 transition-colors relative group">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-400 transition-all relative group flex flex-col gap-4">
 
                 ${!compact ? `
                 <div class="absolute top-4 right-4 flex gap-2 opacity-50 hover:opacity-100 transition-opacity bg-white pl-2">
@@ -1730,23 +1792,30 @@ function hitungKarbon() {
                 </div>
                 ` : ''}
 
-                <span class="text-[10px] font-bold uppercase tracking-wider bg-yellow-100 text-yellow-800 px-2 py-1 rounded-md mb-2 inline-block">Ide Solusi</span>
-                <p class="font-bold text-gray-800 mb-3 ${compact ? 'line-clamp-2 text-sm' : 'pr-12'}">${idea.solusi}</p>
+                <!-- Bagian Solusi (Fokus Utama) -->
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 shadow-sm"><i class="ph-fill ph-lightbulb"></i> Ide Solusi</span>
+                    <h3 class="font-bold text-gray-900 text-base md:text-lg leading-snug ${compact ? 'line-clamp-2' : 'pr-12'}">${idea.solusi}</h3>
+                </div>
                 
-                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs space-y-2">
-                    <div>
-                        <span class="font-bold text-gray-500 block mb-0.5">⚠️ Masalah:</span>
-                        <p class="text-gray-700 italic ${compact ? 'line-clamp-1' : ''}">"${idea.masalah}"</p>
+                <!-- Bagian Detail (Masalah & Alasan) -->
+                ${!compact ? `
+                <div class="flex flex-col gap-3 mt-1">
+                    <!-- Block Masalah (Merah) -->
+                    <div class="bg-red-50/50 border-l-4 border-red-400 p-3.5 rounded-r-xl">
+                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-warning-circle"></i> Mengatasi Masalah</span>
+                        <p class="text-sm text-gray-700 leading-relaxed">${idea.masalah}</p>
                     </div>
                     
-                    <!-- Ini akan memunculkan kolom 'Mengapa Penting' (alasan) -->
+                    <!-- Block Alasan (Biru) -->
                     ${idea.alasan ? `
-                    <div class="border-t border-gray-200 pt-2">
-                        <span class="font-bold text-gray-500 block mb-0.5">💡 Mengapa Penting:</span>
-                        <p class="text-gray-700 italic ${compact ? 'line-clamp-1' : ''}">"${idea.alasan}"</p>
+                    <div class="bg-blue-50/50 border-l-4 border-blue-400 p-3.5 rounded-r-xl">
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-target"></i> Mengapa Signifikan?</span>
+                        <p class="text-sm text-gray-700 leading-relaxed">${idea.alasan}</p>
                     </div>
                     ` : ''}
                 </div>
+                ` : ''}
             </div>`;
         }
 

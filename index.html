@@ -36,6 +36,11 @@
         .leaflet-container { z-index: 10 !important; }
         .leaflet-draw-tooltip { z-index: 15 !important; }
 
+        /* SEMBUNYIKAN TOOLBAR FINISH/CANCEL BAWAAN LEAFLET AGAR TIDAK BINGUNG */
+        .leaflet-draw-actions {
+            display: none !important;
+        }
+
         /* Transisi Tampilan Tab */
         .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
         .view-section.active { display: block; }
@@ -50,7 +55,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans overflow-hidden">
 
-    <!-- MODAL POPUP PETA -->
+    <!-- MODAL POPUP PETA HASIL -->
     <div id="modal-peta" class="fixed inset-0 bg-black/60 z-[100] hidden flex-col justify-center items-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col transform transition-all">
             <div class="p-4 bg-teal-600 text-white flex justify-between items-center">
@@ -59,6 +64,33 @@
             </div>
             <div id="modal-map-container" class="w-full h-[60vh] md:h-96 bg-gray-200"></div>
         </div>
+    </div>
+
+    <!-- MODAL FULLSCREEN DRAW PETA TANAM -->
+    <div id="map-tanam-wrapper" class="hidden fixed inset-0 z-[100] bg-white flex-col">
+        <div class="p-4 bg-teal-600 text-white flex justify-between items-center shadow-md z-10">
+            <div>
+                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold text-xl"></i> Area Tanam</h3>
+                <p class="text-xs text-teal-100 mt-1">Gunakan ikon segilima untuk menggambar area.</p>
+            </div>
+            <button onclick="closeMapTanam()" class="font-bold text-teal-900 bg-white hover:bg-gray-100 px-5 py-2 rounded-xl transition-colors shadow-sm active:scale-95">Selesai</button>
+        </div>
+        <div id="map-tanam-container" class="w-full flex-1 relative z-0 bg-gray-200"></div>
+        <div class="p-3 bg-gray-50 flex justify-end border-t border-gray-200">
+            <button onclick="downloadGeoJSON(currentGeoJSONTanam)" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
+        </div>
+    </div>
+
+    <!-- MODAL FULLSCREEN DRAW PETA LAPANGAN -->
+    <div id="map-lapangan-wrapper" class="hidden fixed inset-0 z-[100] bg-white flex-col">
+        <div class="p-4 bg-blue-600 text-white flex justify-between items-center shadow-md z-10">
+            <div>
+                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold text-xl"></i> Area Sapuan</h3>
+                <p class="text-xs text-blue-100 mt-1">Gambarkan batas lahan yang disisir hari ini.</p>
+            </div>
+            <button type="button" onclick="closeMapLapangan()" class="font-bold text-blue-900 bg-white hover:bg-gray-100 px-5 py-2 rounded-xl transition-colors shadow-sm active:scale-95">Selesai</button>
+        </div>
+        <div id="map-lapangan-container" class="w-full flex-1 relative z-0 bg-gray-200"></div>
     </div>
 
     <!-- PRINT AREA (TEMPLATE LAPORAN LENGKAP) -->
@@ -97,8 +129,8 @@
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
-    <div id="app-container" class="flex flex-col md:flex-row h-screen w-full">
+    <!-- MAIN APP WRAPPER (h-[100dvh] untuk mobile) -->
+    <div id="app-container" class="flex flex-col md:flex-row h-[100dvh] w-full">
 
         <!-- SIDEBAR / BOTTOM NAV (Hybrid) -->
         <nav class="fixed md:relative bottom-0 w-full md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-50 flex md:flex-col justify-around md:justify-start pb-safe md:pb-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-none order-2 md:order-1 transition-all">
@@ -142,7 +174,8 @@
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 w-full max-w-4xl md:mx-auto">
+            <!-- pb-36 ditambahkan agar konten terbawah tidak tertutup menu mobile -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-36 md:pb-8 w-full max-w-4xl md:mx-auto">
                 
                 <!-- 1. DASHBOARD (ALL-IN-ONE) -->
                 <section id="view-dashboard" class="view-section active space-y-6">
@@ -207,7 +240,7 @@
                     </div>
 
                     <!-- CARD SAVE / LOAD JSON -->
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-6">
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-6 mb-8">
                         <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i class="ph-fill ph-database text-indigo-500 text-xl"></i> Sistem Save Data (JSON)</h3>
                         <p class="text-sm text-gray-600 mb-5">Pahami cara kerja "Save Game" digital! Simpan (Save) progresmu menjadi file <strong class="text-indigo-600">.json</strong>, muat kembali (Load) di perangkat lain, atau tes memuat data Sample Peta Balikpapan.</p>
                         
@@ -258,27 +291,20 @@
                     <div id="calc-tanam" class="hidden space-y-4">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                             <h3 class="font-bold text-gray-800 mb-4">Ukur Area & Kalkulator Tanam</h3>
-                            <div class="flex gap-2 mb-4">
-                                <button onclick="toggleMapTanam(false)" id="btn-manual-tanam" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors">Input Manual</button>
-                                <button onclick="toggleMapTanam(true)" id="btn-map-tanam" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-map-trifold"></i> Gambar di Peta</button>
-                            </div>
-
-                            <div id="map-tanam-wrapper" class="hidden flex-col gap-2 mb-4">
-                                <div id="map-tanam-container" class="w-full h-64 md:h-80 bg-gray-200 rounded-xl border-2 border-teal-200 relative z-0"></div>
-                                <div class="flex justify-between items-center px-1">
-                                    <span class="text-xs text-gray-500"><i class="ph-fill ph-info"></i> Gunakan ikon segilima untuk menggambar area</span>
-                                    <button onclick="downloadGeoJSON(currentGeoJSONTanam)" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
-                                </div>
+                            
+                            <div class="flex gap-2 mb-6">
+                                <button onclick="setModeTanam('manual')" id="btn-manual-tanam" class="flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors border border-teal-700 shadow-sm">Input Manual</button>
+                                <button onclick="setModeTanam('map')" id="btn-map-tanam" class="flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1 border border-gray-200 shadow-sm"><i class="ph-bold ph-map-trifold"></i> Mode Peta (Layar Penuh)</button>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-bold text-gray-500 uppercase">Luas Area (m²)</label>
-                                    <input type="number" id="input-luas" value="100" oninput="hitungTanam()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none font-bold text-teal-700" />
+                                    <input type="number" id="input-luas" value="100" oninput="hitungTanam()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none font-bold text-teal-700 text-center text-lg" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-gray-500 uppercase">Jarak (m)</label>
-                                    <select id="input-jarak" onchange="hitungTanam()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                                    <select id="input-jarak" onchange="hitungTanam()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none font-medium">
                                         <option value="0.5">0.5 m (Rapat)</option>
                                         <option value="1" selected>1 m (Standar)</option>
                                         <option value="1.5">1.5 m (Renggang)</option>
@@ -315,7 +341,7 @@
                                     <span class="text-sm font-bold text-gray-500">Kg</span>
                                 </div>
                             </div>
-                            <button onclick="tambahSampahUrai()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2">
+                            <button onclick="tambahSampahUrai()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2 shadow-sm">
                                 <i class="ph-bold ph-plus"></i> Tambah ke Keranjang
                             </button>
                         </div>
@@ -325,7 +351,7 @@
                             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
                                 <div class="flex justify-between items-center mb-3">
                                     <h4 class="font-bold text-gray-800 text-sm uppercase">Keranjang Sampahmu</h4>
-                                    <button onclick="resetSampahUrai()" class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded hover:bg-red-100">Reset</button>
+                                    <button onclick="resetSampahUrai()" class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition-colors">Reset</button>
                                 </div>
                                 <ul id="list-sampah-urai" class="space-y-2 mb-4 max-h-40 overflow-y-auto pr-2">
                                     <!-- List items injected here -->
@@ -367,7 +393,7 @@
 
                     <!-- Form View -->
                     <div id="lapangan-form" class="hidden">
-                        <button onclick="toggleFormLapangan(false)" class="mb-4 text-teal-600 text-sm font-semibold flex items-center gap-1">
+                        <button type="button" onclick="toggleFormLapangan(false)" class="mb-4 text-teal-600 text-sm font-semibold flex items-center gap-1 hover:text-teal-800 transition-colors">
                             <i class="ph-bold ph-arrow-left"></i> Kembali
                         </button>
                         <form onsubmit="saveReport(event)" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-5">
@@ -396,7 +422,7 @@
                                 <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm font-bold text-teal-800 flex items-center gap-2"><i class="ph-fill ph-map-pin"></i> GPS Lokasi</span>
-                                        <button type="button" onclick="getGPS()" class="bg-teal-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-teal-700 active:scale-95">Lacak</button>
+                                        <button type="button" onclick="getGPS()" class="bg-teal-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-teal-700 active:scale-95 shadow-sm">Lacak</button>
                                     </div>
                                     <p id="form-gps-status" class="text-xs text-teal-600 font-medium">Belum ada data</p>
                                     <input type="hidden" id="form-lat"><input type="hidden" id="form-lng">
@@ -406,20 +432,11 @@
                                 <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm font-bold text-blue-800 flex items-center gap-2"><i class="ph-fill ph-bounding-box"></i> Area Sapuan (Ha)</span>
-                                        <button type="button" onclick="toggleMapLapanganArea(true)" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 active:scale-95">Gambar Peta</button>
+                                        <button type="button" onclick="openMapLapangan()" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 active:scale-95 shadow-sm">Gambar Peta</button>
                                     </div>
                                     <p id="form-area-status" class="text-xs text-blue-600 font-medium">0 Hektar</p>
                                     <input type="hidden" id="form-area-ha" value="0">
                                 </div>
-                            </div>
-
-                            <!-- Map Area Sapuan (Hidden by default) -->
-                            <div id="map-lapangan-wrapper" class="hidden flex-col gap-2">
-                                <div class="flex justify-between items-end">
-                                    <label class="text-xs font-bold text-gray-500">Gambarkan batas area yang kelompokmu sapu/observasi:</label>
-                                    <button type="button" onclick="toggleMapLapanganArea(false)" class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded">Tutup Peta</button>
-                                </div>
-                                <div id="map-lapangan-container" class="w-full h-64 bg-gray-200 rounded-xl border-2 border-blue-200 relative z-0"></div>
                             </div>
 
                             <!-- Foto Input -->
@@ -437,7 +454,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full bg-teal-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-teal-700 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                            <button type="submit" class="w-full bg-teal-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-teal-700 active:scale-95 transition-transform flex justify-center items-center gap-2 mt-4">
                                 <i class="ph-bold ph-floppy-disk"></i> Simpan Laporan
                             </button>
                         </form>
@@ -553,6 +570,32 @@
             return mapInstance;
         }
 
+        // --- SISTEM PENYELESAIAN PETA OTOMATIS (MENGGANTI TOMBOL FINISH BAWAAN) ---
+        function forceFinishDrawing() {
+            const actionLinks = document.querySelectorAll('.leaflet-draw-actions a');
+            let finished = false;
+            
+            // 1. Coba klik Finish (jika titik >= 3)
+            actionLinks.forEach(link => {
+                if((link.title && link.title.toLowerCase().includes('finish')) || link.innerText.toLowerCase().includes('finish')) {
+                    if (link.parentElement && link.parentElement.style.display !== 'none') {
+                        link.click();
+                        finished = true;
+                    }
+                }
+            });
+
+            // 2. Jika tidak bisa di-finish (titik < 3), klik Cancel agar tool tidak nyangkut
+            if (!finished) {
+                actionLinks.forEach(link => {
+                    if((link.title && link.title.toLowerCase().includes('cancel')) || link.innerText.toLowerCase().includes('cancel')) {
+                        link.click();
+                    }
+                });
+            }
+        }
+
+        // --- Logic Peta Tanam (Fullscreen) ---
         function initMapTanam() {
             if (mapTanam) { mapTanam.invalidateSize(); mapTanam.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsTanam = new L.FeatureGroup();
@@ -564,23 +607,38 @@
             });
         }
 
-        function toggleMapTanam(show) {
-            const btnManual = document.getElementById('btn-manual-tanam'); const btnMap = document.getElementById('btn-map-tanam');
-            const mapWrap = document.getElementById('map-tanam-wrapper'); const inputLuas = document.getElementById('input-luas');
-            if (show) {
-                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white flex items-center justify-center gap-1";
-                btnManual.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600";
-                mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
-                inputLuas.setAttribute('readonly', 'true'); inputLuas.classList.add('bg-gray-100');
-                setTimeout(() => { initMapTanam(); if(mapTanam) mapTanam.invalidateSize(); }, 200); 
+        function setModeTanam(mode) {
+            const btnManual = document.getElementById('btn-manual-tanam'); 
+            const btnMap = document.getElementById('btn-map-tanam');
+            const inputLuas = document.getElementById('input-luas');
+            
+            if (mode === 'map') {
+                btnMap.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-teal-600 text-white flex items-center justify-center gap-1 border border-teal-700 shadow-sm";
+                btnManual.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200 shadow-sm transition-colors";
+                inputLuas.setAttribute('readonly', 'true'); 
+                inputLuas.classList.add('bg-gray-100');
+                openMapTanam();
             } else {
-                btnManual.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors";
-                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center gap-1";
-                mapWrap.classList.add('hidden'); mapWrap.classList.remove('flex');
-                inputLuas.removeAttribute('readonly'); inputLuas.classList.remove('bg-gray-100');
+                btnManual.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-teal-600 text-white border border-teal-700 shadow-sm transition-colors";
+                btnMap.className = "flex-1 py-3 text-xs md:text-sm font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center gap-1 border border-gray-200 shadow-sm";
+                inputLuas.removeAttribute('readonly'); 
+                inputLuas.classList.remove('bg-gray-100');
             }
         }
 
+        function openMapTanam() {
+            const mapWrap = document.getElementById('map-tanam-wrapper');
+            mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+            setTimeout(() => { initMapTanam(); if(mapTanam) mapTanam.invalidateSize(); }, 200); 
+        }
+
+        function closeMapTanam() {
+            forceFinishDrawing(); // Integrasi penutupan otomatis area
+            document.getElementById('map-tanam-wrapper').classList.add('hidden');
+            document.getElementById('map-tanam-wrapper').classList.remove('flex');
+        }
+
+        // --- Logic Peta Lapangan (Fullscreen) ---
         function initMapLapangan() {
             if (mapLapangan) { mapLapangan.invalidateSize(); mapLapangan.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsLapangan = new L.FeatureGroup();
@@ -594,12 +652,16 @@
             });
         }
 
-        function toggleMapLapanganArea(show) {
+        function openMapLapangan() {
             const mapWrap = document.getElementById('map-lapangan-wrapper');
-            if(show) {
-                mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
-                setTimeout(() => { initMapLapangan(); if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
-            } else { mapWrap.classList.add('hidden'); mapWrap.classList.remove('flex'); }
+            mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+            setTimeout(() => { initMapLapangan(); if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
+        }
+
+        function closeMapLapangan() {
+            forceFinishDrawing(); // Integrasi penutupan otomatis area
+            document.getElementById('map-lapangan-wrapper').classList.add('hidden');
+            document.getElementById('map-lapangan-wrapper').classList.remove('flex');
         }
 
         function downloadGeoJSON(geojsonData) {
@@ -882,7 +944,7 @@
             document.getElementById('form-area-ha').value = '0'; document.getElementById('form-area-status').innerText = '0 Hektar';
             document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
             currentGeoJSONLapangan = null; if(drawnItemsLapangan) drawnItemsLapangan.clearLayers();
-            toggleMapLapanganArea(false); toggleFormInputs(); removePhoto();
+            toggleFormInputs(); removePhoto();
         }
 
         function renderReports() {

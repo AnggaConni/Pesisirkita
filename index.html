@@ -619,7 +619,7 @@
         // --- 1. STATE & DATA INITIALIZATION ---
         let reports = JSON.parse(localStorage.getItem('pesisir_reports')) || [];
         let ideas = JSON.parse(localStorage.getItem('pesisir_ideas')) || [];
-        let listSampahUrai = []; // Untuk kalkulator urai sampah kumulatif
+        let listSampahUrai = JSON.parse(localStorage.getItem('pesisir_sampah')) ||[];
         
         let currentPhotoBase64 = null;
         let currentGeoJSONLapangan = null;
@@ -897,76 +897,71 @@ function loadSampleData() {
                 "type": "Feature", "properties": {},
                 "geometry": { "type": "Polygon", "coordinates": [[[117.5361,-0.812366],[117.536207,-0.812248],[117.536475,-0.812366],[117.536797,-0.812376],[117.537065,-0.812462],[117.537419,-0.812382],[117.537704,-0.812258],[117.538025,-0.812151],[117.538192,-0.812055],[117.538369,-0.812081],[117.53853,-0.812242],[117.538251,-0.812398],[117.538015,-0.812548],[117.537569,-0.812811],[117.537709,-0.813052],[117.53765,-0.813256],[117.537548,-0.813449],[117.537253,-0.81331],[117.536952,-0.813556],[117.536754,-0.813449],[117.536604,-0.813202],[117.536368,-0.812827],[117.536314,-0.812655],[117.535982,-0.812779],[117.5361,-0.812366]]] }
             };
-            
             const now = Date.now();
             
-            // 3 Data Lapangan
+            // 1. Data Laporan Lapangan
             reports =[
-                {
-                    id: now, timestamp: new Date(now).toISOString(), type: 'cleanup', amount: '125',
-                    notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Banyak botol plastik dan kemasan sachet yang tersangkut di akar pohon.',
-                    lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null
-                },
-                {
-                    id: now - 1000, timestamp: new Date(now - 86400000).toISOString(), type: 'planting', amount: '',
-                    notes: 'Penanaman bibit bersama warga lokal di area lumpur yang stabil. Jarak tanam direnggangkan.',
-                    lat: '-1.2150', lng: '116.8400', areaHa: '0.5', geojson: null, photo: null,
-                    bibit: '50', jarak: '1.5', jenis: 'Rhizophora'
-                },
-                {
-                    id: now - 2000, timestamp: new Date(now - 172800000).toISOString(), type: 'observation', amount: '',
-                    notes: 'Berhasil melihat 3 ekor Bekantan sedang makan pucuk daun Pedada (Sonneratia) sore ini!',
-                    lat: '-1.2195', lng: '116.8355', areaHa: '0', geojson: null, photo: null
-                }
+                { id: now, timestamp: new Date(now).toISOString(), type: 'cleanup', amount: '125', notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Didominasi botol plastik dan jaring nelayan rusak.', lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null },
+                { id: now - 1000, timestamp: new Date(now - 86400000).toISOString(), type: 'planting', amount: '', notes: 'Penanaman bibit bersama warga lokal di area lumpur yang stabil. Jarak tanam direnggangkan.', lat: '-1.2150', lng: '116.8400', areaHa: '0.5', geojson: null, photo: null, bibit: '150', jarak: '1.5', jenis: 'Rhizophora' },
+                { id: now - 2000, timestamp: new Date(now - 172800000).toISOString(), type: 'observation', amount: '', notes: 'Berhasil melihat 3 ekor Bekantan sedang makan pucuk daun Pedada (Sonneratia) sore ini!', lat: '-1.2195', lng: '116.8355', areaHa: '0', geojson: null, photo: null }
             ];
             
-            // 2 Data Ide
+            // 2. Data Ide Hackathon
             ideas =[
-                {
-                    id: now + 1,
-                    masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove secara permanen.',
-                    alasan: 'Jika dibiarkan, tumpukan sampah akan memblokir akar napas dan membuat mangrove mati lemas.',
-                    solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk sebelum menyentuh akar mangrove utama.'
-                },
-                {
-                    id: now + 2,
-                    masalah: 'Masyarakat kurang paham fungsi mangrove dan membuang sampah sembarangan di sekitarnya.',
-                    alasan: 'Tanpa kesadaran masyarakat, sebanyak apapun kita membersihkan, sampah akan terus menumpuk setiap harinya.',
-                    solusi: 'Bikin kampanye TikTok bareng Karang Taruna dan lomba foto "Mangrove Keren" berhadiah saldo E-Wallet.'
-                }
+                { id: now + 1, masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove.', alasan: 'Tumpukan sampah akan memblokir akar napas dan membuat mangrove mati lemas.', solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk.' },
+                { id: now + 2, masalah: 'Masyarakat sering membuang sampah sembarangan di sekitar ekowisata.', alasan: 'Tanpa kesadaran warga, sebanyak apapun kita membersihkan, sampah akan terus menumpuk.', solusi: 'Bikin kampanye TikTok bareng Karang Taruna berhadiah saldo E-Wallet.' }
             ];
 
-            // 3 Data Sampah Kalkulator
+            // 3. Data Keranjang Sampah Kalkulator
             listSampahUrai =[
-                { nama: 'Botol PET / Air Mineral', berat: 2.5, tahun: 450, fakta: sampahFacts["450"], id: now + 3 },
-                { nama: 'Jaring Nelayan / Senar', berat: 1.2, tahun: 600, fakta: sampahFacts["600"], id: now + 4 },
-                { nama: 'Kantong Plastik Kresek', berat: 0.5, tahun: 20, fakta: sampahFacts["20"], id: now + 5 }
+                { nama: 'Botol PET / Air Mineral', berat: 45.5, tahun: 450, fakta: sampahFacts["450"], id: now + 3 },
+                { nama: 'Jaring Nelayan / Senar', berat: 23.2, tahun: 600, fakta: sampahFacts["600"], id: now + 4 },
+                { nama: 'Gelas Sterofoam', berat: 8.5, tahun: 50, fakta: sampahFacts["50"], id: now + 6 },
+                { nama: 'Kantong Plastik Kresek', berat: 47.8, tahun: 20, fakta: sampahFacts["20"], id: now + 5 }
             ];
 
+            // Simpan Semuanya Secara Permanen ke LocalStorage
             localStorage.setItem('pesisir_reports', JSON.stringify(reports));
             localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
+            localStorage.setItem('pesisir_sampah', JSON.stringify(listSampahUrai));
             
+            // --- 👇 TAMBAHAN BARU: UPDATE ANGKA DI FORM KALKULATOR 👇 ---
+            // Update Kalkulator Karbon (150 Bibit sesuai data laporan di atas)
+            if(document.getElementById('input-pohon')) {
+                document.getElementById('input-pohon').value = 150;
+                hitungKarbon(); // Jalankan rumus
+            }
+            
+            // Update Kalkulator Tanam (0.5 Ha = 5000 m2, jarak 1.5m sesuai data laporan)
+            if(document.getElementById('input-luas') && document.getElementById('input-jarak')) {
+                document.getElementById('input-luas').value = 5000;
+                document.getElementById('input-jarak').value = "1.5";
+                hitungTanam(); // Jalankan rumus
+            }
+            // -------------------------------------------------------------
+
+            // Render ulang semua tampilan
             updateDashboard(); 
-            renderReports();
-            renderIdeas();
-            renderSampahUrai();
-            
+            renderReports(); 
+            renderIdeas(); 
+            renderSampahUrai(); 
             switchTab('dashboard');
-            alert("🎉 Sample Data Berhasil Dimuat!\n\nCoba cek menu Lapangan, Ide Tim, dan Keranjang Urai Sampah di Kalkulator ya!");
+            
+            alert("🎉 Sample Data Super Lengkap Berhasil Dimuat!");
         }
 
         function resetAplikasi() {
-            const konfirmasi = confirm("🚨 PERHATIAN!\n\nYakin ingin MENGHAPUS SEMUA DATA (Laporan, Ide, Kalkulator)?\n\nData yang dihapus tidak bisa dikembalikan kecuali kamu sudah melakukan 'Save Game'.");
-            
-            if(konfirmasi) {
-                // 1. Kosongkan Memori Sementara (Variabel JS)
-                reports = [];
-                ideas = [];
-                listSampahUrai =[];
+            if(confirm("🚨 PERHATIAN!\n\nYakin ingin MENGHAPUS SEMUA DATA?\n\nData yang dihapus tidak bisa dikembalikan kecuali kamu sudah melakukan 'Save Game'.")) {
+                
+                // 1. Kosongkan Memori Javascript
+                reports = []; 
+                ideas = []; 
+                listSampahUrai = [];
 
-                // 2. Kosongkan LocalStorage (Database Browser)
+                // 2. Kosongkan Database Browser (LocalStorage)
                 localStorage.removeItem('pesisir_reports');
                 localStorage.removeItem('pesisir_ideas');
+                localStorage.removeItem('pesisir_sampah');
 
                 // 3. Update semua tampilan kembali jadi 0
                 updateDashboard();
@@ -974,7 +969,7 @@ function loadSampleData() {
                 renderIdeas();
                 renderSampahUrai();
                 
-                // 4. Kasih notifikasi
+                // 4. Beri notifikasi sukses
                 alert("🗑️ Berhasil! Semua data sudah di-reset menjadi 0.");
             }
         }
@@ -1064,27 +1059,29 @@ function hitungKarbon() {
         function tambahSampahUrai() {
             const select = document.getElementById('input-jenis-sampah');
             const beratInput = document.getElementById('input-berat-sampah');
-            
             const berat = parseFloat(beratInput.value);
             if(isNaN(berat) || berat <= 0) return alert("Silakan masukkan berat sampah yang valid!");
 
             const tahun = parseInt(select.value);
             const namaSampah = select.options[select.selectedIndex].text.split(' (')[0];
-            const fakta = sampahFacts[tahun.toString()] || "Sampah ini merusak ekosistem laut!"; // Tarik fakta dari kamus
+            const fakta = sampahFacts[tahun.toString()] || "Sampah ini merusak ekosistem laut!";
 
             listSampahUrai.push({ nama: namaSampah, berat: berat, tahun: tahun, fakta: fakta, id: Date.now() });
+            localStorage.setItem('pesisir_sampah', JSON.stringify(listSampahUrai)); // Simpan Permanen
             
-            beratInput.value = ''; // reset input
+            beratInput.value = ''; 
             renderSampahUrai();
         }
 
         function hapusSampahUrai(id) {
             listSampahUrai = listSampahUrai.filter(s => s.id !== id);
+            localStorage.setItem('pesisir_sampah', JSON.stringify(listSampahUrai)); // Simpan Permanen
             renderSampahUrai();
         }
 
         function resetSampahUrai() {
-            listSampahUrai = [];
+            listSampahUrai =[];
+            localStorage.removeItem('pesisir_sampah'); // Hapus Permanen
             renderSampahUrai();
         }
 
@@ -1524,7 +1521,7 @@ function hitungKarbon() {
                                 }).addTo(map);
                                 
                                 // Pas-kan kamera ke polygon
-                                map.fitBounds(layer.getBounds(), { padding: [10, 10] });
+                                map.fitBounds(layer.getBounds(), { padding: [70, 70], maxZoom: 16 });
                             }
                         }
                     });

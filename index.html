@@ -1780,40 +1780,49 @@ function hitungKarbon() {
         }
 
 
-        // --- Helper: Generate Tampilan Kartu Ide (Digunakan di Hackathon & Dashboard) ---
+// --- Helper: Generate Tampilan Kartu Ide (Digunakan di Hackathon & Dashboard) ---
         function generateIdeaCard(idea, compact = false) {
             return `
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-400 transition-all relative group flex flex-col gap-4">
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-300 transition-all relative group flex flex-col gap-4">
 
+                <!-- Tombol Edit/Delete (Floating Kanan Atas) -->
                 ${!compact ? `
-                <div class="absolute top-4 right-4 flex gap-2 opacity-50 hover:opacity-100 transition-opacity bg-white pl-2">
-                    <button onclick="editIdea(${idea.id})" class="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Ide"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
-                    <button onclick="deleteIdea(${idea.id})" class="text-gray-400 hover:text-red-600 transition-colors" title="Hapus Ide"><i class="ph-bold ph-trash text-lg"></i></button>
+                <div class="absolute top-4 right-4 flex gap-2 opacity-50 hover:opacity-100 transition-opacity bg-white pl-2 rounded-bl-lg">
+                    <button onclick="editIdea(${idea.id})" class="text-gray-400 hover:text-blue-600 transition-colors p-1" title="Edit Ide"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
+                    <button onclick="deleteIdea(${idea.id})" class="text-gray-400 hover:text-red-600 transition-colors p-1" title="Hapus Ide"><i class="ph-bold ph-trash text-lg"></i></button>
                 </div>
                 ` : ''}
 
-                <!-- Bagian Solusi (Fokus Utama) -->
+                <!-- Bagian Solusi (Fokus Utama yang dibikin Clean & Read-able) -->
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 shadow-sm"><i class="ph-fill ph-lightbulb"></i> Ide Solusi</span>
-                    <h3 class="font-bold text-gray-900 text-base md:text-lg leading-snug ${compact ? 'line-clamp-2' : 'pr-12'}">${idea.solusi}</h3>
+                    <span class="text-[10px] font-bold uppercase tracking-widest bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 border border-yellow-200">
+                        <i class="ph-fill ph-lightbulb text-yellow-500"></i> Solusi Utama
+                    </span>
+                    
+                    <!-- Font dibuat normal, justify, dan lega -->
+                    <p class="text-gray-700 text-sm md:text-base leading-relaxed text-justify mt-2 ${compact ? 'line-clamp-2' : 'pr-12 md:pr-0'}">
+                        ${idea.solusi}
+                    </p>
                 </div>
                 
                 <!-- Bagian Detail (Masalah & Alasan) -->
                 ${!compact ? `
-                <div class="flex flex-col gap-3 mt-1">
+                <div class="flex flex-col gap-3 mt-2 border-t border-gray-100 pt-5">
+                    
                     <!-- Block Masalah (Merah) -->
-                    <div class="bg-red-50/50 border-l-4 border-red-400 p-3.5 rounded-r-xl">
-                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-warning-circle"></i> Mengatasi Masalah</span>
-                        <p class="text-sm text-gray-700 leading-relaxed">${idea.masalah}</p>
+                    <div class="bg-red-50/50 border-l-4 border-red-400 p-4 rounded-r-xl">
+                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-2 flex items-center gap-1"><i class="ph-fill ph-warning-circle"></i> Mengatasi Masalah</span>
+                        <p class="text-sm text-gray-600 leading-relaxed text-justify">${idea.masalah}</p>
                     </div>
                     
                     <!-- Block Alasan (Biru) -->
                     ${idea.alasan ? `
-                    <div class="bg-blue-50/50 border-l-4 border-blue-400 p-3.5 rounded-r-xl">
-                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-target"></i> Mengapa Signifikan?</span>
-                        <p class="text-sm text-gray-700 leading-relaxed">${idea.alasan}</p>
+                    <div class="bg-blue-50/50 border-l-4 border-blue-400 p-4 rounded-r-xl">
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-2 flex items-center gap-1"><i class="ph-fill ph-target"></i> Mengapa Signifikan?</span>
+                        <p class="text-sm text-gray-600 leading-relaxed text-justify">${idea.alasan}</p>
                     </div>
                     ` : ''}
+
                 </div>
                 ` : ''}
             </div>`;

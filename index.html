@@ -1453,227 +1453,274 @@ function hitungKarbon() {
             </div>`;
         }
 
-       // --- 6. EXPORT PDF DASHBOARD KOMPREHENSIF (NEW TAB INJECT) ---
-        function exportLaporanLengkap() {
-            // 1. Kumpulkan Semua Data
-            const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-            const totalPohon = reports.filter(r => r.type === 'observation' || r.type === 'planting').length;
-            const totalBibit = reports.filter(r => r.type === 'planting').reduce((sum, r) => sum + Number(r.bibit || 0), 0);
-            
-            // Ambil data dari kalkulator Karbon
-            const inputPohon = parseInt(document.getElementById('input-pohon')?.value) || 5;
-            const co2 = inputPohon * 12;
+// --- 6. EXPORT PDF DASHBOARD KOMPREHENSIF (NEW TAB INJECT) ---
+function exportLaporanLengkap() {
+    // 1. Kumpulkan Semua Data REAL DARI LAPANGAN (Bukan dari Kalkulator)
+    const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
+    const totalPohon = reports.filter(r => r.type === 'observation' || r.type === 'planting').length;
+    const totalBibit = reports.filter(r => r.type === 'planting').reduce((sum, r) => sum + Number(r.bibit || 0), 0);
+    
+    // Hitung Total Karbon berdasarkan REAL BIBIT yang ditanam di lapangan
+    const totalCo2 = totalBibit * 12;
 
-            // Ambil data dari Kalkulator Urai Sampah
-            const uraiBerat = listSampahUrai.reduce((sum, item) => sum + item.berat, 0);
-            const uraiWaktu = listSampahUrai.length > 0 ? Math.max(...listSampahUrai.map(item => item.tahun)) : 0;
-            const generasi = Math.ceil(uraiWaktu / 25);
+    // 2. Buka Tab Baru
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return alert("Pop-up diblokir oleh browser! Tolong izinkan pop-up untuk mencetak PDF.");
 
-            // 2. Buka Tab Baru
-            const printWindow = window.open('', '_blank');
-            if (!printWindow) return alert("Pop-up diblokir oleh browser! Tolong izinkan pop-up untuk mencetak PDF.");
+    // 3. Desain HTML (Profesional, Clean, Modern, Berbasis Impact)
+    const html = `
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Laporan PesisirKita - Tim Kamu</title>
+        <!-- Inject Tailwind -->
+        <script src="https://cdn.tailwindcss.com"><\/script>
+        <!-- Inject Phosphor Icons -->
+        <script src="https://unpkg.com/@phosphor-icons/web"><\/script>
+        <!-- Inject Leaflet untuk Peta di PDF -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+        
+        <style>
+            @media print {
+                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .page-break { page-break-before: always; }
+                .no-break { page-break-inside: avoid; }
+                .leaflet-control-container { display: none !important; }
+            }
+            body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1e293b; padding: 2rem; }
+        </style>
+    </head>
+    <body class="max-w-4xl mx-auto">
+        
+        <!-- HEADER PROFESIONAL -->
+        <div class="border-b-2 border-teal-600 pb-6 mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-black text-gray-900 tracking-tight">Laporan Aksi Pesisir</h1>
+                <p class="text-lg font-semibold text-teal-600 mt-1">Tim Pahlawan PesisirKita</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Tanggal Cetak</p>
+                <p class="text-sm text-gray-800 font-medium">${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
+            </div>
+        </div>
 
-            // 3. Desain HTML (Profesional, Clean, Modern)
-            const html = `
-            <!DOCTYPE html>
-            <html lang="id">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Laporan PesisirKita - Tim Kamu</title>
-                <!-- Inject Tailwind -->
-                <script src="https://cdn.tailwindcss.com"><\/script>
-                <!-- Inject Leaflet untuk Peta di PDF -->
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
-                
-                <style>
-                    @media print {
-                        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                        .page-break { page-break-before: always; }
-                        .no-break { page-break-inside: avoid; }
-                        /* Sembunyikan elemen UI peta saat print agar bersih */
-                        .leaflet-control-container { display: none !important; }
-                    }
-                    body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1e293b; padding: 2rem; }
-                </style>
-            </head>
-            <body class="max-w-4xl mx-auto">
-                
-                <!-- HEADER PROFESIONAL -->
-                <div class="border-b-2 border-teal-600 pb-6 mb-8 flex justify-between items-end">
-                    <div>
-                        <h1 class="text-3xl font-black text-gray-900 tracking-tight">Laporan Aksi Pesisir</h1>
-                        <p class="text-lg font-semibold text-teal-600 mt-1">Tim Pahlawan PesisirKita</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Tanggal Cetak</p>
-                        <p class="text-sm text-gray-800 font-medium">${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
-                    </div>
-                </div>
+        <!-- HIGHLIGHT ANGKA (EXECUTIVE SUMMARY BERDASARKAN DATA LAPANGAN) -->
+        <div class="grid grid-cols-4 gap-4 mb-10">
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Kegiatan</p>
+                <p class="text-2xl font-black text-teal-700">${reports.length}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Sampah Diangkut</p>
+                <p class="text-2xl font-black text-orange-600">${totalTrash.toFixed(1)} <span class="text-sm font-medium text-gray-500">Kg</span></p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Bibit Ditanam</p>
+                <p class="text-2xl font-black text-emerald-600">${totalBibit}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Serapan Karbon</p>
+                <p class="text-2xl font-black text-blue-600">${totalCo2} <span class="text-sm font-medium text-gray-500">Kg/Thn</span></p>
+            </div>
+        </div>
 
-                <!-- HIGHLIGHT ANGKA (EXECUTIVE SUMMARY) -->
-                <div class="grid grid-cols-4 gap-4 mb-10">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Aksi</p>
-                        <p class="text-2xl font-black text-teal-700">${totalPohon}</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Sampah Diangkut</p>
-                        <p class="text-2xl font-black text-orange-600">${totalTrash} <span class="text-sm font-medium text-gray-500">Kg</span></p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Bibit Ditanam</p>
-                        <p class="text-2xl font-black text-emerald-600">${totalBibit}</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Potensi Karbon</p>
-                        <p class="text-2xl font-black text-blue-600">${co2} <span class="text-sm font-medium text-gray-500">Kg CO₂</span></p>
-                    </div>
-                </div>
-
-                <!-- SIMULASI KALKULATOR (EDUKASI) -->
-                <div class="mb-10 no-break">
-                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
-                        <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">A</span> Analisa Dampak Lingkungan
-                    </h2>
-                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                        <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                            Berdasarkan simulasi kalkulator lapangan, tim telah menganalisa secara kumulatif <strong>${uraiBerat.toFixed(1)} Kg</strong> spesimen sampah laut. Data menunjukkan bahwa dampak terburuk dari temuan ini membutuhkan waktu hingga <strong class="text-orange-600">${uraiWaktu} Tahun</strong> untuk terurai secara alami. Aksi pembersihan ini setara dengan mencegah pencemaran lautan selama <strong class="text-teal-600 font-black text-lg">${generasi} Generasi</strong> umat manusia ke depan.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- IDE HACKATHON -->
-                <div class="mb-10">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
-                        <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">B</span> Rumusan Solusi & Ide Inovasi
-                    </h2>
-                    <div class="space-y-4">
-                        ${ideas.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada ide yang dirumuskan.</p>' : ideas.map((idea, i) => `
-                        <div class="border border-gray-200 p-5 rounded-xl no-break">
-                            <h3 class="font-bold text-gray-900 mb-3">${i+1}. ${idea.solusi}</h3>
-                            <div class="pl-4 border-l-2 border-orange-300 mb-2">
-                                <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Identifikasi Masalah</p>
-                                <p class="text-sm text-gray-700 italic">"${idea.masalah}"</p>
-                            </div>
-                            ${idea.alasan ? `
-                            <div class="pl-4 border-l-2 border-blue-300">
-                                <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Alasan Signifikansi</p>
-                                <p class="text-sm text-gray-700 italic">"${idea.alasan}"</p>
-                            </div>
-                            ` : ''}
-                        </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="page-break"></div>
-
-                <!-- RIWAYAT LAPANGAN -->
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
-                        <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">C</span> Log Data Lapangan Berbasis Geospasial
-                    </h2>
-                    <div class="space-y-6">
-                        ${reports.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada data lapangan yang direkam.</p>' : reports.map((r, i) => {
-                            const isCleanup = r.type === 'cleanup';
-                            const isPlanting = r.type === 'planting';
-                            const typeName = isCleanup ? 'Pembersihan Pesisir' : (isPlanting ? 'Penanaman Mangrove' : 'Observasi Ekosistem');
-                            const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-                            
-                            return `
-                            <div class="border border-gray-200 rounded-xl overflow-hidden no-break shadow-sm">
-                                <!-- Card Header -->
-                                <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 text-base">${typeName}</h4>
-                                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mt-0.5">${date}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        ${r.amount ? `<span class="bg-orange-100 text-orange-800 font-bold px-3 py-1 rounded-full text-sm">${r.amount} Kg</span>` : ''}
-                                        ${r.bibit ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">${r.bibit} Bibit</span>` : ''}
-                                    </div>
-                                </div>
-                                
-                                <!-- Card Body -->
-                                <div class="p-5">
-                                    <!-- Jika Ada Peta, Render Kotak Petanya di Sini -->
-                                    ${r.geojson ? `<div id="print-map-${r.id}" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mb-4 border border-gray-300"></div>` : ''}
-
-                                    <p class="text-sm text-gray-700 leading-relaxed text-justify mb-4"><strong>Catatan Lapangan:</strong> ${r.notes || '-'}</p>
-
-                                    <!-- Atribut Tambahan (Metadata) -->
-                                    <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
-                                        ${parseFloat(r.areaHa) > 0 ? `
-                                        <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 rounded">Luas: ${r.areaHa} Ha</span>
-                                        ` : ''}
-
-                                        ${isPlanting && r.jenis ? `
-                                        <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded">Flora: ${r.jenis} (Jarak ${r.jarak || '-'} m)</span>
-                                        ` : ''}
-
-                                        ${r.lat ? `
-                                        <span class="text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded font-mono">GPS: ${r.lat}, ${r.lng}</span>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-                
-                <!-- FOOTER -->
-                <div class="text-center mt-12 pt-6 border-t-2 border-gray-800 text-gray-500 text-xs font-bold uppercase tracking-widest pb-10">
-                    Sistem Operasi Lapangan - PesisirKita © ${new Date().getFullYear()}
-                </div>
-
-                <!-- INJECT SCRIPT UNTUK MENGGAMBAR PETA -->
-                <script>
-                    const reportsData = ${JSON.stringify(reports)};
+        <!-- IDE HACKATHON -->
+        <div class="mb-10">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
+                <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">A</span> Rumusan Solusi & Ide Inovasi Tim
+            </h2>
+            <div class="space-y-6">
+                ${ideas.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada ide yang dirumuskan.</p>' : ideas.map((idea, i) => `
+                <div class="border border-gray-200 p-6 rounded-2xl no-break">
                     
-                    // Gambar peta satu per satu untuk laporan yang punya geojson
-                    reportsData.forEach(r => {
-                        if (r.geojson) {
-                            const mapId = 'print-map-' + r.id;
-                            const mapEl = document.getElementById(mapId);
-                            if(mapEl) {
-                                // Matikan semua interaksi agar jadi static map
-                                const map = L.map(mapId, {
-                                    zoomControl: false, attributionControl: false,
-                                    dragging: false, scrollWheelZoom: false,
-                                    doubleClickZoom: false, boxZoom: false, touchZoom: false, keyboard: false
-                                });
-                                
-                                // Peta Satelit Esri
-                                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-                                
-                                const polyColor = r.type === 'cleanup' ? '#ea580c' : '#059669';
-                                const layer = L.geoJSON(r.geojson, { 
-                                    style: { color: polyColor, weight: 3, fillOpacity: 0.4 } 
-                                }).addTo(map);
-                                
-                                // Pas-kan kamera ke polygon
-                                map.fitBounds(layer.getBounds(), { padding: [70, 70], maxZoom: 16 });
-                            }
-                        }
-                    });
+                    <!-- Label Solusi -->
+                    <span class="text-[10px] font-bold uppercase tracking-widest bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 border border-yellow-200">
+                        <i class="ph-fill ph-lightbulb text-yellow-500 text-sm"></i> Solusi Utama #${i+1}
+                    </span>
+                    
+                    <!-- Teks Solusi (Bukan Bold, dibuat lega seperti di App) -->
+                    <p class="text-gray-800 text-base leading-relaxed text-justify mt-3 font-medium">
+                        ${idea.solusi}
+                    </p>
+                    
+                    <!-- Kotak Detail (Masalah & Alasan) -->
+                    <div class="flex flex-col gap-3 mt-5 pt-4 border-t border-gray-100">
+                        
+                        <!-- Block Masalah (Merah) -->
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl">
+                            <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
+                                <i class="ph-fill ph-warning-circle text-sm"></i> Mengatasi Masalah
+                            </span>
+                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                ${idea.masalah}
+                            </p>
+                        </div>
+                        
+                        <!-- Block Alasan (Biru) -->
+                        ${idea.alasan ? `
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-xl">
+                            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
+                                <i class="ph-fill ph-target text-sm"></i> Mengapa Signifikan?
+                            </span>
+                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                ${idea.alasan}
+                            </p>
+                        </div>
+                        ` : ''}
 
-                    // TUNGGU 2 DETIK AGAR GAMBAR SATELIT SELESAI LOADING, LALU PRINT
-                    setTimeout(() => {
-                        window.print();
-                    }, 2000);
-                <\/script>
-            </body>
-            </html>
-            `;
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- RIWAYAT LAPANGAN DENGAN IMPACT -->
+        <div>
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
+                <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">B</span> Log Data Lapangan & Bukti Dampak
+            </h2>
+            <div class="space-y-6">
+                ${reports.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada data lapangan yang direkam.</p>' : reports.map((r, i) => {
+                    const isCleanup = r.type === 'cleanup';
+                    const isPlanting = r.type === 'planting';
+                    const typeName = isCleanup ? 'Pembersihan Pesisir' : (isPlanting ? 'Penanaman Mangrove' : 'Observasi Ekosistem');
+                    const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                    
+                    // --- LOGIK PERHITUNGAN IMPACT PER REPORT ---
+                    let impactBox = '';
+                    
+                    if (isPlanting && r.bibit) {
+                        const co2Report = Number(r.bibit) * 12;
+                        impactBox = `
+                        <div class="mt-5 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                            <h5 class="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-1.5 border-b border-emerald-200 pb-2"><i class="ph-fill ph-plant text-lg"></i> Kalkulasi Dampak Penanaman</h5>
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-lg border border-emerald-100 flex-1">
+                                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Potensi Serapan Karbon</p>
+                                    <p class="text-xl font-black text-emerald-700 mt-1">${co2Report} <span class="text-xs font-semibold text-emerald-600">Kg CO₂ / Tahun</span></p>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Penjelasan Singkat</p>
+                                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                                        Perhitungan berdasarkan <strong>${r.bibit} bibit</strong> yang ditanam. Rata-rata 1 pohon mangrove muda dapat menyerap <strong>12 kg karbon dioksida</strong> setiap tahunnya untuk membantu mengurangi pemanasan global.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>`;
+                    } 
+                    else if (isCleanup && r.amount) {
+                        impactBox = `
+                        <div class="mt-5 bg-orange-50 border border-orange-200 rounded-xl p-4">
+                            <h5 class="text-sm font-bold text-orange-800 mb-3 flex items-center gap-1.5 border-b border-orange-200 pb-2"><i class="ph-fill ph-recycle text-lg"></i> Kalkulasi Dampak Pembersihan</h5>
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-lg border border-orange-100 flex-1">
+                                    <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wider">Penyelamatan Ekosistem</p>
+                                    <p class="text-xl font-black text-orange-700 mt-1">${r.amount} <span class="text-xs font-semibold text-orange-600">Kg Sampah Diangkat</span></p>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wider">Penjelasan Singkat</p>
+                                    <p class="text-xs text-orange-800 mt-1 leading-relaxed">
+                                        Tim berhasil mencegah masuknya <strong>${r.amount} kg material berbahaya</strong> ke laut. Hal ini mencegah sampah terurai menjadi mikroplastik yang merusak terumbu karang dan meracuni biota laut dalam rantai makanan.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+
+                    return `
+                    <div class="border border-gray-200 rounded-xl overflow-hidden no-break shadow-sm">
+                        <!-- Card Header -->
+                        <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-base">${typeName}</h4>
+                                <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mt-0.5">${date}</p>
+                            </div>
+                            <div class="text-right">
+                                ${r.amount ? `<span class="bg-orange-100 text-orange-800 font-bold px-3 py-1 rounded-full text-sm border border-orange-200">${r.amount} Kg</span>` : ''}
+                                ${r.bibit ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm border border-emerald-200">${r.bibit} Bibit</span>` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Card Body -->
+                        <div class="p-5">
+                            <!-- Jika Ada Peta -->
+                            ${r.geojson ? `<div id="print-map-${r.id}" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mb-4 border border-gray-300"></div>` : ''}
+
+                            <p class="text-sm text-gray-700 leading-relaxed text-justify mb-2"><strong>Catatan Lapangan:</strong> ${r.notes || '-'}</p>
+
+                            <!-- INJEKSI KOTAK IMPACT DI SINI -->
+                            ${impactBox}
+
+                            <!-- Atribut Tambahan (Metadata GPS & Luas) -->
+                            <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
+                                ${parseFloat(r.areaHa) > 0 ? `
+                                <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 rounded flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> Luas Area: ${r.areaHa} Ha</span>
+                                ` : ''}
+
+                                ${isPlanting && r.jenis ? `
+                                <span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded flex items-center gap-1"><i class="ph-bold ph-tree"></i> Flora: ${r.jenis} (Jarak ${r.jarak || '-'} m)</span>
+                                ` : ''}
+
+                                ${r.lat ? `
+                                <span class="text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded font-mono flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> GPS: ${r.lat}, ${r.lng}</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="text-center mt-12 pt-6 border-t-2 border-gray-800 text-gray-500 text-xs font-bold uppercase tracking-widest pb-10">
+            Sistem Operasi Lapangan - PesisirKita © ${new Date().getFullYear()}
+        </div>
+
+        <!-- INJECT SCRIPT UNTUK MENGGAMBAR PETA -->
+        <script>
+            const reportsData = ${JSON.stringify(reports)};
             
-            // 4. Suntikkan HTML ke Tab Baru
-            printWindow.document.open();
-            printWindow.document.write(html);
-            printWindow.document.close();
-        }
+            reportsData.forEach(r => {
+                if (r.geojson) {
+                    const mapId = 'print-map-' + r.id;
+                    const mapEl = document.getElementById(mapId);
+                    if(mapEl) {
+                        const map = L.map(mapId, {
+                            zoomControl: false, attributionControl: false,
+                            dragging: false, scrollWheelZoom: false,
+                            doubleClickZoom: false, boxZoom: false, touchZoom: false, keyboard: false
+                        });
+                        
+                        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+                        
+                        const polyColor = r.type === 'cleanup' ? '#ea580c' : '#059669';
+                        const layer = L.geoJSON(r.geojson, { 
+                            style: { color: polyColor, weight: 3, fillOpacity: 0.4 } 
+                        }).addTo(map);
+                        
+                        map.fitBounds(layer.getBounds(), { padding: [70, 70], maxZoom: 16 });
+                    }
+                }
+            });
+
+            // TUNGGU 2 DETIK AGAR GAMBAR SATELIT SELESAI LOADING, LALU PRINT
+            setTimeout(() => { window.print(); }, 2000);
+        <\/script>
+    </body>
+    </html>
+    `;
+    
+    // 4. Suntikkan HTML ke Tab Baru
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+}
 
         // --- 7. KAMUS LOGIC ---
         // --- LOGIKA KAMUS INTERAKTIF ---

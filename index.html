@@ -158,8 +158,9 @@
                         
                         <div class="relative z-10 flex-1">
                             <h2 class="text-sm uppercase tracking-wider font-semibold opacity-80 mb-1">Status Tim Kamu</h2>
-                            <p class="text-3xl md:text-4xl font-black mb-6">Pahlawan Pesisir</p>
-                            
+                            <p id="dash-level" class="text-3xl md:text-4xl font-black mb-1">Pahlawan Pesisir</p>
+                            <p id="dash-reaksi" class="text-sm font-bold text-yellow-300 mb-6 bg-black/20 inline-block px-3 py-1 rounded-full backdrop-blur-md">Belum ada aksi</p>
+                                                        
                             <div class="flex flex-wrap gap-4">
                                 <div class="bg-black/20 rounded-2xl p-4 flex items-center gap-3 backdrop-blur-md min-w-[140px]">
                                     <i class="ph-fill ph-tree text-emerald-300 text-3xl"></i>
@@ -217,16 +218,20 @@
                         <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i class="ph-fill ph-database text-indigo-500 text-xl"></i> Sistem Save Data (JSON)</h3>
                         <p class="text-sm text-gray-600 mb-5">Pahami cara kerja "Save Game" digital! Simpan (Save) progresmu menjadi file <strong class="text-indigo-600">.json</strong>, muat kembali (Load) di perangkat lain, atau tes memuat data Sample Peta Balikpapan.</p>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <button onclick="exportDataJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-indigo-200 shadow-sm active:scale-95">
-                                <i class="ph-bold ph-download-simple text-xl"></i> Save Game
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="exportDataJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-indigo-200 shadow-sm active:scale-95 text-xs text-center">
+                                <i class="ph-bold ph-download-simple text-2xl"></i> Save Game
                             </button>
-                            <button onclick="triggerLoadJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-indigo-200 shadow-sm active:scale-95">
-                                <i class="ph-bold ph-upload-simple text-xl"></i> Load Game
+                            <button onclick="triggerLoadJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-indigo-200 shadow-sm active:scale-95 text-xs text-center">
+                                <i class="ph-bold ph-upload-simple text-2xl"></i> Load Game
                             </button>
-                            <button onclick="loadSampleData()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-emerald-200 shadow-sm active:scale-95">
-                                <i class="ph-bold ph-game-controller text-xl"></i> Load Sample Map
+                            <button onclick="loadSampleData()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-emerald-200 shadow-sm active:scale-95 text-xs text-center">
+                                <i class="ph-bold ph-game-controller text-2xl"></i> Load Sample
                             </button>
+                            <button onclick="resetAplikasi()" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold py-3 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-200 shadow-sm active:scale-95 text-xs text-center">
+                                <i class="ph-bold ph-trash text-2xl"></i> Reset Data
+                            </button>
+
                             <!-- Input file tersembunyi untuk Load JSON -->
                             <input type="file" id="load-json-input" accept=".json" class="hidden" onchange="handleLoadJSON(event)">
                         </div>
@@ -249,15 +254,27 @@
                             <p class="text-sm text-gray-500 mb-6">Berapa banyak bibit mangrove yang kelompokmu tanam hari ini?</p>
                             <input type="number" id="input-pohon" value="5" oninput="hitungKarbon()" class="w-full text-center text-4xl font-bold text-teal-600 border-b-2 border-teal-200 pb-2 focus:outline-none focus:border-teal-500" min="1">
                         </div>
-                        <div class="bg-teal-700 rounded-2xl p-6 text-white shadow-md text-center">
-                            <h4 class="text-teal-200 text-sm font-semibold mb-2">Dampak Nyata Kamu!</h4>
+
+                        <div class="bg-teal-700 rounded-2xl p-6 text-white shadow-md text-center relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full bg-yellow-400 text-teal-900 text-xs font-bold py-1 z-10">🎯 Challenge: Bisakah tim kamu capai 100 Kg CO₂?</div>
+                            <h4 class="text-teal-200 text-sm font-semibold mb-2 mt-4">Dampak Nyata Kamu!</h4>
                             <p class="text-lg">Dalam 1 tahun, <strong class="text-yellow-300" id="lbl-pohon">5 pohon</strong> ini akan menyerap sekitar:</p>
-                            <div class="text-5xl font-black my-4"><span id="lbl-co2">60</span> <span class="text-xl font-normal">kg CO₂</span></div>
-                            <div class="bg-teal-800/50 rounded-xl p-4 mt-4 text-sm flex items-start text-left gap-3 border border-teal-600/50">
-                                <div class="bg-teal-600 p-2 rounded-lg mt-1"><i class="ph-fill ph-motorcycle text-xl text-teal-100"></i></div>
-                                <p class="leading-relaxed">Setara dengan membersihkan emisi perjalanan sepeda motor sejauh <strong class="text-yellow-300 text-lg" id="lbl-motor">600 km</strong>! Keren!</p>
+                            <div class="text-5xl font-black my-2"><span id="lbl-co2">60</span> <span class="text-xl font-normal">kg CO₂</span></div>
+                            <div id="lbl-reaksi-karbon" class="text-sm font-bold text-yellow-300 mb-4 animate-pulse">Lumayan 👍</div>
+                            
+                            <div class="bg-teal-800/80 rounded-xl p-4 mt-2 text-sm text-left border border-teal-600 space-y-3">
+                                <p class="text-xs text-teal-300 font-bold uppercase border-b border-teal-600 pb-1">Itu Setara Dengan Membersihkan Polusi Dari:</p>
+                                <div class="flex items-center gap-3"><i class="ph-fill ph-motorcycle text-xl text-yellow-400"></i> <span>Naik motor sejauh <strong id="lbl-motor" class="text-white">600 km</strong></span></div>
+                                <div class="flex items-center gap-3"><i class="ph-fill ph-plug-charging text-xl text-blue-400"></i> <span>Ngecas HP <strong id="lbl-hp" class="text-white">12.000x</strong> nonstop</span></div>
+                                <div class="flex items-center gap-3"><i class="ph-fill ph-snowflake text-xl text-cyan-300"></i> <span>Nyalain AC <strong id="lbl-ac" class="text-white">6 Hari</strong> nonstop</span></div>
                             </div>
+
+                            <div class="mt-4 bg-emerald-600 p-3 rounded-lg text-xs leading-relaxed border border-emerald-400 shadow-inner">
+                                🌍 <strong class="text-yellow-300">Bayangkan!</strong> Kalau 1 kelas (30 orang) lakuin ini bareng, kita bisa serap <strong id="lbl-multiplier" class="text-white text-sm font-black">1800 Kg CO₂!</strong>
+                            </div>
+                            <p id="lbl-funfact-karbon" class="text-[10px] text-teal-200 mt-4 italic"></p>
                         </div>
+
                     </div>
 
                     <!-- Mode Tanam -->
@@ -300,10 +317,18 @@
                                 </div>
                             </div>
 
-                            <div class="mt-6 p-5 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
-                                <p class="text-emerald-800 text-sm font-semibold mb-1">Kebutuhan Bibit Ideal:</p>
-                                <p class="text-4xl font-black text-emerald-600"><span id="lbl-bibit">100</span> <span class="text-lg font-normal">Bibit</span></p>
-                            </div>
+                                <div class="mt-6 p-5 bg-emerald-50 rounded-xl border border-emerald-100 text-center relative">
+                                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">Target Hari Ini</div>
+                                    <p class="text-emerald-800 text-sm font-semibold mb-1 mt-2">Kebutuhan Bibit Ideal:</p>
+                                    <p class="text-4xl font-black text-emerald-600"><span id="lbl-bibit">100</span> <span class="text-lg font-normal">Bibit</span></p>
+                                    
+                                    <div class="bg-white p-3 rounded-lg mt-3 text-sm text-gray-700 flex items-center justify-center gap-2 border border-emerald-100">
+                                        <i class="ph-fill ph-users text-emerald-500 text-xl"></i> 
+                                        <span>Butuh <strong id="lbl-orang" class="text-emerald-700 text-lg">5 Orang</strong> tim untuk selesai dalam 1 hari!</span>
+                                    </div>
+                                    <p id="lbl-funfact-tanam" class="text-[10px] text-emerald-600 mt-3 italic"></p>
+                                </div>
+
                         </div>
                     </div>
 
@@ -393,7 +418,31 @@
                                 <select id="form-type" onchange="toggleFormInputs()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500">
                                     <option value="cleanup">Pembersihan Sampah Pesisir</option>
                                     <option value="observation">Observasi Ekosistem & Tanam</option>
+                                    <option value="planting">Penanaman Mangrove</option> 
                                 </select>
+                            </div>
+
+                            <!-- KOTAK KHUSUS PENANAMAN MANGROVE (Awalnya disembunyikan pakai style="display:none") -->
+                            <div id="input-planting-container" style="display: none;" class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 space-y-3">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-emerald-800 uppercase">Jml Bibit (Kuantitatif)</label>
+                                        <input type="number" id="form-bibit" placeholder="Misal: 100" class="w-full mt-1 p-3 bg-white border border-emerald-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500" />
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-emerald-800 uppercase">Jarak Tanam (m)</label>
+                                        <input type="number" step="0.1" id="form-jarak" placeholder="Misal: 1.5" class="w-full mt-1 p-3 bg-white border border-emerald-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-emerald-800 uppercase">Jenis Mangrove (Kualitatif)</label>
+                                    <select id="form-jenis" class="w-full mt-1 p-3 bg-white border border-emerald-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                                        <option value="Rhizophora">Rhizophora (Bakau - Akar Tunjang)</option>
+                                        <option value="Sonneratia">Sonneratia (Pedada - Akar Napas)</option>
+                                        <option value="Avicennia">Avicennia (Api-api)</option>
+                                        <option value="Campuran">Campuran / Lainnya</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div id="input-amount-container">
@@ -463,15 +512,35 @@
                 </section>
 
                 <!-- 4. KAMUS -->
-                <section id="view-kamus" class="view-section space-y-4">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Glosarium Pesisir</h2>
-                        <div class="relative">
-                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-3.5 text-gray-400 text-lg"></i>
-                            <input type="text" id="search-kamus" oninput="renderKamus()" placeholder="Cari istilah... (contoh: Bekantan)" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none text-sm font-medium" />
+                <section id="view-kamus" class="view-section space-y-4 relative">
+                    
+                    <!-- 🌟 ISTILAH HARI INI -->
+                    <div id="kamus-tod" class="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden mb-2">
+                        <i class="ph-fill ph-sparkle text-[120px] absolute -right-6 -top-6 opacity-20 transform rotate-12"></i>
+                        <div class="relative z-10">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-purple-200 mb-1 flex items-center gap-1"><i class="ph-fill ph-star"></i> Spotlight Hari Ini</p>
+                            <h3 id="tod-term" class="text-2xl md:text-3xl font-black mb-2 text-yellow-300">Bekantan</h3>
+                            <p id="tod-desc" class="text-sm text-purple-50 font-medium leading-relaxed mb-3">Monyet hidung panjang endemik Kalimantan. Pemakan pucuk Sonneratia muda.</p>
+                            <div id="tod-funfact" class="bg-black/20 backdrop-blur-sm p-3 rounded-xl border border-white/10 text-xs italic">
+                                "Hidung besarnya ternyata buat narik perhatian betina lho! 😎"
+                            </div>
                         </div>
                     </div>
-                    <div id="kamus-container" class="space-y-3"></div>
+
+                    <!-- SEARCH BAR STICKY -->
+                    <div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-gray-100 sticky top-0 z-20">
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i class="ph-bold ph-book-open-text text-teal-600"></i> Glosarium</h2>
+                            <span id="kamus-count" class="text-xs font-bold text-teal-700 bg-teal-100 px-3 py-1 rounded-full">0 Istilah</span>
+                        </div>
+                        <div class="relative">
+                            <i class="ph-bold ph-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-lg"></i>
+                            <input type="text" id="search-kamus" oninput="renderKamus()" placeholder="Cari istilah... (contoh: Bakau)" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none text-sm font-medium transition-shadow shadow-inner" />
+                        </div>
+                    </div>
+                    
+                    <!-- CONTAINER KARTU -->
+                    <div id="kamus-container" class="space-y-4 pb-6"></div>
                 </section>
 
                 <!-- 5. HACKATHON -->
@@ -493,27 +562,56 @@
                         <button onclick="toggleFormHackathon(false)" class="mb-4 text-teal-600 text-sm font-semibold flex items-center gap-1">
                             <i class="ph-bold ph-arrow-left"></i> Batal
                         </button>
+
+
                         <form onsubmit="saveIdea(event)" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
                             <div class="border-b pb-2">
                                 <h2 class="text-xl font-bold text-gray-800">Kanvas Ide Hackathon</h2>
                                 <p class="text-xs text-gray-500">Strukturkan pemikiran tim kamu.</p>
                             </div>
-                            <div class="space-y-2">
+
+                            <!-- 1. FUN TWIST GENERATOR -->
+                            <div id="fun-twist-container" class="bg-purple-100 border border-purple-200 p-4 rounded-xl flex items-start gap-3 relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 bg-purple-200 w-16 h-16 rounded-full opacity-50"></div>
+                                <i class="ph-fill ph-magic-wand text-3xl text-purple-600 z-10"></i>
+                                <div class="z-10">
+                                    <p class="text-[10px] font-black text-purple-800 uppercase tracking-wider mb-1">🧠 Fun Twist Challenge!</p>
+                                    <p id="fun-twist-text" class="text-sm text-purple-700 font-medium leading-tight">Bayangkan kamu jadi wali kota...</p>
+                                </div>
+                            </div>
+
+                            <!-- 2. KOLOM DENGAN HINT & PLACEHOLDER -->
+                            <div class="space-y-1">
                                 <label class="text-sm font-bold text-red-600 flex items-center gap-2"><span class="bg-red-100 px-2 rounded-full text-xs">1</span> Apa Masalahnya?</label>
-                                <textarea id="idea-masalah" required class="w-full p-3 bg-red-50/50 border border-red-100 rounded-xl text-sm h-20 outline-none focus:ring-2 focus:ring-red-400"></textarea>
+                                <p class="text-[10px] text-gray-500 font-medium ml-7">Contoh: Pantai kotor karena sedotan plastik, atau banyak bibit mangrove mati.</p>
+                                <textarea id="idea-masalah" oninput="checkIdeLevel()" required placeholder="Tulis masalah spesifik yang kamu lihat di lapangan..." class="w-full mt-1 p-3 bg-red-50/50 border border-red-100 rounded-xl text-sm h-20 outline-none focus:ring-2 focus:ring-red-400"></textarea>
                             </div>
-                            <div class="space-y-2">
+
+                            <div class="space-y-1">
                                 <label class="text-sm font-bold text-orange-600 flex items-center gap-2"><span class="bg-orange-100 px-2 rounded-full text-xs">2</span> Mengapa Penting?</label>
-                                <textarea id="idea-alasan" required class="w-full p-3 bg-orange-50/50 border border-orange-100 rounded-xl text-sm h-20 outline-none focus:ring-2 focus:ring-orange-400"></textarea>
+                                <p class="text-[10px] text-gray-500 font-medium ml-7">Hint: Apa dampaknya buat warga? Buat hewan laut? Buat 5 tahun ke depan?</p>
+                                <textarea id="idea-alasan" oninput="checkIdeLevel()" required placeholder="Ide ini penting untuk diselesaikan karena..." class="w-full mt-1 p-3 bg-orange-50/50 border border-orange-100 rounded-xl text-sm h-20 outline-none focus:ring-2 focus:ring-orange-400"></textarea>
                             </div>
-                            <div class="space-y-2">
+
+                            <div class="space-y-1">
                                 <label class="text-sm font-bold text-teal-600 flex items-center gap-2"><span class="bg-teal-100 px-2 rounded-full text-xs">3</span> Ide Solusi Kami?</label>
-                                <textarea id="idea-solusi" required class="w-full p-3 bg-teal-50/50 border border-teal-100 rounded-xl text-sm h-24 outline-none focus:ring-2 focus:ring-teal-400"></textarea>
+                                <p class="text-[10px] text-gray-500 font-medium ml-7">Format:[Siapa] melakukan [apa] dengan cara [bagaimana].</p>
+                                <textarea id="idea-solusi" oninput="checkIdeLevel()" required placeholder="Contoh: Siswa akan bikin jadwal piket bawa tas belanja kain dengan cara..." class="w-full mt-1 p-3 bg-teal-50/50 border border-teal-100 rounded-xl text-sm h-24 outline-none focus:ring-2 focus:ring-teal-400"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-gray-900 transition-colors flex justify-center items-center gap-2">
+
+                            <!-- 3. LIVE AUTO FEEDBACK / LEVEL IDE -->
+                            <div id="ide-feedback-container" class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center transition-all duration-300 transform scale-100">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Status Ide Kamu</p>
+                                <h4 id="ide-level-title" class="text-lg font-black text-gray-400 transition-colors">Belum Ada Ide 💤</h4>
+                                <p id="ide-level-msg" class="text-xs text-gray-500 mt-1 transition-colors">Ayo mulai ketik sesuatu di atas!</p>
+                            </div>
+
+                            <button type="submit" class="w-full bg-gray-800 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-gray-900 transition-transform active:scale-95 flex justify-center items-center gap-2">
                                 <i class="ph-bold ph-paper-plane-tilt"></i> Simpan Ide Tim
                             </button>
                         </form>
+
+
                     </div>
                 </section>
 
@@ -530,46 +628,53 @@
         
         let currentPhotoBase64 = null;
         let currentGeoJSONLapangan = null;
-        
-        // Data Kamus
-        const kamusData = [
-            { term: 'Blue Carbon (Karbon Biru)', cat: 'Konsep', desc: 'Karbon yang diserap oleh ekosistem pesisir. Mangrove menyimpan karbon 3-5 kali lebih banyak dari hutan tropis.' },
-            { term: 'Sonneratia alba (Pedada)', cat: 'Flora', desc: 'Mangrove pionir. Akar napas kerucut, buah seperti apel. Favorit Bekantan.' },
-            { term: 'Rhizophora (Bakau)', cat: 'Flora', desc: 'Mangrove dengan akar tunjang khas yang kuat menahan abrasi.' },
-            { term: 'Bekantan (Nasalis larvatus)', cat: 'Fauna', desc: 'Monyet hidung panjang endemik Kalimantan. Pemakan pucuk Sonneratia muda.' },
-            { term: 'Abrasi', cat: 'Ancaman', desc: 'Pengikisan pantai oleh gelombang. Mangrove adalah solusi alaminya.' },
-            { term: 'Salinitas', cat: 'Kondisi', desc: 'Tingkat keasinan air. Mangrove bisa membuang kelebihan garam melalui daun.' },
-            { term: 'Pneumatofora', cat: 'Adaptasi', desc: 'Akar napas yang tumbuh ke atas dari tanah. Membantu mangrove “bernapas” di lingkungan lumpur yang minim oksigen.' },
-            { term: 'Vivipari', cat: 'Adaptasi', desc: 'Strategi unik mangrove: biji berkecambah saat masih menempel di pohon induk. Siap jatuh dan langsung tumbuh di lumpur.' },
-            { term: 'Nursery Ground', cat: 'Fungsi', desc: 'Mangrove adalah “taman kanak-kanak laut”. Banyak ikan, udang, dan kepiting tumbuh di sini sebelum ke laut lepas.' },
-            { term: 'Ekosistem Pesisir', cat: 'Konsep', desc: 'Wilayah pertemuan darat dan laut. Mangrove berperan sebagai penjaga keseimbangan antara dua dunia ini.' },
-            { term: 'Restorasi Mangrove', cat: 'Aksi', desc: 'Upaya menanam dan memulihkan mangrove yang rusak. Tidak sekadar tanam, tapi harus sesuai kondisi tanah, pasang surut, dan jenis lokal.' },
-            { term: 'Fragmentasi Habitat', cat: 'Ancaman', desc: 'Terputusnya area mangrove akibat pembangunan. Membuat satwa sulit berpindah dan ekosistem jadi tidak stabil.' },
-            { term: 'Detritus', cat: 'Proses', desc: 'Daun mangrove yang gugur akan terurai jadi nutrisi penting bagi rantai makanan laut.' },
-            { term: 'Lamun (Seagrass)', cat: 'Ekosistem', desc: 'Tumbuhan laut yang sering berdampingan dengan mangrove. Sama-sama penyimpan karbon biru dan habitat biota laut.' },
-            { term: 'Carbon Sink', cat: 'Konsep', desc: 'Ekosistem yang menyerap lebih banyak karbon daripada yang dilepaskan. Mangrove adalah salah satu carbon sink paling efisien di bumi.' },
-            { term: 'Avicennia (Api-api)', cat: 'Flora', desc: 'Mangrove dengan kemampuan menyaring garam di akar. Daunnya sering terlihat berlapis kristal garam halus.' },
-            { term: 'Bruguiera (Tancang)', cat: 'Flora', desc: 'Mangrove dengan akar lutut (knee root). Biasanya tumbuh di bagian tengah hutan mangrove.' },
-            { term: 'Zonasi Mangrove', cat: 'Konsep', desc: 'Pola distribusi mangrove berdasarkan jarak dari laut. Setiap jenis punya “zona favorit” sesuai toleransi air dan garam.' },
-            { term: 'Pasang Surut', cat: 'Kondisi', desc: 'Naik turunnya permukaan laut yang sangat menentukan kehidupan mangrove. Akar dan sistem reproduksi sangat bergantung pada siklus ini.' },
-            { term: 'Sedimentasi', cat: 'Proses', desc: 'Pengendapan lumpur dan pasir yang dibantu oleh akar mangrove. Proses ini justru bisa memperluas daratan baru secara alami.' },
-            { term: 'Bioturbasi', cat: 'Proses', desc: 'Aktivitas hewan seperti kepiting yang mengaduk tanah mangrove. Membantu distribusi oksigen dan nutrisi di dalam sedimen.' },
-            { term: 'Kepiting Bakau (Scylla spp.)', cat: 'Fauna', desc: 'Salah satu komoditas penting. Hidup di akar mangrove dan berperan dalam daur ulang bahan organik.' },
-            { term: 'Burung Air', cat: 'Fauna', desc: 'Mangrove menjadi habitat penting bagi burung migran dan lokal sebagai tempat makan dan bersarang.' },
-            { term: 'Overfishing', cat: 'Ancaman', desc: 'Penangkapan berlebihan di sekitar mangrove dapat merusak keseimbangan ekosistem dan mengganggu rantai makanan.' },
-            { term: 'Konversi Lahan', cat: 'Ancaman', desc: 'Perubahan mangrove menjadi tambak, industri, atau pemukiman. Salah satu penyebab utama hilangnya mangrove.' },
-            { term: 'Ekowisata Mangrove', cat: 'Pemanfaatan', desc: 'Wisata berbasis alam yang mengedepankan konservasi dan edukasi, seperti tracking boardwalk di hutan mangrove.' },
-            { term: 'Jasa Ekosistem', cat: 'Konsep', desc: 'Manfaat yang diberikan mangrove: perlindungan pantai, penyimpanan karbon, habitat biota, hingga sumber ekonomi.' },
-            { term: 'Mitigasi Perubahan Iklim', cat: 'Konsep', desc: 'Peran mangrove dalam mengurangi dampak perubahan iklim melalui penyimpanan karbon dan perlindungan pesisir.' },
-            { term: 'Adaptasi Perubahan Iklim', cat: 'Konsep', desc: 'Mangrove membantu masyarakat pesisir beradaptasi terhadap kenaikan muka air laut dan badai ekstrem.' },
-            { term: 'Halofit', cat: 'Adaptasi', desc: 'Tumbuhan yang mampu hidup di lingkungan dengan kadar garam tinggi—kategori di mana mangrove termasuk.' },
-            { term: 'Lenticel', cat: 'Adaptasi', desc: 'Pori-pori kecil pada batang atau akar mangrove yang membantu pertukaran gas di lingkungan tergenang.' },
-            { term: 'Canopy Mangrove', cat: 'Struktur', desc: 'Lapisan tajuk atas mangrove yang berfungsi melindungi bawahnya serta menjadi habitat berbagai satwa.' },
-            { term: 'Edge Effect', cat: 'Konsep', desc: 'Perbedaan kondisi di tepi dan bagian dalam mangrove yang mempengaruhi distribusi flora dan fauna.' },
-            { term: 'Coastal Resilience', cat: 'Konsep', desc: 'Kemampuan pesisir untuk bertahan dari gangguan seperti badai dan abrasi—mangrove adalah kunci utamanya.' },
-            { term: 'Illegal Logging', cat: 'Ancaman', desc: 'Penebangan liar mangrove yang merusak struktur ekosistem dan mempercepat degradasi pesisir.' }
 
+        // --- FUN FACTS & GAMIFICATION DATA ---
+        const randomFunFacts =[
+            "Tahukah kamu? Hutan mangrove menyerap karbon 5x lebih cepat dari hutan darat! 🌳💨",
+            "Akar mangrove itu pelindung alami dari Tsunami dan ombak besar! 🌊🛡️",
+            "Satu pohon mangrove bisa jadi rumah buat ratusan kepiting kecil. 🦀🏠",
+            "Tanpa mangrove, pantai tempat kita main lama-lama bisa tenggelam lho! 🏖️📉",
+            "Ikan hiu lemon muda sering berlindung di sela-sela akar mangrove! 🦈🌿"
         ];
+
+        const sampahFacts = {
+            "450": "Botol ini bisa bertahan lebih lama dari umur kamu dan cucumu nanti! 😬",
+            "600": "Bahaya 'Ghost Fishing'! Jaring ini bakal terus menjerat ikan walau dibuang 😢",
+            "200": "Sayang banget dibuang, padahal kaleng ini gampang banget didaur ulang ♻️",
+            "50": "Sterofoam gampang hancur jadi mikroplastik, dimakan ikan, lalu ikannya kamu makan! 🤢",
+            "4000": "Wow, 40 Abad! Ini bakal jadi artefak purbakala di masa depan 🏛️",
+            "20": "Kresek di laut sering dikira ubur-ubur sama penyu. Kasihan penyu nya bisa mati keselek 🐢😭",
+            "10": "Racun dari 1 puntung rokok bisa mencemari hingga 500 liter air laut lho! ☠️"
+        };
+        
+        const funTwists =[
+            "Bayangkan kamu adalah Wali Kota dengan budget terbatas! 🏛️",
+            "Gimana caranya biar ide ini viral di TikTok & direpost influencer? 📱🔥",
+            "Kalau kamu cuma punya uang Rp 100.000, gimana cara eksekusi ide ini? 💸",
+            "Bayangkan idemu harus melibatkan anak SD sebagai pahlawannya! 🦸‍♂️🦸‍♀️",
+            "Gimana kalau teknologinya cuma modal grup WhatsApp aja? 💬",
+            "Coba bikin solusi yang bisa dikerjakan rebahan dari rumah! 🛏️😎"
+        ];
+
+        // Data Kamus
+        // Data Kamus Baru (Diperkaya dengan Fun Fact & Relasi)
+const kamusData =[
+    { term: 'Blue Carbon', cat: 'Konsep', desc: 'Karbon yang diserap oleh ekosistem pesisir. Mangrove menyimpan karbon 3-5 kali lebih banyak dari hutan tropis.', funfact: 'Ibarat vacuum cleaner raksasa buat nyedot polusi udara bumi! 🌪️', terkait:['Carbon Sink', 'Mitigasi Perubahan Iklim'] },
+    { term: 'Sonneratia alba (Pedada)', cat: 'Flora', desc: 'Mangrove pionir yang tangguh di garis depan. Punya akar napas kerucut dan buah berbentuk seperti apel kecil.', funfact: 'Buahnya asem-asem seger, ini makanan favoritnya Bekantan! 🐒', terkait: ['Bekantan', 'Pneumatofora'] },
+    { term: 'Rhizophora (Bakau)', cat: 'Flora', desc: 'Si ikonik mangrove dengan akar tunjang khas yang mencengkram lumpur dengan kuat.', funfact: 'Akarnya mirip cakar laba-laba, jadi benteng utama penahan ombak. 🕷️', terkait: ['Abrasi', 'Nursery Ground'] },
+    { term: 'Bekantan', cat: 'Fauna', desc: 'Monyet hidung panjang endemik Kalimantan. Pemakan pucuk Sonneratia muda dan jago berenang.', funfact: 'Hidung besarnya ternyata berfungsi buat narik perhatian betina lho! 😎', terkait: ['Sonneratia alba'] },
+    { term: 'Abrasi', cat: 'Ancaman', desc: 'Pengikisan pantai oleh gelombang laut. Kalau dibiarkan, daratan bisa hilang perlahan.', funfact: 'Mangrove itu ibarat bodyguard atau tembok beton alami penahan abrasi laut. 🛡️', terkait: ['Rhizophora', 'Coastal Resilience'] },
+    { term: 'Salinitas', cat: 'Kondisi', desc: 'Tingkat keasinan air. Tumbuhan biasa bakal mati, tapi mangrove punya cara rahasia buat bertahan.', funfact: 'Beberapa mangrove bisa "berkeringat" ngeluarin kelebihan garam lewat daunnya! 🧂', terkait:['Halofit', 'Avicennia'] },
+    { term: 'Pneumatofora', cat: 'Adaptasi', desc: 'Akar napas yang mencuat ke atas dari lumpur biar pohon bisa "bernapas" oksigen bebas.', funfact: 'Kelihatan kayak paku-paku tajam yang nancep terbalik di tanah lumpur. 📌', terkait: ['Sonneratia alba', 'Avicennia'] },
+    { term: 'Vivipari', cat: 'Adaptasi', desc: 'Strategi cerdas mangrove: biji berkecambah saat masih nempel di pohon induk. Pas jatuh, langsung siap tumbuh!', funfact: 'Biji mangrove jatuhnya kayak panah, langsung nancep lurus di lumpur. 🎯', terkait: ['Rhizophora'] },
+    { term: 'Nursery Ground', cat: 'Fungsi', desc: 'Mangrove adalah “taman kanak-kanak laut”. Tempat ikan, udang, kepiting tumbuh aman sebelum ke laut lepas.', funfact: 'Tanpa mangrove, nelayan bisa kehilangan 75% tangkapan ikannya! 🎣', terkait:['Ekosistem Pesisir', 'Overfishing'] },
+    { term: 'Illegal Logging', cat: 'Ancaman', desc: 'Penebangan liar mangrove buat dijadikan arang atau kayu bakar. Menghancurkan ekosistem secara instan.', funfact: 'Butuh puluhan tahun buat nebus kerusakan tebang liar yang cuma 1 hari. 😭', terkait:['Fragmentasi Habitat'] },
+    { term: 'Ekowisata Mangrove', cat: 'Aksi', desc: 'Jalan-jalan santai di boardwalk mangrove sambil belajar konservasi. Nambah ekonomi warga lokal.', funfact: 'Healing terbaik buat ngelepas stres sekolah sambil hirup oksigen murni! 🌿', terkait:['Jasa Ekosistem'] },
+    { term: 'Avicennia (Api-api)', cat: 'Flora', desc: 'Mangrove dengan kemampuan menyaring garam di akar. Daunnya sering terlihat berlapis kristal garam halus.', funfact: 'Kalau kamu jilat daunnya, rasanya beneran asin kayak keripik! 🍟 (tapi jangan dimakan ya)', terkait: ['Salinitas', 'Pneumatofora'] },
+    { term: 'Kepiting Bakau', cat: 'Fauna', desc: 'Hewan yang hidup di akar mangrove dan berperan dalam daur ulang daun jatuh (detritus).', funfact: 'Mereka ini tukang kebunnya mangrove, suka ngaduk-ngaduk tanah biar subur. 👨‍🌾', terkait: ['Bioturbasi', 'Detritus'] },
+    { term: 'Overfishing', cat: 'Ancaman', desc: 'Penangkapan ikan berlebihan di pesisir yang merusak keseimbangan ekosistem laut dan mangrove.', funfact: 'Ibarat ngambil uang di tabungan tapi nggak pernah nabung lagi, lama-lama ludes! 💸', terkait: ['Nursery Ground'] }
+];
 
         // --- 2. LEAFLET MAP LOGIC (MULTI-MAP SUPPORT) ---
         let mapTanam = null; let drawnItemsTanam = null; let currentGeoJSONTanam = null;
@@ -789,34 +894,90 @@
             event.target.value = ''; // Reset file input
         }
 
-        function loadSampleData() {
+function loadSampleData() {
             // Polygon Kawasan Mangrove Graha Indah Balikpapan
             const sampleGeoJSON = {
-              "type": "Feature",
-              "properties": {},
-              "geometry": {
-                "type": "Polygon",
-                "coordinates": [[[117.5361,-0.812366],[117.536207,-0.812248],[117.536475,-0.812366],[117.536797,-0.812376],[117.537065,-0.812462],[117.537419,-0.812382],[117.537704,-0.812258],[117.538025,-0.812151],[117.538192,-0.812055],[117.538369,-0.812081],[117.53853,-0.812242],[117.538251,-0.812398],[117.538015,-0.812548],[117.537569,-0.812811],[117.537709,-0.813052],[117.53765,-0.813256],[117.537548,-0.813449],[117.537253,-0.81331],[117.536952,-0.813556],[117.536754,-0.813449],[117.536604,-0.813202],[117.536368,-0.812827],[117.536314,-0.812655],[117.535982,-0.812779],[117.5361,-0.812366]]]
-              }
+                "type": "Feature", "properties": {},
+                "geometry": { "type": "Polygon", "coordinates": [[[117.5361,-0.812366],[117.536207,-0.812248],[117.536475,-0.812366],[117.536797,-0.812376],[117.537065,-0.812462],[117.537419,-0.812382],[117.537704,-0.812258],[117.538025,-0.812151],[117.538192,-0.812055],[117.538369,-0.812081],[117.53853,-0.812242],[117.538251,-0.812398],[117.538015,-0.812548],[117.537569,-0.812811],[117.537709,-0.813052],[117.53765,-0.813256],[117.537548,-0.813449],[117.537253,-0.81331],[117.536952,-0.813556],[117.536754,-0.813449],[117.536604,-0.813202],[117.536368,-0.812827],[117.536314,-0.812655],[117.535982,-0.812779],[117.5361,-0.812366]]] }
             };
             
-            reports = [{
-                id: Date.now(), timestamp: new Date().toISOString(), type: 'cleanup', amount: '125',
-                notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Banyak botol plastik dan kemasan sachet yang tersangkut di akar pohon.',
-                lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null
-            }];
+            const now = Date.now();
             
-            ideas = [{
-                id: Date.now() + 1,
-                masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove secara permanen.',
-                solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk sebelum menyentuh akar mangrove utama.'
-            }];
+            // 3 Data Lapangan
+            reports =[
+                {
+                    id: now, timestamp: new Date(now).toISOString(), type: 'cleanup', amount: '125',
+                    notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Banyak botol plastik dan kemasan sachet yang tersangkut di akar pohon.',
+                    lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null
+                },
+                {
+                    id: now - 1000, timestamp: new Date(now - 86400000).toISOString(), type: 'planting', amount: '',
+                    notes: 'Penanaman bibit bersama warga lokal di area lumpur yang stabil. Jarak tanam direnggangkan.',
+                    lat: '-1.2150', lng: '116.8400', areaHa: '0.5', geojson: null, photo: null,
+                    bibit: '50', jarak: '1.5', jenis: 'Rhizophora'
+                },
+                {
+                    id: now - 2000, timestamp: new Date(now - 172800000).toISOString(), type: 'observation', amount: '',
+                    notes: 'Berhasil melihat 3 ekor Bekantan sedang makan pucuk daun Pedada (Sonneratia) sore ini!',
+                    lat: '-1.2195', lng: '116.8355', areaHa: '0', geojson: null, photo: null
+                }
+            ];
+            
+            // 2 Data Ide
+            ideas =[
+                {
+                    id: now + 1,
+                    masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove secara permanen.',
+                    solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk sebelum menyentuh akar mangrove utama.'
+                },
+                {
+                    id: now + 2,
+                    masalah: 'Masyarakat kurang paham fungsi mangrove dan membuang sampah sembarangan di sekitarnya.',
+                    solusi: 'Bikin kampanye TikTok bareng Karang Taruna dan lomba foto "Mangrove Keren" berhadiah saldo E-Wallet.'
+                }
+            ];
+
+            // 3 Data Sampah Kalkulator
+            listSampahUrai =[
+                { nama: 'Botol PET / Air Mineral', berat: 2.5, tahun: 450, fakta: sampahFacts["450"], id: now + 3 },
+                { nama: 'Jaring Nelayan / Senar', berat: 1.2, tahun: 600, fakta: sampahFacts["600"], id: now + 4 },
+                { nama: 'Kantong Plastik Kresek', berat: 0.5, tahun: 20, fakta: sampahFacts["20"], id: now + 5 }
+            ];
 
             localStorage.setItem('pesisir_reports', JSON.stringify(reports));
             localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
             
-            updateDashboard(); switchTab('dashboard');
-            alert("Sample Map Balikpapan berhasil dimuat! Cek 'Kegiatan Lapangan' di dashboard untuk melihat peta area yang digambar.");
+            updateDashboard(); 
+            renderReports();
+            renderIdeas();
+            renderSampahUrai();
+            
+            switchTab('dashboard');
+            alert("🎉 Sample Data Berhasil Dimuat!\n\nCoba cek menu Lapangan, Ide Tim, dan Keranjang Urai Sampah di Kalkulator ya!");
+        }
+
+        function resetAplikasi() {
+            const konfirmasi = confirm("🚨 PERHATIAN!\n\nYakin ingin MENGHAPUS SEMUA DATA (Laporan, Ide, Kalkulator)?\n\nData yang dihapus tidak bisa dikembalikan kecuali kamu sudah melakukan 'Save Game'.");
+            
+            if(konfirmasi) {
+                // 1. Kosongkan Memori Sementara (Variabel JS)
+                reports = [];
+                ideas = [];
+                listSampahUrai =[];
+
+                // 2. Kosongkan LocalStorage (Database Browser)
+                localStorage.removeItem('pesisir_reports');
+                localStorage.removeItem('pesisir_ideas');
+
+                // 3. Update semua tampilan kembali jadi 0
+                updateDashboard();
+                renderReports();
+                renderIdeas();
+                renderSampahUrai();
+                
+                // 4. Kasih notifikasi
+                alert("🗑️ Berhasil! Semua data sudah di-reset menjadi 0.");
+            }
         }
 
         // --- 3. NAVIGATION ---
@@ -854,17 +1015,43 @@
 
         function hitungKarbon() {
             const jml = parseInt(document.getElementById('input-pohon').value) || 0;
-            const co2 = jml * 12; 
+            const co2 = jml * 12; // 1 pohon ~ 12kg co2/tahun
+            
             document.getElementById('lbl-pohon').innerText = `${jml} pohon`;
             document.getElementById('lbl-co2').innerText = co2;
+            
+            // Konversi relatable anak SMA
             document.getElementById('lbl-motor').innerText = Math.round(co2 / 0.1) + " km";
+            document.getElementById('lbl-hp').innerText = Math.round(co2 / 0.005).toLocaleString('id-ID') + "x";
+            document.getElementById('lbl-ac').innerText = Math.round(co2 / 10) + " Hari"; // Asumsi 1 hari AC ~ 10kg CO2
+            
+            // Multiplier Kelas
+            document.getElementById('lbl-multiplier').innerText = (co2 * 30).toLocaleString('id-ID') + " Kg CO₂!";
+
+            // Reaksi Fun
+            let reaksi = "Lumayan 👍";
+            if (co2 >= 50 && co2 < 100) reaksi = "Keren Banget! 🔥";
+            if (co2 >= 100) reaksi = "GILA SIH! BUMI TERSELAMATKAN 😱🚀";
+            document.getElementById('lbl-reaksi-karbon').innerText = reaksi;
+
+            // Random Fun Fact
+            document.getElementById('lbl-funfact-karbon').innerText = "💡 " + randomFunFacts[Math.floor(Math.random() * randomFunFacts.length)];
         }
 
-        function hitungTanam() {
-            const luas = parseFloat(document.getElementById('input-luas').value) || 0;
-            const jarak = parseFloat(document.getElementById('input-jarak').value) || 1;
-            document.getElementById('lbl-bibit').innerText = Math.floor(luas / (jarak * jarak));
-        }
+            function hitungTanam() {
+                const luas = parseFloat(document.getElementById('input-luas').value) || 0;
+                const jarak = parseFloat(document.getElementById('input-jarak').value) || 1;
+                const butuhBibit = Math.floor(luas / (jarak * jarak));
+                
+                document.getElementById('lbl-bibit').innerText = butuhBibit;
+                
+                // Asumsi 1 orang SMA nanam 20 bibit santai 1 hari
+                const butuhOrang = Math.ceil(butuhBibit / 20) || 1;
+                document.getElementById('lbl-orang').innerText = butuhOrang + " Orang";
+
+                // Random Fun Fact
+                document.getElementById('lbl-funfact-tanam').innerText = "💡 " + randomFunFacts[Math.floor(Math.random() * randomFunFacts.length)];
+            }
 
         // --- KALKULATOR URAI SAMPAH (KUMULATIF) ---
         function tambahSampahUrai() {
@@ -876,8 +1063,9 @@
 
             const tahun = parseInt(select.value);
             const namaSampah = select.options[select.selectedIndex].text.split(' (')[0];
+            const fakta = sampahFacts[tahun.toString()] || "Sampah ini merusak ekosistem laut!"; // Tarik fakta dari kamus
 
-            listSampahUrai.push({ nama: namaSampah, berat: berat, tahun: tahun, id: Date.now() });
+            listSampahUrai.push({ nama: namaSampah, berat: berat, tahun: tahun, fakta: fakta, id: Date.now() });
             
             beratInput.value = ''; // reset input
             renderSampahUrai();
@@ -901,28 +1089,34 @@
             }
             containerBox.classList.remove('hidden');
 
+
             const listEl = document.getElementById('list-sampah-urai');
-            listEl.innerHTML = listSampahUrai.map(s => `
-                <li class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+        listEl.innerHTML = listSampahUrai.map(s => `
+            <li class="flex flex-col bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 gap-1">
+                <div class="flex justify-between items-center w-full">
                     <div>
                         <span class="font-bold text-gray-700 text-sm">${s.nama}</span>
-                        <span class="text-xs text-gray-500 ml-2">${s.tahun} Tahun</span>
+                        <span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded ml-2 font-bold">${s.tahun} Tahun</span>
                     </div>
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-orange-600 text-sm">${s.berat} Kg</span>
                         <button onclick="hapusSampahUrai(${s.id})" class="text-red-400 hover:text-red-600"><i class="ph-bold ph-trash"></i></button>
                     </div>
-                </li>
-            `).join('');
+                </div>
+                <p class="text-xs text-gray-500 italic mt-1 border-t border-gray-200 pt-1">"${s.fakta}"</p>
+            </li>
+        `).join('');
 
-            // Kalkulasi Kumulatif
-            const totalBerat = listSampahUrai.reduce((sum, item) => sum + item.berat, 0);
-            const maxTahun = Math.max(...listSampahUrai.map(item => item.tahun));
-            const generasi = Math.floor(maxTahun / 75) || 1;
+        // Kalkulasi Kumulatif (Generasi)
+        const totalBerat = listSampahUrai.reduce((sum, item) => sum + item.berat, 0);
+        const maxTahun = Math.max(...listSampahUrai.map(item => item.tahun));
+        
+        // 1 Generasi = 25 Tahun
+        const generasi = Math.ceil(maxTahun / 25);
 
-            document.getElementById('lbl-total-berat-sampah').innerText = `${totalBerat.toFixed(1)} Kg`;
-            document.getElementById('lbl-max-waktu-urai').innerText = maxTahun;
-            document.getElementById('lbl-generasi-sampah').innerHTML = `Luar Biasa! Tindakan ini setara dengan menyelamatkan lautan selama lebih dari <strong>${generasi} generasi</strong> umat manusia dari jenis sampah terburukmu!`;
+        document.getElementById('lbl-total-berat-sampah').innerText = `${totalBerat.toFixed(1)} Kg`;
+        document.getElementById('lbl-max-waktu-urai').innerText = maxTahun;
+        document.getElementById('lbl-generasi-sampah').innerHTML = `GILA SIH! 😱 Sampah terburukmu baru akan hancur setelah <strong class="text-yellow-300 text-xl">${generasi} Generasi</strong> keturunanmu lahir!`;
         }
 
         // --- 5. LAPANGAN (OFFLINE FIRST) LOGIC ---
@@ -936,8 +1130,20 @@
             const type = document.getElementById('form-type').value;
             const amtBox = document.getElementById('input-amount-container');
             const amtInput = document.getElementById('form-amount');
-            if(type === 'cleanup') { amtBox.style.display = 'block'; amtInput.required = true; } 
-            else { amtBox.style.display = 'none'; amtInput.required = false; amtInput.value = ''; }
+            const plantingBox = document.getElementById('input-planting-container');
+
+            // Reset semua form terlebih dahulu
+            amtBox.style.display = 'none'; 
+            amtInput.required = false; 
+            plantingBox.style.display = 'none';
+
+            if (type === 'cleanup') {
+                amtBox.style.display = 'block'; 
+                amtInput.required = true;
+            } else if (type === 'planting') {
+                plantingBox.style.display = 'block';
+                // Anda bisa buat input bibit required di sini jika mau
+            }
         }
 
         function getGPS() {
@@ -976,10 +1182,21 @@
         function saveReport(event) {
             event.preventDefault();
             const newReport = {
-                id: Date.now(), timestamp: new Date().toISOString(), type: document.getElementById('form-type').value,
-                amount: document.getElementById('form-amount').value, notes: document.getElementById('form-notes').value,
-                lat: document.getElementById('form-lat').value, lng: document.getElementById('form-lng').value,
-                areaHa: document.getElementById('form-area-ha').value, geojson: currentGeoJSONLapangan, photo: currentPhotoBase64
+                id: Date.now(), 
+                timestamp: new Date().toISOString(), 
+                type: document.getElementById('form-type').value,
+                amount: document.getElementById('form-amount').value, 
+                notes: document.getElementById('form-notes').value,
+                lat: document.getElementById('form-lat').value, 
+                lng: document.getElementById('form-lng').value,
+                areaHa: document.getElementById('form-area-ha').value, 
+                geojson: currentGeoJSONLapangan, 
+                photo: currentPhotoBase64,
+                
+                // TAMBAHAN DATA PENANAMAN
+                bibit: document.getElementById('form-bibit') ? document.getElementById('form-bibit').value : '',
+                jarak: document.getElementById('form-jarak') ? document.getElementById('form-jarak').value : '',
+                jenis: document.getElementById('form-jenis') ? document.getElementById('form-jenis').value : ''
             };
             reports.unshift(newReport); 
             localStorage.setItem('pesisir_reports', JSON.stringify(reports));
@@ -996,6 +1213,11 @@
             document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
             currentGeoJSONLapangan = null; if(drawnItemsLapangan) drawnItemsLapangan.clearLayers();
             document.getElementById('map-lapangan-wrapper').className = 'hidden'; // Hide map completely when reset
+
+            if(document.getElementById('form-bibit')) document.getElementById('form-bibit').value = '';
+            if(document.getElementById('form-jarak')) document.getElementById('form-jarak').value = '';
+            if(document.getElementById('form-jenis')) document.getElementById('form-jenis').value = 'Rhizophora';
+
             toggleFormInputs(); removePhoto();
         }
 
@@ -1010,27 +1232,47 @@
         // --- Helper: Generate Tampilan Kartu Laporan (Digunakan di Lapangan & Dashboard) ---
         function generateReportCard(r, compact = false) {
             const reportIndex = reports.indexOf(r);
-            const isCleanup = r.type === 'cleanup';
             const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
-            const icon = isCleanup ? 'ph-trash text-orange-600 bg-orange-100' : 'ph-drop text-blue-600 bg-blue-100';
             const areaBadge = parseFloat(r.areaHa) > 0 ? `<span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> ${r.areaHa} Ha</span>` : '';
+
+            // Penyesuaian Ikon dan Text berdasarkan Jenis Laporan
+            let iconClass = 'ph-drop text-blue-600 bg-blue-100'; // Default Observasi
+            let title = 'Observasi Lingkungan';
+            let highlightStat = '';
+            let extraDetail = '';
+
+            if (r.type === 'cleanup') {
+                iconClass = 'ph-trash text-orange-600 bg-orange-100';
+                title = 'Pembersihan Pesisir';
+                if (r.amount) highlightStat = `<div class="font-black text-orange-600">${r.amount} Kg</div>`;
+            } 
+            else if (r.type === 'planting') {
+                iconClass = 'ph-plant text-emerald-600 bg-emerald-100';
+                title = 'Penanaman Mangrove';
+                if (r.bibit) highlightStat = `<div class="font-black text-emerald-600">${r.bibit} Bibit</div>`;
+                // Tambahkan detail tambahan jika tidak dalam mode compact (di halaman Dashboard)
+                if (!compact && r.jenis) {
+                    extraDetail = `<div class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md mt-2 inline-block font-medium"><i class="ph-bold ph-tree"></i> Jenis: ${r.jenis} | Jarak: ${r.jarak || '-'} m</div>`;
+                }
+            }
 
             return `
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3 hover:border-teal-200 transition-colors">
                 <div class="flex justify-between items-start">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-xl ${icon}"><i class="ph-fill ${icon.split(' ')[0]} text-xl"></i></div>
+                        <div class="p-2 rounded-xl ${iconClass.split(' ').slice(1).join(' ')}"><i class="ph-fill ${iconClass.split(' ')[0]} text-xl"></i></div>
                         <div>
-                            <h3 class="font-bold text-gray-800 text-sm">${isCleanup ? 'Pembersihan' : 'Observasi'}</h3>
+                            <h3 class="font-bold text-gray-800 text-sm">${title}</h3>
                             <p class="text-xs text-gray-500">${date}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        ${r.amount ? `<div class="font-black text-teal-600">${r.amount} Kg</div>` : ''}
+                        ${highlightStat}
                         ${areaBadge}
                     </div>
                 </div>
-                ${!compact && r.notes ? `<p class="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg truncate">${r.notes}</p>` : ''}
+                ${!compact && r.notes ? `<p class="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg truncate mt-1">${r.notes}</p>` : ''}
+                ${extraDetail}
                 ${!compact ? `
                 <div class="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
                     <div class="flex items-center gap-2 text-xs text-gray-400 font-medium">
@@ -1100,29 +1342,146 @@
         }
 
         // --- 7. KAMUS LOGIC ---
+        // --- LOGIKA KAMUS INTERAKTIF ---
+
+        // 1. Mapping Warna & Ikon berdasarkan Kategori
+        const catStyles = {
+            'Flora': { color: 'text-emerald-700 bg-emerald-100 border-emerald-200', icon: 'ph-tree' },
+            'Fauna': { color: 'text-blue-700 bg-blue-100 border-blue-200', icon: 'ph-paw-print' },
+            'Ancaman': { color: 'text-red-700 bg-red-100 border-red-200', icon: 'ph-warning-octagon' },
+            'Konsep': { color: 'text-purple-700 bg-purple-100 border-purple-200', icon: 'ph-lightbulb' },
+            'Adaptasi': { color: 'text-orange-700 bg-orange-100 border-orange-200', icon: 'ph-arrows-merge' },
+            'Kondisi': { color: 'text-cyan-700 bg-cyan-100 border-cyan-200', icon: 'ph-thermometer' },
+            'Fungsi': { color: 'text-teal-700 bg-teal-100 border-teal-200', icon: 'ph-gear' },
+            'Aksi': { color: 'text-pink-700 bg-pink-100 border-pink-200', icon: 'ph-person-simple-walk' }
+        };
+
+        // 2. Fungsi Set Istilah Hari Ini (Randomizer)
+        function setTermOfTheDay() {
+            // Pilih yang punya funfact aja biar seru
+            const funItems = kamusData.filter(i => i.funfact); 
+            const randomItem = funItems[Math.floor(Math.random() * funItems.length)];
+            
+            document.getElementById('tod-term').innerText = randomItem.term;
+            document.getElementById('tod-desc').innerText = randomItem.desc;
+            document.getElementById('tod-funfact').innerHTML = `💡 <strong>Fun Fact:</strong> ${randomItem.funfact}`;
+        }
+
+        // 3. Fungsi Klik Hashtag Relasi
+        function clickTerkait(term) {
+            document.getElementById('search-kamus').value = term;
+            renderKamus();
+            // Auto scroll ke search bar
+            document.getElementById('search-kamus').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // 4. Fungsi Render Utama
         function renderKamus() {
             const term = document.getElementById('search-kamus').value.toLowerCase();
             const filtered = kamusData.filter(i => i.term.toLowerCase().includes(term) || i.desc.toLowerCase().includes(term));
+            
+            document.getElementById('kamus-count').innerText = `${filtered.length} Istilah`;
             const container = document.getElementById('kamus-container');
+            
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 mt-8 font-medium">Istilah tidak ditemukan.</p>'; return;
+                container.innerHTML = `
+                <div class="text-center p-10 bg-white rounded-2xl border border-dashed border-gray-300">
+                    <i class="ph-fill ph-magnifying-glass text-5xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 font-bold">Waduh, istilahnya nggak ketemu nih 😅</p>
+                    <button onclick="document.getElementById('search-kamus').value=''; renderKamus();" class="mt-3 text-sm text-teal-600 font-bold hover:underline">Reset Pencarian</button>
+                </div>`; 
+                return;
             }
-            container.innerHTML = filtered.map(item => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-bold text-teal-800 text-lg leading-tight">${item.term}</h3>
-                        <span class="text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-teal-600 px-2 py-1 rounded-md ml-2 shrink-0">${item.cat}</span>
+
+            container.innerHTML = filtered.map(item => {
+                const style = catStyles[item.cat] || { color: 'text-gray-700 bg-gray-100 border-gray-200', icon: 'ph-book-bookmark' };
+                
+                const tagTerkait = item.terkait ? item.terkait.map(t => 
+                    `<button onclick="clickTerkait('${t}')" class="text-[10px] font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 hover:text-teal-600 px-2 py-1 rounded-md transition-colors border border-gray-200">#${t}</button>`
+                ).join('') : '';
+
+                return `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-300 transition-all group relative">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-2 gap-2">
+                        <h3 class="font-bold text-gray-800 text-lg leading-tight group-hover:text-teal-700 transition-colors">${item.term}</h3>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border shrink-0 flex items-center gap-1 w-max ${style.color}">
+                            <i class="ph-bold ${style.icon}"></i> ${item.cat}
+                        </span>
                     </div>
-                    <p class="text-sm text-gray-600 leading-relaxed">${item.desc}</p>
+                    
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">${item.desc}</p>
+                    
+                    ${item.funfact ? `
+                    <div class="bg-yellow-50/50 border border-yellow-100 p-3 rounded-xl mb-3 flex gap-2 items-start">
+                        <i class="ph-fill ph-lightbulb text-yellow-500 text-lg shrink-0 mt-0.5"></i> 
+                        <p class="text-xs text-yellow-800 font-medium leading-relaxed">${item.funfact}</p>
+                    </div>` : ''}
+
+                    ${tagTerkait ? `
+                    <div class="flex flex-wrap gap-1.5 mt-2 pt-3 border-t border-gray-100 items-center">
+                        <i class="ph-bold ph-link text-gray-400 text-sm mr-1"></i> 
+                        ${tagTerkait}
+                    </div>` : ''}
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // --- 8. HACKATHON LOGIC ---
         function toggleFormHackathon(show) {
             document.getElementById('hackathon-list').classList.toggle('hidden', show);
             document.getElementById('hackathon-form').classList.toggle('hidden', !show);
+            
+            if(show) {
+                // Munculkan Random Twist
+                const randomTwist = funTwists[Math.floor(Math.random() * funTwists.length)];
+                document.getElementById('fun-twist-text').innerText = randomTwist;
+                
+                // Reset form & feedback jika baru buka
+                document.getElementById('idea-masalah').value = '';
+                document.getElementById('idea-alasan').value = '';
+                document.getElementById('idea-solusi').value = '';
+                checkIdeLevel(); // Reset status UI
+            }
         }
+
+        function checkIdeLevel() {
+            // Ambil panjang teks dari ketiga kolom
+            const txt1 = document.getElementById('idea-masalah').value;
+            const txt2 = document.getElementById('idea-alasan').value;
+            const txt3 = document.getElementById('idea-solusi').value;
+            const totalKarakter = txt1.length + txt2.length + txt3.length;
+
+            const titleEl = document.getElementById('ide-level-title');
+            const msgEl = document.getElementById('ide-level-msg');
+            const boxEl = document.getElementById('ide-feedback-container');
+
+            if (totalKarakter === 0) {
+                titleEl.innerText = "Belum Ada Ide 💤";
+                titleEl.className = "text-lg font-black text-gray-400";
+                msgEl.innerText = "Ayo mulai ketik sesuatu di atas!";
+                boxEl.className = "bg-gray-50 border border-gray-200 p-4 rounded-xl text-center transition-all duration-300";
+            } 
+            else if (totalKarakter > 0 && totalKarakter < 60) {
+                titleEl.innerText = "Ide Dasar 🌱";
+                titleEl.className = "text-lg font-black text-emerald-600";
+                msgEl.innerText = "Mulai kelihatan nih! Coba tambahkan detail biar idemu lebih kuat 💡";
+                boxEl.className = "bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center transition-all duration-300";
+            } 
+            else if (totalKarakter >= 60 && totalKarakter < 150) {
+                titleEl.innerText = "Ide Berkembang 🌿";
+                titleEl.className = "text-lg font-black text-blue-600";
+                msgEl.innerText = "Makin tajam! Pastikan solusinya realistis dan bisa dieksekusi ya 👍";
+                boxEl.className = "bg-blue-50 border border-blue-200 p-4 rounded-xl text-center transition-all duration-300 scale-105 shadow-md";
+            } 
+            else {
+                titleEl.innerText = "Ide Siap Aksi! 🚀🔥";
+                titleEl.className = "text-xl font-black text-orange-600 animate-pulse";
+                msgEl.innerText = "GILA SIH! Ini udah selevel sama pitch deck startup! Keren banget! 👏";
+                boxEl.className = "bg-orange-50 border border-orange-200 p-4 rounded-xl text-center transition-all duration-300 scale-105 shadow-lg";
+            }
+        }
+
         function saveIdea(event) {
             event.preventDefault();
             const newIdea = { id: Date.now(), masalah: document.getElementById('idea-masalah').value, solusi: document.getElementById('idea-solusi').value };
@@ -1152,12 +1511,23 @@
 
         // --- 9. DASHBOARD UPDATE (ALL-IN-ONE) ---
         function updateDashboard() {
+
             // 1. Update Stats Angka Top
             const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-            const totalPohon = reports.filter(r => r.type === 'observation').length;
+            const totalPohon = reports.filter(r => r.type === 'observation' || r.type === 'planting').length;
             
             document.getElementById('dash-trash').innerHTML = `${totalTrash} <span class="text-sm font-normal">Kg</span>`;
             document.getElementById('dash-pohon').innerText = totalPohon;
+
+            // GAMIFIKASI: Penentuan Level
+            let levelTeks = "Seed 🌱";
+            let reaksiTeks = "Yuk mulai aksi pertamamu!";
+            if (totalPohon >= 1 && totalPohon < 5) { levelTeks = "Sapling 🌿"; reaksiTeks = "Keren! Langkah awal yang bagus 👍"; }
+            else if (totalPohon >= 5 && totalPohon < 20) { levelTeks = "Mangrove Ranger 🤠"; reaksiTeks = "Mantap! Kamu konsisten banget 🔥"; }
+            else if (totalPohon >= 20) { levelTeks = "Forest Guardian 🌳👑"; reaksiTeks = "GILA SIH! Bumi bangga sama kamu 😱"; }
+            
+            document.getElementById('dash-level').innerText = levelTeks;
+            document.getElementById('dash-reaksi').innerText = reaksiTeks;
 
             // 2. Render Mini-List Laporan Lapangan (Ambil maks 3 terbaru)
             const dashLapContainer = document.getElementById('dash-list-lapangan');
@@ -1181,9 +1551,15 @@
         window.onload = () => {
             switchTab('dashboard'); 
             updateDashboard();
+            
+            // Init Kamus
+            setTermOfTheDay(); // <-- Baris baru yang sangat penting
             renderKamus(); 
+            
             renderIdeas();
         };
+
+
     </script>
 </body>
 </html>

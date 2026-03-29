@@ -23,12 +23,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
     <style>
-        /* Sembunyikan semua elemen saat print kecuali area print */
+        /* CSS Khusus Print / Export PDF */
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 0; }
             #app-container { display: none; }
+            .print-page-break { page-break-before: always; }
         }
         
         /* Fix Leaflet z-index overlapping Tailwind's fixed elements */
@@ -49,38 +50,62 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans overflow-hidden">
 
-    <!-- PRINT AREA (Tersembunyi secara default) -->
-    <div id="print-area" class="hidden p-8 max-w-2xl mx-auto bg-white text-black">
-        <div class="border-b-4 border-teal-600 pb-4 mb-6">
-            <h1 class="text-3xl font-bold text-teal-800">Laporan Lapangan PesisirKita</h1>
-            <p class="text-gray-500" id="print-date"></p>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mb-6 text-lg">
-            <div><strong>Kegiatan:</strong> <span id="print-type"></span></div>
-            <div><strong>Lokasi:</strong> <span id="print-gps"></span></div>
-            <div id="print-amount-box"><strong>Total:</strong> <span id="print-amount"></span></div>
-        </div>
-        <div class="mb-6">
-            <strong>Catatan:</strong>
-            <p class="p-3 bg-gray-50 rounded mt-2" id="print-notes"></p>
-        </div>
-        <div id="print-photo-box" class="mt-6 hidden">
-            <strong>Dokumentasi:</strong><br>
-            <img id="print-photo" src="" alt="Bukti" class="mt-4 max-w-full rounded-lg border shadow-sm" style="max-height: 400px; object-fit: contain;">
+    <!-- MODAL POPUP PETA -->
+    <div id="modal-peta" class="fixed inset-0 bg-black/60 z-[100] hidden flex-col justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col transform transition-all">
+            <div class="p-4 bg-teal-600 text-white flex justify-between items-center">
+                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-map-trifold text-xl"></i> Peta Area Sapuan</h3>
+                <button onclick="closeModalPeta()" class="font-bold text-white bg-teal-800 hover:bg-teal-900 px-3 py-1 rounded-lg transition-colors">Tutup</button>
+            </div>
+            <div id="modal-map-container" class="w-full h-[60vh] md:h-96 bg-gray-200"></div>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER (Hybrid Layout: Column on mobile, Row on Desktop) -->
+    <!-- PRINT AREA (TEMPLATE LAPORAN LENGKAP) -->
+    <div id="print-area" class="hidden p-8 max-w-3xl mx-auto bg-white text-black">
+        <div class="border-b-4 border-teal-600 pb-4 mb-6 text-center">
+            <h1 class="text-3xl font-black text-teal-800 uppercase tracking-wide">Laporan Komprehensif Tim</h1>
+            <p class="text-gray-500 font-medium mt-1">Program Pelestarian PesisirKita</p>
+            <p class="text-sm text-gray-400" id="print-tanggal-cetak"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8 bg-teal-50 p-6 rounded-2xl border border-teal-100">
+            <div>
+                <p class="text-xs font-bold text-teal-600 uppercase">Total Sampah Dievakuasi</p>
+                <p class="text-3xl font-black text-gray-800" id="print-total-sampah">0 Kg</p>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-teal-600 uppercase">Total Pohon / Observasi</p>
+                <p class="text-3xl font-black text-gray-800" id="print-total-pohon">0 Kegiatan</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-bold border-b-2 border-gray-200 pb-2 mb-4 text-gray-800"><i class="ph-bold ph-map-pin"></i> Rekap Data Lapangan</h2>
+            <div id="print-list-lapangan" class="space-y-4">
+                <!-- Data List Lapangan Injected Here -->
+            </div>
+        </div>
+
+        <div class="print-page-break"></div>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-bold border-b-2 border-gray-200 pb-2 mb-4 text-gray-800"><i class="ph-bold ph-lightbulb"></i> Ide & Solusi Hackathon</h2>
+            <div id="print-list-ide" class="space-y-4">
+                <!-- Data List Ide Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
     <div id="app-container" class="flex flex-col md:flex-row h-screen w-full">
 
         <!-- SIDEBAR / BOTTOM NAV (Hybrid) -->
         <nav class="fixed md:relative bottom-0 w-full md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-50 flex md:flex-col justify-around md:justify-start pb-safe md:pb-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-none order-2 md:order-1 transition-all">
-            <!-- Logo Desktop -->
             <div class="hidden md:flex items-center gap-3 px-6 py-6 border-b border-gray-100">
                 <i class="ph-fill ph-tree-evergreen text-3xl text-teal-600"></i>
                 <h1 class="text-2xl font-black text-teal-800 tracking-tight">PesisirKita</h1>
             </div>
-
             <div class="flex md:flex-col w-full px-2 md:px-4 py-2 md:py-6 gap-1 md:gap-2">
                 <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-teal-600 bg-teal-50 transition-colors">
                     <i class="ph-fill ph-house text-2xl md:text-xl md:mr-3"></i>
@@ -107,8 +132,6 @@
 
         <!-- CONTENT AREA -->
         <main class="flex-1 flex flex-col order-1 md:order-2 h-full overflow-hidden relative">
-            
-            <!-- HEADER MOBILE -->
             <header class="md:hidden bg-teal-700 text-white p-4 shadow-md sticky top-0 z-40 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <i class="ph-fill ph-tree-evergreen text-2xl text-teal-300"></i>
@@ -119,70 +142,98 @@
                 </div>
             </header>
 
-            <!-- SCROLLABLE CONTENT VIEWS -->
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 w-full max-w-3xl md:mx-auto">
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 w-full max-w-4xl md:mx-auto">
                 
-                <!-- 1. DASHBOARD -->
+                <!-- 1. DASHBOARD (ALL-IN-ONE) -->
                 <section id="view-dashboard" class="view-section active space-y-6">
-                    <div class="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-                        <i class="ph-fill ph-trophy text-[120px] absolute top-0 right-0 opacity-10 transform translate-x-4 -translate-y-4"></i>
-                        <h2 class="text-sm uppercase tracking-wider font-semibold opacity-80">Status Kamu</h2>
-                        <p class="text-3xl font-bold mt-1">Pahlawan Pesisir</p>
-                        <div class="grid grid-cols-2 gap-4 mt-6">
-                            <div class="bg-black/20 rounded-xl p-4 flex items-center gap-4 backdrop-blur-sm">
-                                <i class="ph-fill ph-tree text-emerald-300 text-3xl"></i>
-                                <div>
-                                    <p class="text-xs opacity-80">Mangrove</p>
-                                    <p class="text-2xl font-bold">12 <span class="text-sm font-normal">Pohon</span></p>
+                    <!-- Kartu Status Utama & Tombol Export -->
+                    <div class="bg-gradient-to-br from-teal-500 to-emerald-600 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <i class="ph-fill ph-trophy text-[160px] absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10"></i>
+                        
+                        <div class="relative z-10 flex-1">
+                            <h2 class="text-sm uppercase tracking-wider font-semibold opacity-80 mb-1">Status Tim Kamu</h2>
+                            <p class="text-3xl md:text-4xl font-black mb-6">Pahlawan Pesisir</p>
+                            
+                            <div class="flex flex-wrap gap-4">
+                                <div class="bg-black/20 rounded-2xl p-4 flex items-center gap-3 backdrop-blur-md min-w-[140px]">
+                                    <i class="ph-fill ph-tree text-emerald-300 text-3xl"></i>
+                                    <div>
+                                        <p class="text-xs opacity-80 uppercase tracking-wide">Pohon/Kegiatan</p>
+                                        <p class="text-2xl font-bold" id="dash-pohon">0</p>
+                                    </div>
+                                </div>
+                                <div class="bg-black/20 rounded-2xl p-4 flex items-center gap-3 backdrop-blur-md min-w-[140px]">
+                                    <i class="ph-fill ph-trash text-orange-300 text-3xl"></i>
+                                    <div>
+                                        <p class="text-xs opacity-80 uppercase tracking-wide">Total Sampah</p>
+                                        <p class="text-2xl font-bold" id="dash-trash">0 <span class="text-sm font-normal">Kg</span></p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="bg-black/20 rounded-xl p-4 flex items-center gap-4 backdrop-blur-sm">
-                                <i class="ph-fill ph-trash text-orange-300 text-3xl"></i>
-                                <div>
-                                    <p class="text-xs opacity-80">Sampah</p>
-                                    <p class="text-2xl font-bold" id="dash-trash">45 <span class="text-sm font-normal">Kg</span></p>
-                                </div>
+                        </div>
+
+                        <div class="relative z-10 w-full md:w-auto mt-4 md:mt-0">
+                            <button onclick="exportLaporanLengkap()" class="w-full md:w-auto bg-yellow-400 text-gray-900 hover:bg-yellow-300 px-6 py-4 rounded-2xl font-bold shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-printer text-xl"></i>
+                                Cetak PDF Lengkap
+                            </button>
+                            <p class="text-xs text-teal-100 mt-2 text-center md:text-right"><i class="ph-fill ph-info"></i> Laporan untuk Guru/Panitia</p>
+                        </div>
+                    </div>
+
+                    <!-- Layout 2 Kolom untuk Data -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Kolom Laporan Lapangan -->
+                        <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="ph-fill ph-map-pin text-blue-500 text-xl"></i> Kegiatan Lapangan</h3>
+                                <button onclick="switchTab('lapangan')" class="text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100">Kelola</button>
+                            </div>
+                            <div id="dash-list-lapangan" class="space-y-3 flex-1">
+                                <!-- Terisi Otomatis lewat JS -->
+                            </div>
+                        </div>
+
+                        <!-- Kolom Ide Hackathon -->
+                        <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="ph-fill ph-lightbulb text-yellow-500 text-xl"></i> Ide Tim (Hackathon)</h3>
+                                <button onclick="switchTab('hackathon')" class="text-xs text-yellow-600 font-bold bg-yellow-50 px-3 py-1.5 rounded-lg hover:bg-yellow-100">Kelola</button>
+                            </div>
+                            <div id="dash-list-ide" class="space-y-3 flex-1">
+                                <!-- Terisi Otomatis lewat JS -->
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-5">
-                            <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="ph-fill ph-medal text-yellow-500 text-xl"></i> Papan Peringkat</h3>
-                            <span class="text-xs text-teal-600 font-semibold cursor-pointer">Lihat Semua</span>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-50 border border-yellow-100">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-yellow-200 text-yellow-800 flex items-center justify-center font-bold text-sm">1</div>
-                                    <span class="font-bold text-gray-800">Tim Bekantan (SMA 1)</span>
-                                </div>
-                                <span class="font-bold text-yellow-700">500 pt</span>
-                            </div>
-                            <div class="flex items-center justify-between p-3 rounded-xl">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold text-sm">2</div>
-                                    <span class="text-gray-600">Tim Rhizophora (SMA 3)</span>
-                                </div>
-                                <span class="font-semibold text-gray-600">450 pt</span>
-                            </div>
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-teal-50 border border-teal-100">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-teal-200 text-teal-800 flex items-center justify-center font-bold text-sm">3</div>
-                                    <span class="font-bold text-teal-800">Kamu (Tim Cerdas)</span>
-                                </div>
-                                <span class="font-bold text-teal-700">350 pt</span>
-                            </div>
+                    <!-- CARD SAVE / LOAD JSON -->
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-6">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i class="ph-fill ph-database text-indigo-500 text-xl"></i> Sistem Save Data (JSON)</h3>
+                        <p class="text-sm text-gray-600 mb-5">Pahami cara kerja "Save Game" digital! Simpan (Save) progresmu menjadi file <strong class="text-indigo-600">.json</strong>, muat kembali (Load) di perangkat lain, atau tes memuat data Sample Peta Balikpapan.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <button onclick="exportDataJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-indigo-200 shadow-sm active:scale-95">
+                                <i class="ph-bold ph-download-simple text-xl"></i> Save Game
+                            </button>
+                            <button onclick="triggerLoadJSON()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-indigo-200 shadow-sm active:scale-95">
+                                <i class="ph-bold ph-upload-simple text-xl"></i> Load Game
+                            </button>
+                            <button onclick="loadSampleData()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-emerald-200 shadow-sm active:scale-95">
+                                <i class="ph-bold ph-game-controller text-xl"></i> Load Sample Map
+                            </button>
+                            <!-- Input file tersembunyi untuk Load JSON -->
+                            <input type="file" id="load-json-input" accept=".json" class="hidden" onchange="handleLoadJSON(event)">
                         </div>
                     </div>
                 </section>
 
                 <!-- 2. KALKULATOR -->
                 <section id="view-kalkulator" class="view-section space-y-6">
-                    <!-- Toggle Kalkulator -->
-                    <div class="flex bg-gray-200 p-1 rounded-xl mb-4">
-                        <button onclick="setCalcMode('karbon')" id="tab-karbon" class="flex-1 py-3 text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors">Karbon Biru</button>
-                        <button onclick="setCalcMode('tanam')" id="tab-tanam" class="flex-1 py-3 text-sm font-semibold rounded-lg text-gray-500 transition-colors">Kebutuhan Tanam</button>
+                    <!-- Toggle Kalkulator (3 Opsi) -->
+                    <div class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl mb-4 text-center">
+                        <button onclick="setCalcMode('karbon')" id="tab-karbon" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors">Karbon Biru</button>
+                        <button onclick="setCalcMode('tanam')" id="tab-tanam" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors">Perlu Tanam</button>
+                        <button onclick="setCalcMode('sampah')" id="tab-sampah" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors">Urai Sampah</button>
                     </div>
 
                     <!-- Mode Karbon -->
@@ -203,23 +254,20 @@
                         </div>
                     </div>
 
-                    <!-- Mode Tanam (Dengan Peta Leaflet) -->
+                    <!-- Mode Tanam -->
                     <div id="calc-tanam" class="hidden space-y-4">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                             <h3 class="font-bold text-gray-800 mb-4">Ukur Area & Kalkulator Tanam</h3>
-                            
-                            <!-- Input Options -->
                             <div class="flex gap-2 mb-4">
-                                <button onclick="toggleMap(false)" id="btn-manual" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors">Input Manual</button>
-                                <button onclick="toggleMap(true)" id="btn-map" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-map-trifold"></i> Gambar di Peta</button>
+                                <button onclick="toggleMapTanam(false)" id="btn-manual-tanam" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors">Input Manual</button>
+                                <button onclick="toggleMapTanam(true)" id="btn-map-tanam" class="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-map-trifold"></i> Gambar di Peta</button>
                             </div>
 
-                            <!-- Peta Area -->
-                            <div id="map-wrapper" class="hidden flex-col gap-2 mb-4">
-                                <div id="map-container" class="w-full h-64 md:h-80 bg-gray-200 rounded-xl border-2 border-teal-200 relative"></div>
+                            <div id="map-tanam-wrapper" class="hidden flex-col gap-2 mb-4">
+                                <div id="map-tanam-container" class="w-full h-64 md:h-80 bg-gray-200 rounded-xl border-2 border-teal-200 relative z-0"></div>
                                 <div class="flex justify-between items-center px-1">
                                     <span class="text-xs text-gray-500"><i class="ph-fill ph-info"></i> Gunakan ikon segilima untuk menggambar area</span>
-                                    <button onclick="downloadGeoJSON()" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
+                                    <button onclick="downloadGeoJSON(currentGeoJSONTanam)" class="text-xs font-bold text-teal-600 flex items-center gap-1 hover:text-teal-800"><i class="ph-bold ph-download-simple"></i> Export GeoJSON</button>
                                 </div>
                             </div>
 
@@ -237,10 +285,63 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="mt-6 p-5 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
                                 <p class="text-emerald-800 text-sm font-semibold mb-1">Kebutuhan Bibit Ideal:</p>
                                 <p class="text-4xl font-black text-emerald-600"><span id="lbl-bibit">100</span> <span class="text-lg font-normal">Bibit</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode Waktu Urai Sampah (KUMULATIF) -->
+                    <div id="calc-sampah" class="hidden space-y-4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-800 mb-2">Simulasi Dampak Sampah Laut</h3>
+                            <p class="text-sm text-gray-500 mb-6">Tambahkan sampah-sampah yang kelompokmu temukan ke dalam keranjang hitung.</p>
+                            
+                            <div class="flex flex-col md:flex-row gap-3 mb-4">
+                                <div class="flex-1">
+                                    <select id="input-jenis-sampah" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 font-medium text-gray-700">
+                                        <option value="450">Botol PET / Air Mineral (450 Thn)</option>
+                                        <option value="600">Jaring Nelayan / Senar (600 Thn)</option>
+                                        <option value="200">Kaleng Aluminium (200 Thn)</option>
+                                        <option value="50">Gelas Sterofoam / Piring (50 Thn)</option>
+                                        <option value="4000">Botol Kaca (4000 Thn)</option>
+                                        <option value="20">Kantong Plastik Kresek (20 Thn)</option>
+                                        <option value="10">Puntung Rokok (10 Thn)</option>
+                                    </select>
+                                </div>
+                                <div class="w-full md:w-32 flex items-center gap-2">
+                                    <input type="number" id="input-berat-sampah" placeholder="Kg" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 font-bold" min="0.1" step="0.1">
+                                    <span class="text-sm font-bold text-gray-500">Kg</span>
+                                </div>
+                            </div>
+                            <button onclick="tambahSampahUrai()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2">
+                                <i class="ph-bold ph-plus"></i> Tambah ke Keranjang
+                            </button>
+                        </div>
+
+                        <!-- Daftar Sampah Kumulatif -->
+                        <div id="keranjang-sampah-container" class="hidden flex flex-col gap-4">
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-bold text-gray-800 text-sm uppercase">Keranjang Sampahmu</h4>
+                                    <button onclick="resetSampahUrai()" class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded hover:bg-red-100">Reset</button>
+                                </div>
+                                <ul id="list-sampah-urai" class="space-y-2 mb-4 max-h-40 overflow-y-auto pr-2">
+                                    <!-- List items injected here -->
+                                </ul>
+                            </div>
+                            
+                            <!-- Hasil Apresiasi Kumulatif -->
+                            <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white shadow-md text-center relative overflow-hidden">
+                                <i class="ph-fill ph-shield-check text-[100px] absolute top-2 right-2 opacity-10"></i>
+                                <h4 class="text-orange-100 text-sm font-bold uppercase tracking-wider mb-2">Pahlawan Lautan!</h4>
+                                <p class="text-base z-10 relative">Secara total, kamu telah mencegah <span id="lbl-total-berat-sampah" class="font-black text-yellow-300 text-xl">0 kg</span> sampah mencemari laut!</p>
+                                <p class="text-sm z-10 relative mt-2">Dampak terburuk yang berhasil kamu cegah memiliki waktu urai hingga:</p>
+                                <div class="text-5xl font-black my-3 z-10 relative"><span id="lbl-max-waktu-urai">0</span> <span class="text-xl font-normal">Tahun</span></div>
+                                <div class="bg-black/20 rounded-xl p-3 mt-4 text-sm border border-white/10 z-10 relative leading-relaxed" id="lbl-generasi-sampah">
+                                    Penyelamatan yang luar biasa!
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -252,10 +353,10 @@
                     <div id="lapangan-list">
                         <div class="flex justify-between items-center mb-6">
                             <div>
-                                <h2 class="text-xl font-bold text-gray-800">Laporan Lapangan</h2>
+                                <h2 class="text-xl font-bold text-gray-800">Manajemen Data Lapangan</h2>
                                 <p class="text-sm text-gray-500"><i class="ph-bold ph-wifi-slash"></i> Tersimpan Lokal</p>
                             </div>
-                            <button onclick="toggleFormLapangan(true)" class="bg-teal-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 hover:bg-teal-700 transition-transform active:scale-95">
+                            <button onclick="toggleFormLapangan(true)" class="bg-teal-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 hover:bg-teal-700 active:scale-95">
                                 <i class="ph-bold ph-plus"></i> Catat Baru
                             </button>
                         </div>
@@ -275,8 +376,8 @@
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase">Jenis Kegiatan</label>
                                 <select id="form-type" onchange="toggleFormInputs()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500">
-                                    <option value="cleanup">Pembersihan Sampah</option>
-                                    <option value="observation">Observasi Ekosistem</option>
+                                    <option value="cleanup">Pembersihan Sampah Pesisir</option>
+                                    <option value="observation">Observasi Ekosistem & Tanam</option>
                                 </select>
                             </div>
 
@@ -286,19 +387,42 @@
                             </div>
 
                             <div>
-                                <label class="text-xs font-bold text-gray-500 uppercase">Catatan / Temuan</label>
-                                <textarea id="form-notes" placeholder="Tulis pengamatanmu di sini..." class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 h-24" required></textarea>
+                                <label class="text-xs font-bold text-gray-500 uppercase">Catatan / Temuan Unik</label>
+                                <textarea id="form-notes" placeholder="Misal: Banyak ditemukan cangkang kepiting mati atau dominasi botol kaca..." class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 h-24" required></textarea>
                             </div>
 
-                            <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm font-bold text-teal-800 flex items-center gap-2"><i class="ph-fill ph-map-pin"></i> GPS Lokasi</span>
-                                    <button type="button" onclick="getGPS()" class="bg-teal-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-teal-700 active:scale-95">Lacak GPS</button>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Area GPS -->
+                                <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-bold text-teal-800 flex items-center gap-2"><i class="ph-fill ph-map-pin"></i> GPS Lokasi</span>
+                                        <button type="button" onclick="getGPS()" class="bg-teal-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-teal-700 active:scale-95">Lacak</button>
+                                    </div>
+                                    <p id="form-gps-status" class="text-xs text-teal-600 font-medium">Belum ada data</p>
+                                    <input type="hidden" id="form-lat"><input type="hidden" id="form-lng">
                                 </div>
-                                <p id="form-gps-status" class="text-xs text-teal-600 font-medium">Belum ada data lokasi</p>
-                                <input type="hidden" id="form-lat"><input type="hidden" id="form-lng">
+                                
+                                <!-- Area Polygon / GeoJSON (BARU) -->
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-bold text-blue-800 flex items-center gap-2"><i class="ph-fill ph-bounding-box"></i> Area Sapuan (Ha)</span>
+                                        <button type="button" onclick="toggleMapLapanganArea(true)" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 active:scale-95">Gambar Peta</button>
+                                    </div>
+                                    <p id="form-area-status" class="text-xs text-blue-600 font-medium">0 Hektar</p>
+                                    <input type="hidden" id="form-area-ha" value="0">
+                                </div>
                             </div>
 
+                            <!-- Map Area Sapuan (Hidden by default) -->
+                            <div id="map-lapangan-wrapper" class="hidden flex-col gap-2">
+                                <div class="flex justify-between items-end">
+                                    <label class="text-xs font-bold text-gray-500">Gambarkan batas area yang kelompokmu sapu/observasi:</label>
+                                    <button type="button" onclick="toggleMapLapanganArea(false)" class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded">Tutup Peta</button>
+                                </div>
+                                <div id="map-lapangan-container" class="w-full h-64 bg-gray-200 rounded-xl border-2 border-blue-200 relative z-0"></div>
+                            </div>
+
+                            <!-- Foto Input -->
                             <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors relative">
                                 <div id="photo-preview-container" class="hidden relative">
                                     <img id="photo-preview" src="" alt="Preview" class="rounded-lg max-h-40 mx-auto object-contain" />
@@ -308,7 +432,7 @@
                                     <input type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)" class="hidden" id="camera-input" />
                                     <label for="camera-input" class="cursor-pointer flex flex-col items-center justify-center gap-2">
                                         <div class="bg-teal-100 p-3 rounded-full text-teal-600"><i class="ph-fill ph-camera text-2xl"></i></div>
-                                        <span class="text-sm font-bold text-gray-600">Ambil Foto Bukti</span>
+                                        <span class="text-sm font-bold text-gray-600">Ambil Foto Bukti Laporan</span>
                                     </label>
                                 </div>
                             </div>
@@ -329,9 +453,7 @@
                             <input type="text" id="search-kamus" oninput="renderKamus()" placeholder="Cari istilah... (contoh: Bekantan)" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none text-sm font-medium" />
                         </div>
                     </div>
-                    <div id="kamus-container" class="space-y-3">
-                        <!-- Kamus rendered here -->
-                    </div>
+                    <div id="kamus-container" class="space-y-3"></div>
                 </section>
 
                 <!-- 5. HACKATHON -->
@@ -346,9 +468,7 @@
                                 + Buat Ide
                             </button>
                         </div>
-                        <div id="ideas-container" class="space-y-4">
-                            <!-- Ideas rendered here -->
-                        </div>
+                        <div id="ideas-container" class="space-y-4"></div>
                     </div>
 
                     <div id="hackathon-form" class="hidden pb-10">
@@ -388,7 +508,10 @@
         // --- 1. STATE & DATA INITIALIZATION ---
         let reports = JSON.parse(localStorage.getItem('pesisir_reports')) || [];
         let ideas = JSON.parse(localStorage.getItem('pesisir_ideas')) || [];
+        let listSampahUrai = []; // Untuk kalkulator urai sampah kumulatif
+        
         let currentPhotoBase64 = null;
+        let currentGeoJSONLapangan = null;
         
         // Data Kamus
         const kamusData = [
@@ -400,135 +523,194 @@
             { term: 'Salinitas', cat: 'Kondisi', desc: 'Tingkat keasinan air. Mangrove bisa membuang kelebihan garam melalui daun.' }
         ];
 
-        // --- 2. LEAFLET MAP LOGIC ---
-        let map = null;
-        let drawnItems = null;
-        let currentGeoJSON = null;
-        let userMarker = null;
-        let userCircle = null;
-
-        function initMap() {
-            if (map) {
-                map.invalidateSize(); // Fix if container resized
-                // Jika peta sudah ada, minta ulang lokasi
-                map.locate({setView: true, maxZoom: 18});
-                return;
-            }
-            
-            // Inisialisasi Peta (Default koordinat Indonesia)
-            map = L.map('map-container').setView([-0.789, 113.921], 5);
-            
-            // MENGGUNAKAN PETA SATELIT ESRI (Gratis, Tanpa API Key, Sangat cocok untuk lingkungan)
+        // --- 2. LEAFLET MAP LOGIC (MULTI-MAP SUPPORT) ---
+        let mapTanam = null; let drawnItemsTanam = null; let currentGeoJSONTanam = null;
+        let mapLapangan = null; let drawnItemsLapangan = null;
+        let modalMap = null; let modalFeatureGroup = null; // Untuk Modal Popup
+        
+        function createEsriMap(containerId, drawnItemsGroup, onDrawCreated) {
+            const mapInstance = L.map(containerId).setView([-0.789, 113.921], 5);
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EAP'
-            }).addTo(map);
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri'
+            }).addTo(mapInstance);
 
-            // Inisialisasi Layer Gambar
-            drawnItems = new L.FeatureGroup();
-            map.addLayer(drawnItems);
-
+            mapInstance.addLayer(drawnItemsGroup);
             const drawControl = new L.Control.Draw({
-                edit: { featureGroup: drawnItems },
+                edit: { featureGroup: drawnItemsGroup },
                 draw: {
-                    // Penyesuaian warna poligon agar terlihat jelas di atas peta satelit
-                    polygon: { shapeOptions: { color: '#14b8a6', weight: 4, fillColor: '#14b8a6', fillOpacity: 0.5 } }, 
+                    polygon: { shapeOptions: { color: (containerId === 'map-lapangan-container' ? '#3b82f6' : '#14b8a6'), weight: 4, fillOpacity: 0.5 } }, 
                     polyline: false, rectangle: true, circle: false, marker: false, circlemarker: false
                 }
             });
-            map.addControl(drawControl);
+            mapInstance.addControl(drawControl);
 
-            // --- FITUR AUTO-ZOOM GPS ---
-            // Leaflet akan mencoba mencari lokasi user dan otomatis zoom ke sana
-            map.locate({setView: true, maxZoom: 18});
-
-            // Jika lokasi berhasil ditemukan
-            map.on('locationfound', function(e) {
-                const radius = e.accuracy / 2;
-                
-                // Hapus marker lama jika ada
-                if (userMarker) map.removeLayer(userMarker);
-                if (userCircle) map.removeLayer(userCircle);
-                
-                // Tambahkan marker penanda lokasi siswa
-                userMarker = L.marker(e.latlng).addTo(map)
-                    .bindPopup("Kamu berada di sekitar area ini!").openPopup();
-                userCircle = L.circle(e.latlng, radius, {color: '#14b8a6', fillColor: '#14b8a6', fillOpacity: 0.2}).addTo(map);
+            mapInstance.locate({setView: true, maxZoom: 18});
+            mapInstance.on('locationfound', function(e) {
+                L.marker(e.latlng).addTo(mapInstance).bindPopup("Lokasi Kamu").openPopup();
+                L.circle(e.latlng, e.accuracy/2, {color: '#14b8a6', fillOpacity: 0.2}).addTo(mapInstance);
             });
+            mapInstance.on(L.Draw.Event.CREATED, onDrawCreated);
+            return mapInstance;
+        }
 
-            // Jika GPS ditolak atau gagal
-            map.on('locationerror', function(e) {
-                console.log("Gagal mendapatkan lokasi GPS: " + e.message);
-                // Fallback sederhana jika metode locate leaflet gagal
-                if(navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(pos => {
-                        map.setView([pos.coords.latitude, pos.coords.longitude], 16);
-                    });
-                }
-            });
-
-            // Event saat poligon selesai digambar
-            map.on(L.Draw.Event.CREATED, function (e) {
-                drawnItems.clearLayers(); // Hanya boleh 1 area
-                const layer = e.layer;
-                drawnItems.addLayer(layer);
-                
-                // Ambil GeoJSON dan Hitung Luas pake Turf.js
-                currentGeoJSON = layer.toGeoJSON();
-                const areaSqMeters = turf.area(currentGeoJSON);
-                
-                // Update input luas
-                document.getElementById('input-luas').value = Math.round(areaSqMeters);
-                hitungTanam(); // Update kalkulasi otomatis
+        function initMapTanam() {
+            if (mapTanam) { mapTanam.invalidateSize(); mapTanam.locate({setView: true, maxZoom: 18}); return; }
+            drawnItemsTanam = new L.FeatureGroup();
+            mapTanam = createEsriMap('map-tanam-container', drawnItemsTanam, function (e) {
+                drawnItemsTanam.clearLayers(); drawnItemsTanam.addLayer(e.layer);
+                currentGeoJSONTanam = e.layer.toGeoJSON();
+                document.getElementById('input-luas').value = Math.round(turf.area(currentGeoJSONTanam));
+                hitungTanam();
             });
         }
 
-        function toggleMap(show) {
-            const btnManual = document.getElementById('btn-manual');
-            const btnMap = document.getElementById('btn-map');
-            const mapWrap = document.getElementById('map-wrapper');
-            const inputLuas = document.getElementById('input-luas');
-
+        function toggleMapTanam(show) {
+            const btnManual = document.getElementById('btn-manual-tanam'); const btnMap = document.getElementById('btn-map-tanam');
+            const mapWrap = document.getElementById('map-tanam-wrapper'); const inputLuas = document.getElementById('input-luas');
             if (show) {
-                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors flex items-center justify-center gap-1";
-                btnManual.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors";
-                mapWrap.classList.remove('hidden');
-                mapWrap.classList.add('flex');
-                inputLuas.setAttribute('readonly', 'true');
-                inputLuas.classList.add('bg-gray-100');
-                
-                // Inisialisasi peta setelah unhide agar ukurannya benar
-                setTimeout(() => {
-                    initMap();
-                    if(map) map.invalidateSize();
-                }, 200); 
+                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white flex items-center justify-center gap-1";
+                btnManual.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600";
+                mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+                inputLuas.setAttribute('readonly', 'true'); inputLuas.classList.add('bg-gray-100');
+                setTimeout(() => { initMapTanam(); if(mapTanam) mapTanam.invalidateSize(); }, 200); 
             } else {
                 btnManual.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-teal-600 text-white transition-colors";
-                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1";
-                mapWrap.classList.add('hidden');
-                mapWrap.classList.remove('flex');
-                inputLuas.removeAttribute('readonly');
-                inputLuas.classList.remove('bg-gray-100');
+                btnMap.className = "flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center gap-1";
+                mapWrap.classList.add('hidden'); mapWrap.classList.remove('flex');
+                inputLuas.removeAttribute('readonly'); inputLuas.classList.remove('bg-gray-100');
             }
         }
 
-        function downloadGeoJSON() {
-            if (!currentGeoJSON) return alert("Silakan gambar area terlebih dahulu menggunakan ikon segilima di peta.");
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentGeoJSON));
-            const dlNode = document.createElement('a');
-            dlNode.setAttribute("href", dataStr);
-            dlNode.setAttribute("download", "area_pesisir.geojson");
-            document.body.appendChild(dlNode);
-            dlNode.click();
-            dlNode.remove();
+        function initMapLapangan() {
+            if (mapLapangan) { mapLapangan.invalidateSize(); mapLapangan.locate({setView: true, maxZoom: 18}); return; }
+            drawnItemsLapangan = new L.FeatureGroup();
+            mapLapangan = createEsriMap('map-lapangan-container', drawnItemsLapangan, function (e) {
+                drawnItemsLapangan.clearLayers(); drawnItemsLapangan.addLayer(e.layer);
+                currentGeoJSONLapangan = e.layer.toGeoJSON();
+                const areaHectares = (turf.area(currentGeoJSONLapangan) / 10000).toFixed(3); 
+                document.getElementById('form-area-ha').value = areaHectares;
+                document.getElementById('form-area-status').innerText = `${areaHectares} Hektar`;
+                document.getElementById('form-area-status').className = 'text-xs text-green-600 font-bold';
+            });
         }
 
-        // --- 3. NAVIGATION & UI LOGIC ---
+        function toggleMapLapanganArea(show) {
+            const mapWrap = document.getElementById('map-lapangan-wrapper');
+            if(show) {
+                mapWrap.classList.remove('hidden'); mapWrap.classList.add('flex');
+                setTimeout(() => { initMapLapangan(); if(mapLapangan) mapLapangan.invalidateSize(); }, 200);
+            } else { mapWrap.classList.add('hidden'); mapWrap.classList.remove('flex'); }
+        }
+
+        function downloadGeoJSON(geojsonData) {
+            if (!geojsonData) return alert("Silakan gambar area terlebih dahulu di peta.");
+            const dlNode = document.createElement('a');
+            dlNode.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojsonData)));
+            dlNode.setAttribute("download", "area_geojson.geojson");
+            document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+        }
+
+        // --- LOGIC MAP MODAL POPUP ---
+        function viewMap(index) {
+            const r = reports[index];
+            if (!r || !r.geojson) return;
+            
+            document.getElementById('modal-peta').classList.remove('hidden');
+            document.getElementById('modal-peta').classList.add('flex');
+            
+            setTimeout(() => {
+                if (!modalMap) {
+                    modalMap = L.map('modal-map-container');
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles &copy; Esri'
+                    }).addTo(modalMap);
+                    modalFeatureGroup = new L.FeatureGroup().addTo(modalMap);
+                }
+                
+                modalFeatureGroup.clearLayers();
+                const geoJsonLayer = L.geoJSON(r.geojson, {
+                    style: { color: '#3b82f6', weight: 4, fillOpacity: 0.5 }
+                });
+                modalFeatureGroup.addLayer(geoJsonLayer);
+                modalMap.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] });
+                modalMap.invalidateSize();
+            }, 200);
+        }
+
+        function closeModalPeta() {
+            document.getElementById('modal-peta').classList.add('hidden');
+            document.getElementById('modal-peta').classList.remove('flex');
+        }
+
+        // --- LOGIC SAVE / LOAD GAME (JSON) ---
+        function exportDataJSON() {
+            const data = { reports: reports, ideas: ideas, savedAt: new Date().toISOString() };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlNode = document.createElement('a');
+            dlNode.setAttribute("href", dataStr);
+            dlNode.setAttribute("download", "pesisir_savegame.json");
+            document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+        }
+
+        function triggerLoadJSON() {
+            document.getElementById('load-json-input').click();
+        }
+
+        function handleLoadJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.reports && Array.isArray(data.reports)) {
+                        reports = data.reports; ideas = data.ideas || [];
+                        localStorage.setItem('pesisir_reports', JSON.stringify(reports));
+                        localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
+                        updateDashboard(); switchTab('dashboard');
+                        alert("Data game (JSON) berhasil dimuat!");
+                    } else { alert("Format JSON tidak dikenali."); }
+                } catch (err) { alert("Gagal membaca file JSON."); }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        function loadSampleData() {
+            // Polygon Kawasan Mangrove Graha Indah Balikpapan
+            const sampleGeoJSON = {
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [[[116.8350, -1.2180], [116.8370, -1.2180], [116.8370, -1.2190], [116.8350, -1.2190], [116.8350, -1.2180]]]
+              }
+            };
+            
+            reports = [{
+                id: Date.now(), timestamp: new Date().toISOString(), type: 'cleanup', amount: '125',
+                notes: 'Menyisir kawasan Hutan Mangrove Graha Indah Balikpapan. Banyak botol plastik dan kemasan sachet yang tersangkut di akar pohon.',
+                lat: '-1.2185', lng: '116.8361', areaHa: '2.14', geojson: sampleGeoJSON, photo: null
+            }];
+            
+            ideas = [{
+                id: Date.now() + 1,
+                masalah: 'Sampah plastik laut terbawa pasang surut dan tersangkut di akar mangrove secara permanen.',
+                solusi: 'Pemasangan Trash Boom (Jaring Apung) dari botol bekas di jalur air masuk sebelum menyentuh akar mangrove utama.'
+            }];
+
+            localStorage.setItem('pesisir_reports', JSON.stringify(reports));
+            localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
+            
+            updateDashboard(); switchTab('dashboard');
+            alert("Sample Map Balikpapan berhasil dimuat! Cek 'Kegiatan Lapangan' di dashboard untuk melihat peta area yang digambar.");
+        }
+
+        // --- 3. NAVIGATION ---
         function switchTab(tabId) {
-            // Sembunyikan semua view
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabId).classList.add('active');
 
-            // Update warna tombol navigasi (Hybrid logic untuk warna)
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-teal-600', 'bg-teal-50');
                 btn.classList.add('text-gray-400', 'hover:text-teal-600', 'hover:bg-teal-50/50');
@@ -537,7 +719,6 @@
             activeBtn.classList.add('text-teal-600', 'bg-teal-50');
             activeBtn.classList.remove('text-gray-400', 'hover:text-teal-600', 'hover:bg-teal-50/50');
 
-            // Render khusus
             if(tabId === 'lapangan') renderReports();
             if(tabId === 'hackathon') renderIdeas();
             if(tabId === 'kamus') renderKamus();
@@ -546,24 +727,21 @@
 
         // --- 4. KALKULATOR LOGIC ---
         function setCalcMode(mode) {
-            const btnKarbon = document.getElementById('tab-karbon');
-            const btnTanam = document.getElementById('tab-tanam');
-            if (mode === 'karbon') {
-                btnKarbon.className = "flex-1 py-3 text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors";
-                btnTanam.className = "flex-1 py-3 text-sm font-semibold rounded-lg text-gray-500 transition-colors";
-                document.getElementById('calc-karbon').classList.remove('hidden');
-                document.getElementById('calc-tanam').classList.add('hidden');
-            } else {
-                btnTanam.className = "flex-1 py-3 text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors";
-                btnKarbon.className = "flex-1 py-3 text-sm font-semibold rounded-lg text-gray-500 transition-colors";
-                document.getElementById('calc-tanam').classList.remove('hidden');
-                document.getElementById('calc-karbon').classList.add('hidden');
-            }
+            ['karbon', 'tanam', 'sampah'].forEach(t => {
+                const btn = document.getElementById('tab-' + t); const view = document.getElementById('calc-' + t);
+                if (t === mode) {
+                    btn.className = "py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors";
+                    view.classList.remove('hidden');
+                } else {
+                    btn.className = "py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors";
+                    view.classList.add('hidden');
+                }
+            });
         }
 
         function hitungKarbon() {
             const jml = parseInt(document.getElementById('input-pohon').value) || 0;
-            const co2 = jml * 12; // Asumsi 12kg/thn
+            const co2 = jml * 12; 
             document.getElementById('lbl-pohon').innerText = `${jml} pohon`;
             document.getElementById('lbl-co2').innerText = co2;
             document.getElementById('lbl-motor').innerText = Math.round(co2 / 0.1) + " km";
@@ -572,8 +750,66 @@
         function hitungTanam() {
             const luas = parseFloat(document.getElementById('input-luas').value) || 0;
             const jarak = parseFloat(document.getElementById('input-jarak').value) || 1;
-            const bibit = Math.floor(luas / (jarak * jarak));
-            document.getElementById('lbl-bibit').innerText = bibit;
+            document.getElementById('lbl-bibit').innerText = Math.floor(luas / (jarak * jarak));
+        }
+
+        // --- KALKULATOR URAI SAMPAH (KUMULATIF) ---
+        function tambahSampahUrai() {
+            const select = document.getElementById('input-jenis-sampah');
+            const beratInput = document.getElementById('input-berat-sampah');
+            
+            const berat = parseFloat(beratInput.value);
+            if(isNaN(berat) || berat <= 0) return alert("Silakan masukkan berat sampah yang valid!");
+
+            const tahun = parseInt(select.value);
+            const namaSampah = select.options[select.selectedIndex].text.split(' (')[0];
+
+            listSampahUrai.push({ nama: namaSampah, berat: berat, tahun: tahun, id: Date.now() });
+            
+            beratInput.value = ''; // reset input
+            renderSampahUrai();
+        }
+
+        function hapusSampahUrai(id) {
+            listSampahUrai = listSampahUrai.filter(s => s.id !== id);
+            renderSampahUrai();
+        }
+
+        function resetSampahUrai() {
+            listSampahUrai = [];
+            renderSampahUrai();
+        }
+
+        function renderSampahUrai() {
+            const containerBox = document.getElementById('keranjang-sampah-container');
+            if(listSampahUrai.length === 0) {
+                containerBox.classList.add('hidden');
+                return;
+            }
+            containerBox.classList.remove('hidden');
+
+            const listEl = document.getElementById('list-sampah-urai');
+            listEl.innerHTML = listSampahUrai.map(s => `
+                <li class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                    <div>
+                        <span class="font-bold text-gray-700 text-sm">${s.nama}</span>
+                        <span class="text-xs text-gray-500 ml-2">${s.tahun} Tahun</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-orange-600 text-sm">${s.berat} Kg</span>
+                        <button onclick="hapusSampahUrai(${s.id})" class="text-red-400 hover:text-red-600"><i class="ph-bold ph-trash"></i></button>
+                    </div>
+                </li>
+            `).join('');
+
+            // Kalkulasi Kumulatif
+            const totalBerat = listSampahUrai.reduce((sum, item) => sum + item.berat, 0);
+            const maxTahun = Math.max(...listSampahUrai.map(item => item.tahun));
+            const generasi = Math.floor(maxTahun / 75) || 1;
+
+            document.getElementById('lbl-total-berat-sampah').innerText = `${totalBerat.toFixed(1)} Kg`;
+            document.getElementById('lbl-max-waktu-urai').innerText = maxTahun;
+            document.getElementById('lbl-generasi-sampah').innerHTML = `Luar Biasa! Tindakan ini setara dengan menyelamatkan lautan selama lebih dari <strong>${generasi} generasi</strong> umat manusia dari jenis sampah terburukmu!`;
         }
 
         // --- 5. LAPANGAN (OFFLINE FIRST) LOGIC ---
@@ -587,29 +823,19 @@
             const type = document.getElementById('form-type').value;
             const amtBox = document.getElementById('input-amount-container');
             const amtInput = document.getElementById('form-amount');
-            if(type === 'cleanup') {
-                amtBox.style.display = 'block';
-                amtInput.required = true;
-            } else {
-                amtBox.style.display = 'none';
-                amtInput.required = false;
-                amtInput.value = '';
-            }
+            if(type === 'cleanup') { amtBox.style.display = 'block'; amtInput.required = true; } 
+            else { amtBox.style.display = 'none'; amtInput.required = false; amtInput.value = ''; }
         }
 
         function getGPS() {
-            const status = document.getElementById('form-gps-status');
-            status.innerText = "Mencari lokasi...";
+            const status = document.getElementById('form-gps-status'); status.innerText = "Mencari...";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        const lat = pos.coords.latitude.toFixed(5);
-                        const lng = pos.coords.longitude.toFixed(5);
-                        document.getElementById('form-lat').value = lat;
-                        document.getElementById('form-lng').value = lng;
-                        status.innerText = `Koordinat: ${lat}, ${lng}`;
-                    },
-                    (err) => { status.innerText = "Gagal akses GPS."; }
+                        document.getElementById('form-lat').value = pos.coords.latitude.toFixed(5);
+                        document.getElementById('form-lng').value = pos.coords.longitude.toFixed(5);
+                        status.innerText = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+                    }, () => { status.innerText = "Gagal akses GPS."; }
                 );
             } else { status.innerText = "GPS tidak didukung."; }
         }
@@ -629,8 +855,7 @@
         }
 
         function removePhoto() {
-            currentPhotoBase64 = null;
-            document.getElementById('camera-input').value = "";
+            currentPhotoBase64 = null; document.getElementById('camera-input').value = "";
             document.getElementById('photo-preview-container').classList.add('hidden');
             document.getElementById('photo-input-container').classList.remove('hidden');
         }
@@ -638,101 +863,125 @@
         function saveReport(event) {
             event.preventDefault();
             const newReport = {
-                id: Date.now(),
-                timestamp: new Date().toISOString(),
-                type: document.getElementById('form-type').value,
-                amount: document.getElementById('form-amount').value,
-                notes: document.getElementById('form-notes').value,
-                lat: document.getElementById('form-lat').value,
-                lng: document.getElementById('form-lng').value,
-                photo: currentPhotoBase64
+                id: Date.now(), timestamp: new Date().toISOString(), type: document.getElementById('form-type').value,
+                amount: document.getElementById('form-amount').value, notes: document.getElementById('form-notes').value,
+                lat: document.getElementById('form-lat').value, lng: document.getElementById('form-lng').value,
+                areaHa: document.getElementById('form-area-ha').value, geojson: currentGeoJSONLapangan, photo: currentPhotoBase64
             };
-            reports.unshift(newReport); // Add to beginning
+            reports.unshift(newReport); 
             localStorage.setItem('pesisir_reports', JSON.stringify(reports));
             
-            toggleFormLapangan(false);
-            renderReports();
-            updateDashboard();
+            toggleFormLapangan(false); renderReports(); updateDashboard();
         }
 
         function resetLapanganForm() {
-            document.getElementById('form-amount').value = '';
-            document.getElementById('form-notes').value = '';
-            document.getElementById('form-lat').value = '';
-            document.getElementById('form-lng').value = '';
+            document.getElementById('form-amount').value = ''; document.getElementById('form-notes').value = '';
+            document.getElementById('form-lat').value = ''; document.getElementById('form-lng').value = '';
             document.getElementById('form-gps-status').innerText = 'Belum ada data lokasi';
             document.getElementById('form-type').value = 'cleanup';
-            toggleFormInputs();
-            removePhoto();
+            document.getElementById('form-area-ha').value = '0'; document.getElementById('form-area-status').innerText = '0 Hektar';
+            document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
+            currentGeoJSONLapangan = null; if(drawnItemsLapangan) drawnItemsLapangan.clearLayers();
+            toggleMapLapanganArea(false); toggleFormInputs(); removePhoto();
         }
 
         function renderReports() {
             const container = document.getElementById('reports-container');
             if (reports.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center p-8 bg-white rounded-2xl border border-gray-200">
-                        <i class="ph-fill ph-camera text-5xl text-gray-300 mb-2"></i>
-                        <p class="text-gray-500 font-bold">Belum ada data</p>
-                    </div>`;
-                return;
+                container.innerHTML = `<div class="text-center p-8 bg-white rounded-2xl border border-gray-200"><i class="ph-fill ph-camera text-5xl text-gray-300 mb-2"></i><p class="text-gray-500 font-bold">Belum ada data</p></div>`; return;
             }
-
-            container.innerHTML = reports.map((r, index) => {
-                const isCleanup = r.type === 'cleanup';
-                const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour:'2-digit', minute:'2-digit'});
-                const icon = isCleanup ? 'ph-trash text-orange-600 bg-orange-100' : 'ph-drop text-blue-600 bg-blue-100';
-                
-                return `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-xl ${icon}"><i class="ph-fill ${icon.split(' ')[0]} text-xl"></i></div>
-                            <div>
-                                <h3 class="font-bold text-gray-800 text-sm">${isCleanup ? 'Pembersihan' : 'Observasi'}</h3>
-                                <p class="text-xs text-gray-500">${date}</p>
-                            </div>
-                        </div>
-                        ${r.amount ? `<span class="font-black text-teal-600">${r.amount} Kg</span>` : ''}
-                    </div>
-                    ${r.notes ? `<p class="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg truncate">${r.notes}</p>` : ''}
-                    <div class="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
-                        <div class="flex items-center gap-1 text-xs text-gray-400 font-medium">
-                            <i class="ph-bold ph-map-pin"></i> ${r.lat ? 'GPS Tersimpan' : 'Tanpa GPS'}
-                        </div>
-                        <button onclick="exportPDF(${index})" class="flex items-center gap-1 text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors">
-                            <i class="ph-bold ph-download-simple"></i> PDF
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
+            container.innerHTML = reports.map(r => generateReportCard(r)).join('');
         }
 
-        // --- 6. EXPORT PDF LOGIC ---
-        function exportPDF(index) {
-            const data = reports[index];
-            const dateStr = new Date(data.timestamp).toLocaleString('id-ID');
+        // --- Helper: Generate Tampilan Kartu Laporan (Digunakan di Lapangan & Dashboard) ---
+        function generateReportCard(r, compact = false) {
+            const reportIndex = reports.indexOf(r);
+            const isCleanup = r.type === 'cleanup';
+            const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
+            const icon = isCleanup ? 'ph-trash text-orange-600 bg-orange-100' : 'ph-drop text-blue-600 bg-blue-100';
+            const areaBadge = parseFloat(r.areaHa) > 0 ? `<span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> ${r.areaHa} Ha</span>` : '';
+
+            return `
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3 hover:border-teal-200 transition-colors">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-xl ${icon}"><i class="ph-fill ${icon.split(' ')[0]} text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm">${isCleanup ? 'Pembersihan' : 'Observasi'}</h3>
+                            <p class="text-xs text-gray-500">${date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        ${r.amount ? `<div class="font-black text-teal-600">${r.amount} Kg</div>` : ''}
+                        ${areaBadge}
+                    </div>
+                </div>
+                ${!compact && r.notes ? `<p class="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg truncate">${r.notes}</p>` : ''}
+                ${!compact ? `
+                <div class="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 font-medium">
+                        <span class="${r.lat ? 'text-teal-600' : ''}"><i class="ph-bold ph-map-pin"></i> GPS</span>
+                        <span class="${r.geojson ? 'text-blue-600' : ''}"><i class="ph-bold ph-polygon"></i> Area</span>
+                        ${r.geojson ? `<button type="button" onclick="viewMap(${reportIndex})" class="ml-2 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100 transition-colors cursor-pointer relative z-10"><i class="ph-bold ph-map-trifold"></i> Lihat Peta</button>` : ''}
+                    </div>
+                </div>` : ''}
+            </div>`;
+        }
+
+        // --- 6. EXPORT PDF DASHBOARD KOMPREHENSIF ---
+        function exportLaporanLengkap() {
+            // Set Tanggal Cetak
+            document.getElementById('print-tanggal-cetak').innerText = "Dicetak pada: " + new Date().toLocaleString('id-ID');
+
+            // Set Data Dashboard Top
+            const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
+            const totalPohon = reports.filter(r => r.type === 'observation').length;
             
-            document.getElementById('print-date').innerText = dateStr;
-            document.getElementById('print-type').innerText = data.type === 'cleanup' ? 'Pembersihan Pantai' : 'Observasi Lingkungan';
-            document.getElementById('print-gps').innerText = data.lat ? `${data.lat}, ${data.lng}` : 'Tidak ada GPS';
-            
-            if(data.type === 'cleanup' && data.amount) {
-                document.getElementById('print-amount-box').style.display = 'block';
-                document.getElementById('print-amount').innerText = data.amount + ' Kg';
+            document.getElementById('print-total-sampah').innerText = `${totalTrash} Kg`;
+            document.getElementById('print-total-pohon').innerText = `${totalPohon} Kegiatan`;
+
+            // Set List Lapangan HTML
+            const printLapContainer = document.getElementById('print-list-lapangan');
+            if(reports.length === 0) {
+                printLapContainer.innerHTML = '<p class="text-gray-500 italic">Belum ada data lapangan yang dicatat.</p>';
             } else {
-                document.getElementById('print-amount-box').style.display = 'none';
-            }
-            
-            document.getElementById('print-notes').innerText = data.notes || '-';
-            
-            if(data.photo) {
-                document.getElementById('print-photo-box').style.display = 'block';
-                document.getElementById('print-photo').src = data.photo;
-            } else {
-                document.getElementById('print-photo-box').style.display = 'none';
+                printLapContainer.innerHTML = reports.map((r, i) => {
+                    const isCleanup = r.type === 'cleanup';
+                    const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                    return `
+                    <div class="border border-gray-200 p-4 rounded-xl mb-3 page-break-inside-avoid">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-bold text-gray-800">${i+1}. ${isCleanup ? 'Pembersihan Pesisir' : 'Observasi Lingkungan'}</h4>
+                            <span class="text-sm text-gray-500">${date}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-gray-700 mb-2">
+                            ${r.amount ? `<div><strong>Total Sampah:</strong> ${r.amount} Kg</div>` : ''}
+                            ${parseFloat(r.areaHa) > 0 ? `<div><strong>Luas Area:</strong> ${r.areaHa} Hektar</div>` : ''}
+                            ${r.lat ? `<div><strong>Koordinat:</strong> ${r.lat}, ${r.lng}</div>` : ''}
+                        </div>
+                        <p class="text-sm text-gray-600 bg-gray-50 p-2 rounded"><strong>Catatan:</strong> ${r.notes || '-'}</p>
+                    </div>`;
+                }).join('');
             }
 
-            // Trigger Print
+            // Set List Ide Hackathon HTML
+            const printIdeContainer = document.getElementById('print-list-ide');
+            if(ideas.length === 0) {
+                printIdeContainer.innerHTML = '<p class="text-gray-500 italic">Tim belum merumuskan ide hackathon.</p>';
+            } else {
+                printIdeContainer.innerHTML = ideas.map((idea, i) => `
+                    <div class="border border-gray-200 p-4 rounded-xl mb-3 page-break-inside-avoid">
+                        <h4 class="font-bold text-teal-700 mb-2">Ide Solusi #${i+1}</h4>
+                        <p class="text-gray-800 font-medium mb-3">${idea.solusi}</p>
+                        <div class="bg-orange-50 p-2 rounded text-sm text-gray-700">
+                            <strong>Mengatasi Masalah:</strong><br/>
+                            <span class="italic">"${idea.masalah}"</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Jalankan Print Document
             window.print();
         }
 
@@ -741,10 +990,8 @@
             const term = document.getElementById('search-kamus').value.toLowerCase();
             const filtered = kamusData.filter(i => i.term.toLowerCase().includes(term) || i.desc.toLowerCase().includes(term));
             const container = document.getElementById('kamus-container');
-            
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 mt-8 font-medium">Istilah tidak ditemukan.</p>';
-                return;
+                container.innerHTML = '<p class="text-center text-gray-500 mt-8 font-medium">Istilah tidak ditemukan.</p>'; return;
             }
             container.innerHTML = filtered.map(item => `
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
@@ -762,52 +1009,66 @@
             document.getElementById('hackathon-list').classList.toggle('hidden', show);
             document.getElementById('hackathon-form').classList.toggle('hidden', !show);
         }
-
         function saveIdea(event) {
             event.preventDefault();
-            const newIdea = {
-                id: Date.now(),
-                masalah: document.getElementById('idea-masalah').value,
-                solusi: document.getElementById('idea-solusi').value
-            };
-            ideas.unshift(newIdea);
-            localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
-            
-            toggleFormHackathon(false);
-            renderIdeas();
+            const newIdea = { id: Date.now(), masalah: document.getElementById('idea-masalah').value, solusi: document.getElementById('idea-solusi').value };
+            ideas.unshift(newIdea); localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
+            toggleFormHackathon(false); renderIdeas(); updateDashboard();
         }
-
         function renderIdeas() {
             const container = document.getElementById('ideas-container');
             if (ideas.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center p-8 border-2 border-dashed border-gray-200 rounded-2xl">
-                        <p class="text-gray-500 font-bold">Ide masih kosong</p>
-                    </div>`;
-                return;
+                container.innerHTML = `<div class="text-center p-8 border-2 border-dashed border-gray-200 rounded-2xl"><p class="text-gray-500 font-bold">Ide masih kosong</p></div>`; return;
             }
-            container.innerHTML = ideas.map(idea => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <span class="text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-teal-600 px-2 py-1 rounded-md mb-2 inline-block">Ide Solusi</span>
-                    <p class="font-bold text-gray-800 mb-3">${idea.solusi}</p>
-                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-sm">
-                        <span class="text-xs font-bold text-gray-500 block mb-1">Masalah:</span>
-                        <p class="text-gray-700 italic">"${idea.masalah}"</p>
-                    </div>
+            container.innerHTML = ideas.map(idea => generateIdeaCard(idea)).join('');
+        }
+
+        // --- Helper: Generate Tampilan Kartu Ide (Digunakan di Hackathon & Dashboard) ---
+        function generateIdeaCard(idea, compact = false) {
+            return `
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-200 transition-colors">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-yellow-100 text-yellow-800 px-2 py-1 rounded-md mb-2 inline-block">Ide Solusi</span>
+                <p class="font-bold text-gray-800 mb-2 ${compact ? 'line-clamp-2 text-sm' : ''}">${idea.solusi}</p>
+                <div class="bg-gray-50 p-2 rounded-xl border border-gray-100 text-xs">
+                    <span class="font-bold text-gray-500 block mb-1">Masalah:</span>
+                    <p class="text-gray-700 italic ${compact ? 'line-clamp-1' : ''}">"${idea.masalah}"</p>
                 </div>
-            `).join('');
+            </div>`;
         }
 
-        // --- 9. DASHBOARD UPDATE ---
+        // --- 9. DASHBOARD UPDATE (ALL-IN-ONE) ---
         function updateDashboard() {
+            // 1. Update Stats Angka Top
             const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
+            const totalPohon = reports.filter(r => r.type === 'observation').length;
+            
             document.getElementById('dash-trash').innerHTML = `${totalTrash} <span class="text-sm font-normal">Kg</span>`;
+            document.getElementById('dash-pohon').innerText = totalPohon;
+
+            // 2. Render Mini-List Laporan Lapangan (Ambil maks 3 terbaru)
+            const dashLapContainer = document.getElementById('dash-list-lapangan');
+            if(reports.length === 0) {
+                dashLapContainer.innerHTML = '<div class="text-center p-4 bg-gray-50 rounded-xl"><p class="text-sm text-gray-500 font-medium">Belum ada kegiatan</p></div>';
+            } else {
+                const latestReports = reports.slice(0, 3); // Cuma 3 terbaru
+                dashLapContainer.innerHTML = latestReports.map(r => generateReportCard(r, true)).join('');
+            }
+
+            // 3. Render Mini-List Ide Hackathon (Ambil maks 3 terbaru)
+            const dashIdeContainer = document.getElementById('dash-list-ide');
+            if(ideas.length === 0) {
+                dashIdeContainer.innerHTML = '<div class="text-center p-4 bg-gray-50 rounded-xl"><p class="text-sm text-gray-500 font-medium">Belum ada ide tim</p></div>';
+            } else {
+                const latestIdeas = ideas.slice(0, 3); // Cuma 3 terbaru
+                dashIdeContainer.innerHTML = latestIdeas.map(idea => generateIdeaCard(idea, true)).join('');
+            }
         }
 
-        // --- INIT APP ---
         window.onload = () => {
-            switchTab('dashboard'); // Tab default
+            switchTab('dashboard'); 
             updateDashboard();
+            renderKamus(); 
+            renderIdeas();
         };
     </script>
 </body>

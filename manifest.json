@@ -1,21 +1,21 @@
 {
   "name": "PesisirKita - Sistem Operasi Lapangan",
   "short_name": "PesisirKita",
-  "description": "Sistem operasi lapangan dan pemetaan kolaboratif untuk wilayah pesisir dan mangrove.",
-  "start_url": "/Pesisirkita/",
-  "scope": "/Pesisirkita/",
+  "description": "Sistem operasi lapangan dan pemetaan kolaboratif untuk wilayah pesisir.",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d9488",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/Pesisirkita/icons/icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/Pesisirkita/icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

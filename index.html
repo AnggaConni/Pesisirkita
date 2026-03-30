@@ -157,8 +157,26 @@
                             </div>
 
                             <!-- Area Angka / Metrik (Untuk Data Literacy) -->
-                            <div class="w-full md:w-auto grid grid-cols-2 gap-3 mt-4 md:mt-0 items-end">
-                            </div>
+                    <div class="w-full md:w-auto grid grid-cols-2 gap-3 mt-4 md:mt-0 items-end">
+                        <div class="bg-white/20 backdrop-blur-md border border-white/20 p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-inner col-span-2 md:col-span-1 transform transition hover:scale-105">
+                            <i class="ph-fill ph-trash text-orange-300 text-2xl mb-1 drop-shadow"></i>
+                            <span id="dash-trash-num" class="text-xl font-black text-white drop-shadow-sm">0 <span class="text-xs font-medium text-teal-100">Kg</span></span>
+                            <span class="text-[9px] font-bold text-teal-100 uppercase tracking-wider mt-0.5">Sampah Diangkat</span>
+                        </div>
+                        
+                        <div class="bg-white/20 backdrop-blur-md border border-white/20 p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-inner transform transition hover:scale-105">
+                            <i class="ph-fill ph-plant text-emerald-300 text-2xl mb-1 drop-shadow"></i>
+                            <span id="dash-pohon" class="text-xl font-black text-white drop-shadow-sm">0</span>
+                            <span class="text-[9px] font-bold text-teal-100 uppercase tracking-wider mt-0.5">Bibit Ditanam</span>
+                        </div>
+
+                        <div class="bg-white/20 backdrop-blur-md border border-white/20 p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-inner transform transition hover:scale-105">
+                            <i class="ph-fill ph-bounding-box text-blue-300 text-2xl mb-1 drop-shadow"></i>
+                            <span id="dash-area" class="text-xl font-black text-white drop-shadow-sm">0 <span class="text-xs font-medium text-teal-100">Ha</span></span>
+                            <span class="text-[9px] font-bold text-teal-100 uppercase tracking-wider mt-0.5">Area Disapu</span>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
 
@@ -1326,18 +1344,65 @@ function hitungKarbon() {
             } else { status.innerText = "GPS tidak didukung."; }
         }
 
+        // --- KODE BARU (FITUR KOMPRESI CANVAS) ---
         function handlePhotoUpload(event) {
             const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    currentPhotoBase64 = reader.result;
+            if (!file) return;
+
+            // 1. Validasi: Pastikan yang diupload benar-benar file gambar
+            if (!file.type.startsWith('image/')) {
+                alert('Mohon upload file gambar yang valid.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // 2. Buat objek Gambar virtual untuk membaca resolusi aslinya
+                const img = new Image();
+                img.onload = function () {
+                    // 3. Batasan Resolusi (Max 800x800 pixel)
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // 4. Hitung proporsi (aspek rasio) agar foto tidak gepeng
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height *= MAX_WIDTH / width));
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round((width *= MAX_HEIGHT / height));
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // 5. Buat elemen Canvas sementara di memori (tidak tampil di layar)
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+
+                    // 6. Gambar foto yang sudah di-resize ke dalam Canvas
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // 7. KOMPRESI MAGIS: Ekspor canvas ke Base64 dengan format JPEG dan Kualitas 60% (0.6)
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+                    // 8. Tampilkan hasilnya ke UI PesisirKita
                     document.getElementById('photo-preview').src = currentPhotoBase64;
                     document.getElementById('photo-preview-container').classList.remove('hidden');
                     document.getElementById('photo-input-container').classList.add('hidden');
                 };
-                reader.readAsDataURL(file);
-            }
+                
+                // Picu pemuatan gambar virtual
+                img.src = e.target.result;
+            };
+            
+            // Mulai baca file dari input kamera/galeri
+            reader.readAsDataURL(file);
         }
 
         function removePhoto() {
@@ -2144,76 +2209,89 @@ function exportLaporanLengkap() {
         }
 
        // --- 9. DASHBOARD UPDATE (ALL-IN-ONE) ---
+        // --- KODE BARU (UPDATE DASHBOARD LENGKAP) ---
         function updateDashboard() {
-            // 1. Hitung Total Data
+            // 1. Hitung Total Data Secara Akurat
             const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-            const totalPohon = reports.filter(r => r.type === 'observation' || r.type === 'planting').length;
+            // Kita hitung jumlah BIBIT sungguhan, bukan cuma berapa kali kegiatan
+            const totalBibit = reports.filter(r => r.type === 'planting').reduce((sum, r) => sum + Number(r.bibit || 0), 0);
+            const totalArea = reports.reduce((sum, r) => sum + Number(r.areaHa || 0), 0).toFixed(2);
+            const totalAksi = reports.length; // Untuk progress bar
             
-            // Render Angka ke HTML
-            document.getElementById('dash-trash-num').innerHTML = `${totalTrash} <span class="text-base font-medium">Kg</span>`;
-            document.getElementById('dash-pohon').innerText = totalPohon;
+            // Render Angka ke HTML Metrik yang baru kita buat
+            if(document.getElementById('dash-trash-num')) document.getElementById('dash-trash-num').innerHTML = `${totalTrash} <span class="text-xs font-medium text-teal-100">Kg</span>`;
+            if(document.getElementById('dash-pohon')) document.getElementById('dash-pohon').innerText = totalBibit;
+            if(document.getElementById('dash-area')) document.getElementById('dash-area').innerHTML = `${totalArea} <span class="text-xs font-medium text-teal-100">Ha</span>`;
 
             // 2. Logika Progress Bar & Level
             let levelTeks = "Seed 🌱";
             let reaksiTeks = "Tanam aksi kebaikan pertamamu! 👍";
-            let target = 5;      // Target level berikutnya
-            let current = totalPohon;
+            let target = 5;      
+            let current = totalAksi; // Level dihitung dari total kegiatan lapangan
 
-            if (totalPohon < 5) { 
+            if (totalAksi < 5) { 
                 levelTeks = "Seed 🌱"; 
                 reaksiTeks = "Tanam aksi kebaikan pertamamu! 👍"; 
                 target = 5;
             }
-            else if (totalPohon >= 5 && totalPohon < 15) { 
+            else if (totalAksi >= 5 && totalAksi < 15) { 
                 levelTeks = "Sapling 🌿"; 
                 reaksiTeks = "Keren! Kamu mulai konsisten 🔥"; 
                 target = 15;
             }
-            else if (totalPohon >= 15 && totalPohon < 30) { 
+            else if (totalAksi >= 15 && totalAksi < 30) { 
                 levelTeks = "Ranger 🤠"; 
                 reaksiTeks = "Luar biasa! Lanjutkan risetmu 🌍"; 
                 target = 30;
             }
-            else if (totalPohon >= 30) { 
+            else if (totalAksi >= 30) { 
                 levelTeks = "Guardian 🌳👑"; 
                 reaksiTeks = "Legend! Pahlawan pesisir sejati 🏆"; 
-                target = totalPohon; // Set 100% jika sudah mentok
+                target = totalAksi; 
             }
             
-            // Hitung Persentase untuk Lebar Progress Bar (Max 100%)
+            // Hitung Persentase Progress Bar
             let pct = (current / target) * 100;
             if (pct > 100) pct = 100;
             
-            // Update Teks & Bar UI
             document.getElementById('dash-level').innerText = levelTeks;
             document.getElementById('dash-reaksi').innerText = reaksiTeks;
             
-            // Gunakan timeout sedikit agar animasi barnya jalan saat pindah tab
             setTimeout(() => {
-                document.getElementById('dash-progress').style.width = `${pct}%`;
+                if(document.getElementById('dash-progress')) document.getElementById('dash-progress').style.width = `${pct}%`;
             }, 100);
 
-            if (totalPohon >= 30) {
+            if (totalAksi >= 30) {
                 document.getElementById('dash-progress-text').innerText = "Level Maksimal!";
             } else {
                 document.getElementById('dash-progress-text').innerText = `${current} dari ${target} Aksi`;
             }
 
-            // 3. Render Mini-List Laporan Lapangan (Ambil maks 3 terbaru)
+            // 3. Render Mini-List Laporan Lapangan (Dengan Empty State Cantik)
             const dashLapContainer = document.getElementById('dash-list-lapangan');
             if(reports.length === 0) {
-                dashLapContainer.innerHTML = '<div class="text-center p-4 bg-gray-50 rounded-xl"><p class="text-sm text-gray-500 font-medium">Belum ada kegiatan</p></div>';
+                dashLapContainer.innerHTML = `
+                <div class="text-center p-6 bg-blue-50/50 border border-dashed border-blue-200 rounded-2xl flex flex-col items-center transition-all hover:bg-blue-50">
+                    <i class="ph-fill ph-map-pin text-4xl text-blue-300 mb-2"></i>
+                    <p class="text-sm text-blue-600 font-bold">Belum ada aksi!</p>
+                    <p class="text-[10px] text-blue-400 mt-1">Ayo jalan ke pesisir sekarang 🏖️</p>
+                </div>`;
             } else {
-                const latestReports = reports.slice(0, 3); // Cuma 3 terbaru
+                const latestReports = reports.slice(0, 3);
                 dashLapContainer.innerHTML = latestReports.map(r => generateReportCard(r, true)).join('');
             }
 
-            // 4. Render Mini-List Ide Hackathon (Ambil maks 3 terbaru)
+            // 4. Render Mini-List Ide Hackathon (Dengan Empty State Cantik)
             const dashIdeContainer = document.getElementById('dash-list-ide');
             if(ideas.length === 0) {
-                dashIdeContainer.innerHTML = '<div class="text-center p-4 bg-gray-50 rounded-xl"><p class="text-sm text-gray-500 font-medium">Belum ada ide tim</p></div>';
+                dashIdeContainer.innerHTML = `
+                <div class="text-center p-6 bg-yellow-50/50 border border-dashed border-yellow-200 rounded-2xl flex flex-col items-center transition-all hover:bg-yellow-50">
+                    <i class="ph-fill ph-lightbulb text-4xl text-yellow-300 mb-2"></i>
+                    <p class="text-sm text-yellow-600 font-bold">Board masih kosong</p>
+                    <p class="text-[10px] text-yellow-400 mt-1">Yuk sumbang ide brilian pertamamu 💡</p>
+                </div>`;
             } else {
-                const latestIdeas = ideas.slice(0, 3); // Cuma 3 terbaru
+                const latestIdeas = ideas.slice(0, 3);
                 dashIdeContainer.innerHTML = latestIdeas.map(idea => generateIdeaCard(idea, true)).join('');
             }
         }

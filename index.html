@@ -2255,6 +2255,23 @@ function exportLaporanLengkap() {
         // Jalankan auto-play setiap 4 detik
         setInterval(moveCarousel, 4000);
 
+        // Di dalam index.html
+        if ('serviceWorker' in navigator) {
+        // Tunggu sampai halaman selesai dimuat
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then((registration) => {
+                console.log('SW Berhasil Didaftarkan! Scope:', registration.scope);
+            })
+            .catch((error) => {
+                console.log('SW Gagal Didaftarkan:', error);
+            });
+        });
+        }
+
     </script>
+
+    
+
 </body>
 </html>

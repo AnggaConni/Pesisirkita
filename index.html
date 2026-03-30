@@ -156,30 +156,55 @@
 
                             <!-- Area Angka / Metrik (Untuk Data Literacy) -->
                             <div class="w-full md:w-auto grid grid-cols-2 gap-3 mt-4 md:mt-0 items-end">
-                                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col justify-center items-start min-w-[140px] shadow-sm">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <div class="bg-white/20 p-1.5 rounded-lg"><i class="ph-fill ph-tree text-yellow-300 text-xl"></i></div>
-                                        <p class="text-[9px] text-teal-50 font-bold uppercase tracking-wider leading-tight">Total<br>Kegiatan</p>
-                                    </div>
-                                    <p class="text-4xl font-black text-white mt-1" id="dash-pohon">0</p>
-                                </div>
-                                
-                                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col justify-center items-start min-w-[140px] shadow-sm">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <div class="bg-white/20 p-1.5 rounded-lg"><i class="ph-fill ph-trash text-yellow-300 text-xl"></i></div>
-                                        <p class="text-[9px] text-teal-50 font-bold uppercase tracking-wider leading-tight">Sampah<br>Diangkut</p>
-                                    </div>
-                                    <p class="text-4xl font-black text-white mt-1" id="dash-trash-num">0 <span class="text-base font-medium">Kg</span></p>
-                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="relative group overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-100 mb-6 mt-6">
+                    <div id="carousel-wrapper" class="flex transition-transform duration-500 ease-out" style="transform: translateX(0%);">
+                        
+                        <div class="min-w-full p-6 bg-gradient-to-br from-emerald-50 to-white flex items-center gap-4">
+                            <div class="bg-emerald-500 p-3 rounded-2xl text-white shadow-lg shadow-emerald-200">
+                                <i class="ph-fill ph-shield-check text-3xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-black text-emerald-900 text-sm uppercase tracking-wider">Tips Lapangan</h4>
+                                <p class="text-sm text-emerald-700 leading-tight mt-1">Gunakan sepatu bot saat menanam di lumpur dalam untuk menghindari luka.</p>
                             </div>
                         </div>
+
+                        <div class="min-w-full p-6 bg-gradient-to-br from-blue-50 to-white flex items-center gap-4">
+                            <div class="bg-blue-500 p-3 rounded-2xl text-white shadow-lg shadow-blue-200">
+                                <i class="ph-fill ph-info text-3xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-black text-blue-900 text-sm uppercase tracking-wider">Tahukah Kamu?</h4>
+                                <p class="text-sm text-blue-700 leading-tight mt-1">Mangrove menyerap karbon 5x lebih banyak daripada hutan biasa!</p>
+                            </div>
+                        </div>
+
+                        <div class="min-w-full p-6 bg-gradient-to-br from-purple-50 to-white flex items-center gap-4">
+                            <div class="bg-purple-500 p-3 rounded-2xl text-white shadow-lg shadow-purple-200">
+                                <i class="ph-fill ph-sparkle text-3xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-black text-purple-900 text-sm uppercase tracking-wider">Misi Minggu Ini</h4>
+                                <p class="text-sm text-purple-700 leading-tight mt-1">Target 50Kg sampah terangkat. Ayo ajak 2 temanmu bergabung!</p>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- TOMBOL CETAK PDF UTAMA -->
-                    <button onclick="exportLaporanLengkap()" class="w-full bg-yellow-400 text-teal-900 hover:bg-yellow-300 px-6 py-4 rounded-2xl font-bold shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 border border-yellow-500">
-                        <i class="ph-bold ph-printer text-xl"></i>
-                        Cetak Laporan PDF Tim ke Guru
-                    </button>
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        <div class="dot w-1.5 h-1.5 rounded-full bg-teal-600 transition-all duration-300" id="dot-0"></div>
+                        <div class="dot w-1.5 h-1.5 rounded-full bg-gray-300 transition-all duration-300" id="dot-1"></div>
+                        <div class="dot w-1.5 h-1.5 rounded-full bg-gray-300 transition-all duration-300" id="dot-2"></div>
+                    </div>
+                </div>
+                <button onclick="exportLaporanLengkap()" class="w-full bg-yellow-400 text-teal-900 hover:bg-yellow-300 px-6 py-4 rounded-2xl font-bold shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 border border-yellow-500">
+                    <i class="ph-bold ph-printer text-xl"></i>
+                    Cetak Laporan PDF Tim ke Guru
+                </button>
 
                     <!-- Layout 2 Kolom untuk Riwayat Data -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2202,6 +2227,33 @@ function exportLaporanLengkap() {
             renderIdeas();
         };
 
+
+        // --- LOGIKA CAROUSEL PESISIRKITA ---
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const carouselWrapper = document.getElementById('carousel-wrapper');
+
+        function moveCarousel() {
+            if (!carouselWrapper) return; // Mencegah error jika elemen tidak ditemukan
+            currentSlide = (currentSlide + 1) % totalSlides;
+            
+            // Geser Wrapper
+            carouselWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update Dots
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.classList.replace('bg-gray-300', 'bg-teal-600');
+                    dot.classList.add('w-4'); 
+                } else {
+                    dot.classList.replace('bg-teal-600', 'bg-gray-300');
+                    dot.classList.remove('w-4');
+                }
+            });
+        }
+
+        // Jalankan auto-play setiap 4 detik
+        setInterval(moveCarousel, 4000);
 
     </script>
 </body>

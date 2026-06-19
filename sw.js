@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesisirkita-v5'; // Naikkan versi jika ada update besar
+const CACHE_NAME = 'pesisirkita-v6'; // Naikkan versi jika ada update besar
 
 const ASSETS_TO_CACHE = [
   './',

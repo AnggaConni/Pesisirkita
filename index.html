@@ -60,6 +60,14 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Fix iOS Safe Area untuk Bottom Navigation */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: calc(env(safe-area-inset-bottom) + 0.2rem) !important;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans overflow-hidden">
@@ -80,44 +88,85 @@
 
         <!-- SIDEBAR / BOTTOM NAV (Hybrid) -->
         <nav class="fixed md:relative bottom-0 w-full md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-50 flex md:flex-col justify-around md:justify-start pb-safe md:pb-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-none order-2 md:order-1 transition-all">
-            <div class="hidden md:flex items-center gap-3 px-6 py-6 border-b border-gray-100">
-                <i class="ph-fill ph-tree-evergreen text-3xl text-teal-600"></i>
-                <h1 class="text-2xl font-black text-teal-800 tracking-tight">PesisirKita</h1>
+            
+<div class="hidden md:flex items-center justify-between px-5 py-6 border-b border-gray-100 w-full">
+
+    <!-- LEFT -->
+<div class="flex items-center gap-2 min-w-0">
+    <img 
+        src="penyu.png" 
+        alt="Logo Penyu PesisirKita"
+        class="w-8 h-8 object-contain flex-shrink-0"
+    />
+
+    <h1 class="text-xl font-black text-teal-800 tracking-tight whitespace-nowrap">
+        PesisirKita
+    </h1>
+</div>
+    <!-- RIGHT -->
+    <button 
+        onclick="openProfileModal()" 
+        class="text-gray-400 hover:text-teal-600 transition flex-shrink-0 ml-3"
+        title="Pengaturan Data Diri"
+    >
+        <i class="ph-bold ph-gear text-xl"></i>
+    </button>
+
+</div>
+
+            <div class="flex md:flex-col w-full px-1.5 md:px-4 pt-1.5 pb-safe md:py-6 gap-0.5 md:gap-2">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center md:justify-start py-1.5 px-1 md:px-4 md:py-3 rounded-xl text-teal-600 bg-teal-50 transition-colors">
+                    <i class="ph-fill ph-house text-xl md:text-xl md:mr-3"></i>
+                    <span class="text-[9px] md:text-sm font-semibold mt-0.5 md:mt-0 leading-none">Dashboard</span>
+                </button>
+                <button onclick="switchTab('lapangan')" id="nav-lapangan" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center md:justify-start py-1.5 px-1 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
+                    <i class="ph-fill ph-map-pin text-xl md:text-xl md:mr-3"></i>
+                    <span class="text-[9px] md:text-sm font-semibold mt-0.5 md:mt-0 leading-none">Field</span>
+                </button>
+                <button onclick="switchTab('kalkulator')" id="nav-kalkulator" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center md:justify-start py-1.5 px-1 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
+                    <i class="ph-fill ph-calculator text-xl md:text-xl md:mr-3"></i>
+                    <span class="text-[9px] md:text-sm font-semibold mt-0.5 md:mt-0 leading-none">Calculator</span>
+                </button>
+                <button onclick="switchTab('kamus')" id="nav-kamus" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center md:justify-start py-1.5 px-1 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
+                    <i class="ph-fill ph-book-open-text text-xl md:text-xl md:mr-3"></i>
+                    <span class="text-[9px] md:text-sm font-semibold mt-0.5 md:mt-0 leading-none">Dictionary</span>
+                </button>
+                <button onclick="switchTab('hackathon')" id="nav-hackathon" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center md:justify-start py-1.5 px-1 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
+                    <i class="ph-fill ph-lightbulb text-xl md:text-xl md:mr-3"></i>
+                    <span class="text-[9px] md:text-sm font-semibold mt-0.5 md:mt-0 leading-none text-center">Team Ideas</span>
+                </button>
             </div>
-            <div class="flex md:flex-col w-full px-2 md:px-4 py-2 md:py-6 gap-1 md:gap-2">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-teal-600 bg-teal-50 transition-colors">
-                    <i class="ph-fill ph-house text-2xl md:text-xl md:mr-3"></i>
-                    <span class="text-[10px] md:text-sm font-semibold mt-1 md:mt-0">Beranda</span>
-                </button>
-                <button onclick="switchTab('lapangan')" id="nav-lapangan" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
-                    <i class="ph-fill ph-map-pin text-2xl md:text-xl md:mr-3"></i>
-                    <span class="text-[10px] md:text-sm font-semibold mt-1 md:mt-0">Lapangan</span>
-                </button>
-                <button onclick="switchTab('kalkulator')" id="nav-kalkulator" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
-                    <i class="ph-fill ph-calculator text-2xl md:text-xl md:mr-3"></i>
-                    <span class="text-[10px] md:text-sm font-semibold mt-1 md:mt-0">Hitung</span>
-                </button>
-                <button onclick="switchTab('kamus')" id="nav-kamus" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
-                    <i class="ph-fill ph-book-open-text text-2xl md:text-xl md:mr-3"></i>
-                    <span class="text-[10px] md:text-sm font-semibold mt-1 md:mt-0">Kamus</span>
-                </button>
-                <button onclick="switchTab('hackathon')" id="nav-hackathon" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start p-2 md:px-4 md:py-3 rounded-xl text-gray-400 hover:text-teal-600 hover:bg-teal-50/50 transition-colors">
-                    <i class="ph-fill ph-lightbulb text-2xl md:text-xl md:mr-3"></i>
-                    <span class="text-[10px] md:text-sm font-semibold mt-1 md:mt-0">Ide Tim</span>
-                </button>
-            </div>
+
         </nav>
 
         <!-- CONTENT AREA -->
         <main class="flex-1 flex flex-col order-1 md:order-2 h-full overflow-hidden relative">
-            <header class="md:hidden bg-teal-700 text-white p-4 shadow-md sticky top-0 z-40 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="ph-fill ph-tree-evergreen text-2xl text-teal-300"></i>
-                    <h1 class="text-xl font-bold">PesisirKita</h1>
+
+            <header class="md:hidden bg-white/90 backdrop-blur-md px-4 py-3 shadow-sm border-b border-gray-100 sticky top-0 z-40 flex justify-between items-center transition-all">
+                
+                <!-- KIRI: Logo Baru PesisirKita (Diperkecil & Estetik) -->
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <img 
+                        src="penyu.png" 
+                        alt="Logo Penyu PesisirKita"
+                        class="w-8 h-8 rounded-lg object-cover shadow-sm flex-shrink-0"
+                    />
+                    <h1 class="text-xl font-bold text-teal-700 tracking-tight whitespace-nowrap">
+                        Pesisir<span class="text-cyan-600">Kita</span>
+                    </h1>
                 </div>
-                <div class="flex items-center gap-1 bg-teal-800 px-3 py-1 rounded-full text-sm font-semibold">
-                    <i class="ph-fill ph-medal text-yellow-400"></i> <span id="header-points">350</span> Poin
+
+                <!-- KANAN: Poin & Settings (Disesuaikan dengan tema terang) -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1 bg-teal-50 border border-teal-100 px-2.5 py-1 rounded-full text-xs font-bold text-teal-700 shadow-inner">
+                        <i class="ph-fill ph-medal text-yellow-500 text-sm"></i> 
+                        <span id="header-points">350</span> pts
+                    </div>
+                    <button onclick="openProfileModal()" class="text-gray-400 hover:text-teal-600 transition flex-shrink-0">
+                        <i class="ph-bold ph-gear text-xl"></i>
+                    </button>
                 </div>
+
             </header>
 
             <!-- pb-36 ditambahkan agar konten terbawah tidak tertutup menu mobile -->
@@ -223,7 +272,7 @@
                 </div>
                 <button onclick="exportLaporanLengkap()" class="w-full bg-yellow-400 text-teal-900 hover:bg-yellow-300 px-6 py-4 rounded-2xl font-bold shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 border border-yellow-500">
                     <i class="ph-bold ph-printer text-xl"></i>
-                    Cetak Laporan PDF Tim ke Guru
+                    Cetak Laporan PDF
                 </button>
 
                     <!-- Layout 2 Kolom untuk Riwayat Data -->
@@ -278,15 +327,34 @@
 
                 <!-- 2. KALKULATOR -->
                 <section id="view-kalkulator" class="view-section space-y-6">
-                    <!-- Toggle Kalkulator (3 Opsi) -->
-                    <div class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl mb-4 text-center">
-                        <button onclick="setCalcMode('karbon')" id="tab-karbon" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors">Karbon Biru</button>
-                        <button onclick="setCalcMode('tanam')" id="tab-tanam" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors">Perlu Tanam</button>
-                        <button onclick="setCalcMode('sampah')" id="tab-sampah" class="py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors">Urai Sampah</button>
+                    <!-- TAB TOGGLE KALKULATOR -->
+                    <div class="bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl grid grid-cols-2 gap-1.5 border border-slate-200 shadow-inner mb-6">
+                        
+                        <!-- Tab: Karbon Biru -->
+                        <button onclick="switchCalcTab('karbon')" id="btn-tab-karbon" class="calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-200/60 hover:text-slate-700 transition-all duration-200">
+                            <i class="ph-bold ph-plant"></i> Karbon Biru
+                        </button>
+                        
+                        <!-- Tab: Perlu Tanam -->
+                        <button onclick="switchCalcTab('tanam')" id="btn-tab-tanam" class="calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-200/60 hover:text-slate-700 transition-all duration-200">
+                            <i class="ph-bold ph-tree-palm"></i> Perlu Tanam
+                        </button>
+                        
+                        <!-- Tab: Urai Sampah -->
+                        <button onclick="switchCalcTab('sampah')" id="btn-tab-sampah" class="calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-200/60 hover:text-slate-700 transition-all duration-200">
+                            <i class="ph-bold ph-trash"></i> Urai Sampah
+                        </button>
+                        
+                        <!-- Tab: Biomassa (Default Active State) -->
+                        <!-- Perhatikan class aktifnya: bg-white, text-indigo-600, shadow-sm -->
+                        <button onclick="switchCalcTab('biomassa')" id="btn-tab-biomassa" class="calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-bold bg-white text-indigo-600 shadow-sm ring-1 ring-slate-900/5 transition-all duration-200">
+                            <i class="ph-bold ph-fish"></i> Biomassa
+                        </button>
+
                     </div>
 
                     <!-- Mode Karbon -->
-                    <div id="calc-karbon" class="space-y-4">
+                    <div id="calc-karbon" class="hidden space-y-4">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                             <h3 class="font-bold text-gray-800 mb-2">Simulasi Serapan Karbon</h3>
                             <p class="text-sm text-gray-500 mb-6">Berapa banyak bibit mangrove yang kelompokmu tanam hari ini?</p>
@@ -440,21 +508,69 @@
                             </div>
                         </div>
                     </div>
+
+
+                <!-- Mode Biomassa Karang -->
+                <div id="calc-biomassa" class="space-y-4">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
+                        <!-- Ornamen background halus di card putih -->
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full blur-2xl opacity-60"></div>
+                        
+                        <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2 relative z-10"><i class="ph-fill ph-scales text-indigo-500 text-xl"></i> Estimasi Biomassa Karang</h3>
+                        <p class="text-xs text-gray-500 mb-6 relative z-10">Hitung berat (modal energi) ekosistem menggunakan rumus empiris alometrik.</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-2 relative z-10">
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase block text-center mb-1">Rata Panjang (cm)</label>
+                                <input type="number" id="input-bio-panjang" value="25" oninput="hitungBiomassaKalkulator()" class="w-full bg-transparent border-b-2 border-indigo-200 focus:border-indigo-500 outline-none font-bold text-indigo-700 text-center text-3xl pb-1" min="1">
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase block text-center mb-1">Jumlah Ikan</label>
+                                <input type="number" id="input-bio-jumlah" value="5" oninput="hitungBiomassaKalkulator()" class="w-full bg-transparent border-b-2 border-gray-300 focus:border-gray-500 outline-none font-bold text-gray-700 text-center text-3xl pb-1" min="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-600 to-blue-800 rounded-2xl p-6 text-white shadow-md text-center relative overflow-hidden">
+                        <!-- Ikon dibesarkan sedikit dan digeser agar tidak nabrak teks -->
+                        <i class="ph-fill ph-fish text-[120px] absolute -top-4 -right-4 opacity-10 transform -rotate-12"></i>
+                        
+                        <h4 class="text-indigo-200 text-sm font-bold uppercase tracking-wider mb-2 z-10 relative">Estimasi Total Biomassa</h4>
+                        <div class="text-6xl font-black my-4 z-10 relative drop-shadow-md"><span id="lbl-bio-hasil">1.17</span> <span class="text-2xl font-medium text-indigo-100">Kg</span></div>
+                        
+                        <div class="bg-black/20 backdrop-blur-sm border border-white/20 rounded-xl p-4 mt-6 text-xs text-left z-10 relative shadow-inner">
+                            <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest mb-2 flex items-center gap-1 border-b border-indigo-500/50 pb-2"><i class="ph-bold ph-math-operations"></i> Arsitektur Rumus Alometrik</p>
+                            <div class="flex items-center justify-center gap-3 my-3">
+                                <span class="font-mono text-lg font-bold bg-white/10 px-3 py-1 rounded">W = aL<sup>b</sup></span>
+                            </div>
+                            <p class="text-indigo-100 mt-2 leading-relaxed text-[10px]">Menggunakan standar ikan kakatua (Parrotfish): Konstanta <strong class="text-white bg-indigo-500 px-1 rounded">a = 0.015</strong> dan eksponen <strong class="text-white bg-indigo-500 px-1 rounded">b = 3.0</strong>. W adalah berat dalam gram, lalu dikonversi ke Kg.</p>
+                        </div>
+                    </div>
+                </div>
+
                 </section>
 
                 <!-- 3. LAPANGAN (DATA KOLEKSI) -->
                 <section id="view-lapangan" class="view-section space-y-4">
                     <!-- List View -->
                     <div id="lapangan-list">
+
+
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h2 class="text-xl font-bold text-gray-800">Manajemen Data Lapangan</h2>
                                 <p class="text-sm text-gray-500"><i class="ph-bold ph-wifi-slash"></i> Tersimpan Lokal</p>
                             </div>
-                            <button onclick="toggleFormLapangan(true)" class="bg-teal-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 hover:bg-teal-700 active:scale-95">
-                                <i class="ph-bold ph-plus"></i> Catat Baru
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="openSyncModal('report')" class="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 hover:bg-blue-700 active:scale-95 transition">
+                                    <i class="ph-bold ph-cloud-arrow-up"></i> <span class="hidden md:inline">Sinkronisasi</span>
+                                </button>
+                                <button onclick="toggleFormLapangan(true)" class="bg-teal-600 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 hover:bg-teal-700 active:scale-95 transition">
+                                    <i class="ph-bold ph-plus"></i> Catat Baru
+                                </button>
+                            </div>
                         </div>
+
                         <div id="reports-container" class="space-y-4">
                             <!-- Reports rendered here -->
                         </div>
@@ -470,11 +586,16 @@
                             
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase">Jenis Kegiatan</label>
-                                <select id="form-type" onchange="toggleFormInputs()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500">
+
+                                <select id="form-type" onchange="toggleFormInputs()" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 font-bold">
                                     <option value="cleanup">Pembersihan Sampah Pesisir</option>
-                                    <option value="observation">Observasi Ekosistem & Tanam</option>
                                     <option value="planting">Penanaman Mangrove</option> 
+                                    <option value="observation">Observasi Ekosistem Rutin</option>
+                                    <option value="biomassa">Sensus Visual Biomassa (UVC)</option>
+                                    <option value="early_warning" class="text-red-600 font-bold">🚨 Lapor Anomali / Early Warning</option>
+                                    <option value="pollution" class="text-purple-600 font-bold">🏭 Lapor Limbah UMKM Pesisir</option>
                                 </select>
+
                             </div>
 
                             <!-- KOTAK KHUSUS PENANAMAN MANGROVE (Awalnya disembunyikan pakai style="display:none") -->
@@ -500,6 +621,291 @@
                                 </div>
                             </div>
 
+                            <!-- KOTAK KHUSUS OBSERVASI EKOSISTEM (3 MODE) -->
+                            <div id="input-observation-container" style="display: none;" class="bg-blue-50 p-4 rounded-xl border border-blue-100 space-y-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-blue-800 uppercase">Sub-Kategori Observasi</label>
+                                    <select id="form-obs-type" onchange="toggleObsInputs()" class="w-full mt-1 p-3 bg-white border border-blue-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium shadow-sm">
+                                        <option value="narrative">📝 Kualitatif / Narasi Bebas (Default)</option>
+                                        <option value="oceanography">🌊 Data Oseanografi Lanjutan</option>
+                                        <option value="sandwatch">🐢 Sandwatch Sea Turtle (Habitat Penyu)</option>
+                                    </select>
+                                </div>
+
+                                <!-- 1. Sub-Form Oseanografi -->
+                                <div id="obs-ocean-container" style="display: none;" class="space-y-3 pt-3 border-t border-blue-200">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">SST Suhu (°C)</label>
+                                            <input type="number" step="0.1" id="obs-sst" oninput="hitungOceanografi()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">Salinitas (ppt)</label>
+                                            <input type="number" step="0.1" id="obs-salinitas" oninput="hitungOceanografi()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">pH Air Laut</label>
+                                            <input type="number" step="0.1" id="obs-ph" oninput="hitungOceanografi()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">Kecepatan Arus (m/s)</label>
+                                            <input type="number" step="0.1" id="obs-arus" oninput="hitungOceanografi()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                    </div>
+                                    <div id="info-oceanografi" class="hidden mt-2 p-3 bg-white/80 border border-blue-200 rounded-lg text-xs text-blue-800 shadow-sm transition-all text-center"></div>
+                                </div>
+
+                                <!-- 2. Sub-Form Sandwatch (Penyu) -->
+                                <div id="obs-sandwatch-container" style="display: none;" class="space-y-3 pt-3 border-t border-blue-200">
+                                    <div class="grid grid-cols-2 gap-3 mb-2">
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">Lebar Pantai (m)</label>
+                                            <input type="number" step="0.1" id="sw-width" oninput="hitungSandwatch()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-blue-800 uppercase">Kemiringan (Derajat)</label>
+                                            <input type="number" step="0.1" id="sw-slope" oninput="hitungSandwatch()" placeholder="Misal: 5" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-blue-800 uppercase">Kelembutan Pasir (Gali 50cm)</label>
+                                        <select id="sw-sand" onchange="hitungSandwatch()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-xs font-medium">
+                                            <option value="Low">Low Difficulty (Sangat Lembut / Mudah Digali)</option>
+                                            <option value="Medium">Medium Difficulty (Lumayan Keras)</option>
+                                            <option value="High">High Difficulty (Berbatu / Padat)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-blue-800 uppercase">Polusi Cahaya (Beachfront Lighting)</label>
+                                        <select id="sw-light" onchange="hitungSandwatch()" class="w-full mt-1 p-2 bg-white border border-blue-200 rounded-lg outline-none text-xs font-medium">
+                                            <option value="1">Rank 1 (Gelap, cahaya sangat tidak langsung)</option>
+                                            <option value="2">Rank 2 (Ada cahaya langsung dari lampu gedung)</option>
+                                            <option value="3">Rank 3 (Sangat Terang, ada bayangan di pasir)</option>
+                                        </select>
+                                    </div>
+                                    <div id="info-sandwatch" class="hidden mt-2 p-3 bg-white/80 border border-blue-200 rounded-lg text-xs text-blue-800 shadow-sm transition-all text-center"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- KOTAK KHUSUS LIMBAH UMKM & INDEKS PENCEMARAN (BARU) -->
+                            <div id="input-pollution-container" style="display: none;" class="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-4">
+                                
+                                <div>
+                                    <label class="text-[10px] font-bold text-purple-800 uppercase">Konteks Industri UMKM</label>
+                                    <select id="poll-jenis" class="w-full mt-1 p-2 bg-white border border-purple-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-xs font-medium">
+                                        <option value="Pewarna Sintetis">Pewarna Sintetis (Azo dye, dll)</option>
+                                        <option value="Pewarna Alami (Tanpa Logam)">Pewarna Alami (Tanpa Fixer Logam)</option>
+                                        <option value="Pewarna Alami (Mordant Logam)">Pewarna Alami (Pakai Fixer Logam Tawas/Tunjung)</option>
+                                    </select>
+                                </div>
+
+                                <div class="border-t border-purple-200 pt-3">
+                                    <h4 class="text-xs font-bold text-purple-800 uppercase mb-2 flex items-center gap-1"><i class="ph-bold ph-flask"></i> Uji Kualitas Air (BOD/COD/TSS)</h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="text-[9px] font-bold text-purple-800 uppercase">pH Air</label>
+                                            <input type="number" step="0.1" id="poll-ph" oninput="hitungPencemaran()" placeholder="Normal: 6-9" class="w-full mt-1 p-2 bg-white border border-purple-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-purple-800 uppercase">BOD (mg/L)</label>
+                                            <input type="number" step="0.1" id="poll-bod" oninput="hitungPencemaran()" placeholder="Baku: 50" class="w-full mt-1 p-2 bg-white border border-purple-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-purple-800 uppercase">COD (mg/L)</label>
+                                            <input type="number" step="0.1" id="poll-cod" oninput="hitungPencemaran()" placeholder="Baku: 150" class="w-full mt-1 p-2 bg-white border border-purple-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-purple-800 uppercase">TSS (mg/L)</label>
+                                            <input type="number" step="0.1" id="poll-tss" oninput="hitungPencemaran()" placeholder="Baku: 50" class="w-full mt-1 p-2 bg-white border border-purple-200 rounded-lg outline-none text-sm font-bold text-center">
+                                        </div>
+                                    </div>
+                                    <div id="info-pollution" class="hidden mt-3 p-3 bg-white/90 border border-purple-300 rounded-lg text-xs text-purple-900 shadow-sm transition-all text-center"></div>
+                                </div>
+                                
+                                <div class="border-t border-purple-200 pt-3">
+                                    <label class="text-[10px] font-bold text-purple-800 uppercase">Aspek Sosial Ekonomi</label>
+                                    <div class="flex flex-wrap gap-2 mt-1">
+                                        <label class="flex items-center gap-1 text-[10px] text-purple-800 bg-white px-2 py-1.5 border border-purple-200 rounded-md shadow-sm"><input type="checkbox" id="poll-sosial-1" class="accent-purple-600 w-3 h-3"> Minat Pindah ke Alami</label>
+                                        <label class="flex items-center gap-1 text-[10px] text-purple-800 bg-white px-2 py-1.5 border border-purple-200 rounded-md shadow-sm"><input type="checkbox" id="poll-sosial-2" class="accent-purple-600 w-3 h-3"> Krisis Regenerasi Perajin</label>
+                                        <label class="flex items-center gap-1 text-[10px] text-purple-800 bg-white px-2 py-1.5 border border-purple-200 rounded-md shadow-sm"><input type="checkbox" id="poll-sosial-3" class="accent-purple-600 w-3 h-3"> IPAL Komunal Tersedia</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kotak Early warning -->
+                        <div id="input-warning-container" style="display: none;" class="bg-red-50 p-4 rounded-xl border border-red-100 space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-red-800 uppercase">Kategori Sinyal Lemah (Weak Signal)</label>
+                                <select id="form-kategori-anomali" onchange="toggleAnomaliInputs()" class="w-full mt-1 p-3 bg-white border border-red-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium">
+                                    <option value="Geologis">🌍 Geologis (Tanah Retak, Abrasi Cepat, Longsor)</option>
+                                    <option value="Hidrologis">🌊 Hidrologis (Air Laut Naik/Rob, Perubahan Suhu Air)</option>
+                                    <option value="Biologis">🦀 Bio-Indikator (Biota Mati Massal, Hewan Pindah)</option>
+                                    <option value="Infrastruktur">🧱 Infrastruktur (Tanggul Retak, Drainase Mampet)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-red-800 uppercase">Tingkat Urgensi Menurut Warga</label>
+                                <div class="grid grid-cols-3 gap-2 mt-1">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="urgensi" value="Waspada" class="peer hidden" checked>
+                                        <div class="text-center py-2 bg-white border border-red-200 text-gray-500 font-bold text-xs rounded-lg peer-checked:bg-yellow-400 peer-checked:text-yellow-900 peer-checked:border-yellow-500 transition-colors">🟡 Waspada</div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="urgensi" value="Kritis" class="peer hidden">
+                                        <div class="text-center py-2 bg-white border border-red-200 text-gray-500 font-bold text-xs rounded-lg peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600 transition-colors">🟠 Kritis</div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="urgensi" value="Bahaya" class="peer hidden">
+                                        <div class="text-center py-2 bg-white border border-red-200 text-gray-500 font-bold text-xs rounded-lg peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-700 transition-colors shadow-sm">🔴 Bahaya</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="dynamic-anomali-fields" class="mt-4 pt-4 border-t border-red-200">
+                                <h4 class="text-xs font-bold text-red-800 uppercase mb-3 flex items-center gap-1"><i class="ph-bold ph-radar"></i> Konteks Lapangan</h4>
+                                
+                                <div id="dyn-geologis" class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-[10px] font-bold text-gray-500 uppercase">Sejak Kapan?</label>
+                                            <select id="geo-waktu" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                                <option value="Baru saja (< 1 Jam)">Baru saja (< 1 Jam)</option>
+                                                <option value="Hari ini (< 24 Jam)">Hari ini (< 24 Jam)</option>
+                                                <option value="Sudah berhari-hari">Sudah berhari-hari</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-bold text-gray-500 uppercase">Estimasi Panjang (m)</label>
+                                            <input type="number" id="geo-panjang" placeholder="Misal: 10" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <label class="flex items-center gap-1 text-xs text-gray-700 bg-white px-2 py-1.5 border border-red-100 rounded-md shadow-sm"><input type="checkbox" id="geo-bertambah" class="accent-red-500 w-3 h-3"> Makin parah/lebar</label>
+                                        <label class="flex items-center gap-1 text-xs text-gray-700 bg-white px-2 py-1.5 border border-red-100 rounded-md shadow-sm"><input type="checkbox" id="geo-suara" class="accent-red-500 w-3 h-3"> Ada suara/getaran</label>
+                                        <label class="flex items-center gap-1 text-xs text-gray-700 bg-white px-2 py-1.5 border border-red-100 rounded-md shadow-sm"><input type="checkbox" id="geo-pemukiman" class="accent-red-500 w-3 h-3"> Dekat pemukiman</label>
+                                    </div>
+                                </div>
+
+                                <div id="dyn-hidrologis" class="space-y-3 hidden">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-[10px] font-bold text-gray-500 uppercase">Kecepatan Naik</label>
+                                            <select id="hidro-cepat" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                                <option value="Sangat Cepat (Menit)">Sangat Cepat (Menit)</option>
+                                                <option value="Perlahan (Jam)">Perlahan (Jam)</option>
+                                                <option value="Stabil / Menggenang">Stabil / Menggenang</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-bold text-gray-500 uppercase">Tinggi Air (cm)</label>
+                                            <input type="number" id="hidro-tinggi" placeholder="Misal: 50" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <label class="flex items-center gap-1 text-xs text-gray-700 bg-white px-2 py-1.5 border border-red-100 rounded-md shadow-sm"><input type="checkbox" id="hidro-hujan" class="accent-red-500 w-3 h-3"> Hujan lebih dari 3 hari</label>
+                                        <label class="flex items-center gap-1 text-xs text-gray-700 bg-white px-2 py-1.5 border border-red-100 rounded-md shadow-sm"><input type="checkbox" id="hidro-berulang" class="accent-red-500 w-3 h-3"> Titik banjir baru</label>
+                                    </div>
+                                </div>
+
+                                <div id="dyn-biologis" class="space-y-3 hidden">
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase">Apa yang terdampak?</label>
+                                        <select id="bio-kejadian" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                            <option value="Ikan / Biota Laut Mati Massal">Ikan / Biota Laut Mati Massal</option>
+                                            <option value="Pohon Mangrove Mendadak Kering">Pohon Mangrove Mendadak Kering</option>
+                                            <option value="Hewan Darat Berpindah Wajar">Hewan Darat Berpindah Tidak Wajar</option>
+                                            <option value="Air Berubah Warna/Bau Tajam">Air Berubah Warna/Bau Tajam</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="dyn-infrastruktur" class="space-y-3 hidden">
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase">Fokus Kerusakan (Sistemik)</label>
+                                        <select id="infra-fokus" class="w-full mt-1 p-2 bg-white border border-red-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-red-500">
+                                            <option value="Tanggul Laut Rembes / Retak">Tanggul Laut Rembes / Retak</option>
+                                            <option value="Sistem Drainase Utama Tersumbat">Sistem Drainase Utama Tersumbat Total</option>
+                                            <option value="Penurunan Tanah Jalanan">Penurunan Tanah Jalanan Pesisir</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+<!-- KOTAK KHUSUS BIOMASSA (UVC) -->
+                        <div id="input-biomass-container" style="display: none;" class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 space-y-3">
+                            
+                            <!-- UPGRADE EKSTRAPOLASI GIS -->
+                            <div class="grid grid-cols-2 gap-3 mb-2 pb-3 border-b border-indigo-200/60">
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Metode Pengamatan</label>
+                                    <select id="form-bio-metode" onchange="toggleTransekInputs(); autoHitungBiomassaForm();" class="w-full mt-1 p-2 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                                        <option value="Belt Transect">Belt Transect (Ekstrapolasi)</option>
+                                        <option value="Roaming">Jelajah Bebas (GIS Area)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Kedalaman (Depth)</label>
+                                    <select id="form-bio-kedalaman" class="w-full mt-1 p-2 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                                        <option value="Dangkal (3-5m)">Dangkal (3 - 5 Meter)</option>
+                                        <option value="Sedang (8-10m)">Sedang (8 - 10 Meter)</option>
+                                        <option value="Dalam (>12m)">Dalam (> 12 Meter)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- KOTAK DIMENSI TRANSEK (Muncul Jika Pilih Belt Transect) -->
+                            <div id="transek-dimensions" class="grid grid-cols-2 gap-3 mb-2 pb-3 border-b border-indigo-200/60">
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Panjang Transek (m)</label>
+                                    <input type="number" id="form-bio-transek-p" value="50" oninput="autoHitungBiomassaForm()" class="w-full mt-1 p-2 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-xs text-center font-bold shadow-sm" />
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Lebar Transek (m)</label>
+                                    <input type="number" id="form-bio-transek-l" value="5" oninput="autoHitungBiomassaForm()" class="w-full mt-1 p-2 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-xs text-center font-bold shadow-sm" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-indigo-800 uppercase">Kategori Fungsional (Famili Utama)</label>
+                                <select id="form-bio-spesies" onchange="autoHitungBiomassaForm()" class="w-full mt-1 p-3 bg-white border border-indigo-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    <optgroup label="1. Ikan Indikator (Kesehatan Karang)">
+                                        <option value="Indikator (Chaetodontidae)">Chaetodontidae (Kepe-kepe)</option>
+                                    </optgroup>
+                                    <optgroup label="2. Ikan Target (Tekanan Tangkap)">
+                                        <option value="Target (Serranidae)">Serranidae (Kerapu)</option>
+                                        <option value="Target (Lutjanidae)">Lutjanidae (Kakap)</option>
+                                        <option value="Target (Lethrinidae)">Lethrinidae (Lencam)</option>
+                                    </optgroup>
+                                    <optgroup label="3. Ikan Herbivora & Mayor">
+                                        <option value="Herbivora (Scaridae)">Scaridae (Kakatua)</option>
+                                        <option value="Herbivora (Acanthuridae)">Acanthuridae (Botana)</option>
+                                        <option value="Mayor (Caesionidae)">Caesionidae (Ekor Kuning)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 items-end">
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Rata Pnjg (cm)</label>
+                                    <input type="number" step="0.1" id="form-bio-panjang" oninput="autoHitungBiomassaForm()" placeholder="Misal: 30" class="w-full mt-1 p-2.5 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-center text-indigo-700 shadow-sm" />
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Jumlah Ekor</label>
+                                    <input type="number" id="form-bio-jumlah" oninput="autoHitungBiomassaForm()" placeholder="Berapa?" class="w-full mt-1 p-2.5 bg-white border border-indigo-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-center text-gray-700 shadow-sm" />
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-indigo-800 uppercase">Total (Kg)</label>
+                                    <input type="number" step="0.01" id="form-bio-berat" placeholder="Otomatis" readonly class="w-full mt-1 p-2.5 bg-indigo-200/50 border border-indigo-300 rounded-lg outline-none text-sm font-black text-center text-indigo-900 cursor-not-allowed shadow-inner" />
+                                </div>
+                            </div>
+                            
+                            <div id="info-kepadatan-bio" class="hidden mt-2 p-3 bg-white/80 border border-indigo-200 rounded-lg text-xs text-indigo-800 shadow-sm transition-all"></div>
+                        </div>
+
+
+                        <!-- KOTAK KHUSUS SAMPAH -->
                             <div id="input-amount-container">
                                 <label class="text-xs font-bold text-gray-500 uppercase">Total Sampah Terkumpul (Kg)</label>
                                 <input type="number" id="form-amount" placeholder="Contoh: 15" class="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500" required />
@@ -545,18 +951,18 @@
                             </div>
 
                             <!-- Foto Input -->
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors relative">
-                                <div id="photo-preview-container" class="hidden relative">
-                                    <img id="photo-preview" src="" alt="Preview" class="rounded-lg max-h-40 mx-auto object-contain" />
-                                    <button type="button" onclick="removePhoto()" class="absolute top-2 right-2 bg-red-500 text-white h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold shadow">X</button>
+                            <div class="border border-gray-200 rounded-xl p-4 transition-colors relative bg-gray-50">
+                                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Link Bukti Visual <span class="text-[9px] text-teal-600 lowercase bg-teal-50 px-1 rounded">(gdrive / direct / youtube)</span></label>
+                                <div class="flex gap-2 mb-2">
+                                    <input type="url" id="form-media-url" placeholder="Paste link foto atau video YouTube..." class="w-full p-2.5 bg-white border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 text-sm">
+                                    <button type="button" onclick="addMediaLink()" class="bg-teal-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-teal-700 whitespace-nowrap shadow-sm active:scale-95 transition-transform">
+                                        Tambah
+                                    </button>
                                 </div>
-                                <div id="photo-input-container">
-                                    <input type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)" class="hidden" id="camera-input" />
-                                    <label for="camera-input" class="cursor-pointer flex flex-col items-center justify-center gap-2">
-                                        <div class="bg-teal-100 p-3 rounded-full text-teal-600"><i class="ph-fill ph-camera text-2xl"></i></div>
-                                        <span class="text-sm font-bold text-gray-600">Ambil Foto Bukti Laporan</span>
-                                    </label>
-                                </div>
+                                <p class="text-[10px] text-gray-400 mb-2">*Bisa tambah lebih dari 1 link. Mendukung link YouTube (otomatis jadi thumbnail).</p>
+                                
+                                <div id="media-preview-container" class="hidden flex flex-wrap gap-3 mt-3 border-t border-gray-200 pt-3">
+                                    </div>
                             </div>
 
                             <button type="submit" class="w-full bg-teal-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-teal-700 active:scale-95 transition-transform flex justify-center items-center gap-2 mt-4">
@@ -601,15 +1007,24 @@
                 <!-- 5. HACKATHON -->
                 <section id="view-hackathon" class="view-section space-y-4">
                     <div id="hackathon-list">
-                        <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 text-white shadow-lg mb-6 flex justify-between items-center">
+
+
+                        <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-4 md:p-6 text-white shadow-lg mb-6 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
                             <div>
                                 <h2 class="text-xl font-bold flex items-center gap-2"><i class="ph-fill ph-lightbulb text-yellow-400"></i> Papan Hackathon</h2>
                                 <p class="text-xs text-gray-300 mt-1">Ubah masalah jadi solusi!</p>
                             </div>
-                            <button onclick="toggleFormHackathon(true)" class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-yellow-300 transition-colors">
-                                + Buat Ide
-                            </button>
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button onclick="openSyncModal('idea')" class="flex-1 md:flex-none bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-blue-600 transition flex justify-center items-center gap-2">
+                                    <i class="ph-bold ph-cloud-arrow-up"></i> Sinkronisasi
+                                </button>
+                                <button onclick="toggleFormHackathon(true)" class="flex-1 md:flex-none bg-yellow-400 text-gray-900 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-yellow-300 transition flex justify-center items-center gap-2">
+                                    + Buat Ide
+                                </button>
+                            </div>
                         </div>
+
+
                         <div id="ideas-container" class="space-y-4"></div>
                     </div>
 
@@ -674,14 +1089,131 @@
         </main>
     </div>
 
+    <!-- ================== MODAL SINKRONISASI KE SERVER ================== -->
+    <div id="sync-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeSyncModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-11/12 max-w-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-blue-600 text-white">
+                <h3 class="font-bold flex items-center gap-2"><i class="ph-bold ph-cloud-arrow-up"></i> Upload ke Server</h3>
+                <button onclick="closeSyncModal()" class="text-blue-200 hover:text-white transition-colors"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <div class="p-6">
+                <div class="bg-blue-50 text-blue-800 text-xs p-3 rounded-lg mb-4 border border-blue-100 font-medium">
+                    Kirim <strong id="sync-count" class="text-blue-600 font-black text-sm">0</strong> data dari HP kamu ke Dashboard Utama.
+                </div>
+                
+                <input type="hidden" id="sync-type" value="">
+
+                
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Mengirim Sebagai:</p>
+                        <p id="sync-user-display" class="text-sm font-bold text-gray-800">-</p>
+                    </div>
+                    <button onclick="closeSyncModal(); openProfileModal();" class="text-teal-600 hover:text-teal-800 text-xs font-bold underline"><i class="ph-bold ph-pencil-simple"></i> Ubah</button>
+                </div>
+
+
+                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Kabupaten / Kota</label>
+                <input type="text" id="sync-kabupaten" placeholder="Misal: Jakarta Utara" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 mb-3 bg-gray-50 focus:bg-white">
+                
+                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Kode Pelaporan</label>
+                <input type="text" id="sync-kode" placeholder="Misal: PK-001" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 mb-4 bg-gray-50 focus:bg-white">
+
+                <p id="sync-error" class="text-red-500 text-xs hidden mb-3 font-medium bg-red-50 p-2 rounded-lg border border-red-100"></p>
+
+               
+                <!-- Tombol Kirim Server yang sudah ada -->
+                <button id="btn-submit-sync" onclick="submitDataToServer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-paper-plane-tilt"></i> Kirim Sekarang
+                </button>
+
+                <!-- 👇 KODE BARU: Pembatas & Tombol Share Lokal 👇 -->
+                <div class="relative flex items-center py-4">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-bold uppercase tracking-widest">ATAU TRANSFER LOKAL</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <p class="text-[10px] text-gray-500 text-center mb-2 leading-relaxed">
+                    *Tidak perlu isi form di atas jika kamu hanya ingin mengirim data ini ke HP teman tim via Bluetooth / Nearby Share.
+                </p>
+
+                <button type="button" onclick="shareDataLokal()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-3 rounded-xl transition border border-gray-300 flex justify-center items-center gap-2 shadow-sm">
+                    <i class="ph-bold ph-share-network text-lg text-blue-500"></i> Share ke HP Lain
+                </button>
+                <!-- 👆 BATAS KODE BARU 👆 -->
+
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeProfileModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-11/12 max-w-sm overflow-hidden flex flex-col">
+            
+
+<div class="px-5 py-4 border-b border-teal-700 flex items-center justify-between bg-teal-600 text-white">
+
+    <!-- LEFT -->
+    <div class="flex items-center gap-2 min-w-0">
+        <i class="ph-bold ph-user text-xl flex-shrink-0"></i>
+
+        <h3 class="text-base font-bold whitespace-nowrap">
+            Profil Tim
+        </h3>
+    </div>
+
+    <!-- RIGHT -->
+    <button 
+        onclick="closeProfileModal()" 
+        class="text-teal-200 hover:text-white transition-colors flex-shrink-0 ml-3"
+    >
+        <i class="ph-bold ph-x text-xl"></i>
+    </button>
+
+</div>
+
+            <div class="p-6">
+                <p class="text-xs text-gray-500 mb-4">Data ini otomatis dilampirkan setiap kali kamu sinkronisasi ke server.</p>
+                
+                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Nama Pelapor / Tim</label>
+                <input type="text" id="profile-name" placeholder="Misal: Budi Santoso" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:border-teal-500 bg-gray-50 focus:bg-white">
+                
+                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Asal Sekolah / Organisasi</label>
+                <input type="text" id="profile-org" placeholder="Misal: SMA Negeri 1" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm mb-5 focus:outline-none focus:border-teal-500 bg-gray-50 focus:bg-white">
+                
+                <button onclick="saveProfile()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition shadow-md flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-floppy-disk"></i> Simpan Data Diri
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
         // --- 1. STATE & DATA INITIALIZATION ---
-        let reports = JSON.parse(localStorage.getItem('pesisir_reports')) || [];
-        let ideas = JSON.parse(localStorage.getItem('pesisir_ideas')) || [];
-        let listSampahUrai = JSON.parse(localStorage.getItem('pesisir_sampah')) ||[];
+        let reports =[];
+        let userProfile = { nama: '', organisasi: '' };
+        let ideas = [];
+        let listSampahUrai =[];
+
+        // 👇 Gunakan Try-Catch agar aplikasi tidak crash jika memori HP/Browser error 👇
+        try {
+            reports = JSON.parse(localStorage.getItem('pesisir_reports')) ||[];
+            userProfile = JSON.parse(localStorage.getItem('pesisir_profile')) || { nama: '', organisasi: '' };
+            ideas = JSON.parse(localStorage.getItem('pesisir_ideas')) ||[];
+            listSampahUrai = JSON.parse(localStorage.getItem('pesisir_sampah')) ||[];
+        } catch (error) {
+            console.error("Error membaca LocalStorage:", error);
+            // Jika error (misal data korup), biarkan tetap array/object kosong agar web tidak blank
+            reports =[];
+            userProfile = { nama: '', organisasi: '' };
+            ideas = [];
+            listSampahUrai = []; 
+        }
         
-        let currentPhotoBase64 = null;
+        let currentMediaUrls = [];
         let currentGeoJSONLapangan = null;
         let editingReportId = null;
         let editingIdeaId = null;
@@ -738,6 +1270,7 @@ const kamusData =[
         let mapLapangan = null; let drawnItemsLapangan = null;
         let modalMap = null; let modalFeatureGroup = null; // Untuk Modal Popup
         
+
         function createEsriMap(containerId, drawnItemsGroup, onDrawCreated) {
             const mapInstance = L.map(containerId).setView([-0.789, 113.921], 5);
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -745,11 +1278,17 @@ const kamusData =[
             }).addTo(mapInstance);
 
             mapInstance.addLayer(drawnItemsGroup);
+            
+            // AKTIFKAN POLYLINE DAN MARKER
             const drawControl = new L.Control.Draw({
                 edit: { featureGroup: drawnItemsGroup },
                 draw: {
                     polygon: { shapeOptions: { color: (containerId === 'map-lapangan-container' ? '#3b82f6' : '#14b8a6'), weight: 4, fillOpacity: 0.5 } }, 
-                    polyline: false, rectangle: true, circle: false, marker: false, circlemarker: false
+                    polyline: { shapeOptions: { color: '#ef4444', weight: 5, dashArray: '5, 10' } }, // Garis putus-putus merah tebal untuk retakan
+                    marker: true, // Titik spesifik
+                    rectangle: true, 
+                    circle: false, 
+                    circlemarker: false
                 }
             });
             mapInstance.addControl(drawControl);
@@ -871,7 +1410,7 @@ const kamusData =[
             setTimeout(() => { if(mapTanam) mapTanam.invalidateSize(); }, 200);
         }
 
-// --- Logic Peta Lapangan (Fullscreen ke Inline) ---
+        // --- Logic Peta Lapangan (Fullscreen ke Inline) ---
         function initMapLapangan() {
             if (mapLapangan) { mapLapangan.invalidateSize(); mapLapangan.locate({setView: true, maxZoom: 18}); return; }
             drawnItemsLapangan = new L.FeatureGroup();
@@ -882,6 +1421,9 @@ const kamusData =[
                 document.getElementById('form-area-ha').value = areaHectares;
                 document.getElementById('form-area-status').innerText = `${areaHectares} Hektar`;
                 document.getElementById('form-area-status').className = 'text-xs text-green-600 font-bold';
+                
+                // Trigger Kalkulator Biomassa
+                if (document.getElementById('form-type').value === 'biomassa') autoHitungBiomassaForm();
             });
 
             mapLapangan.on(L.Draw.Event.DRAWSTART, function (e) {
@@ -890,9 +1432,10 @@ const kamusData =[
                 document.getElementById('form-area-ha').value = 0;
                 document.getElementById('form-area-status').innerText = '0 Hektar';
                 document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
+                
+                if (document.getElementById('form-type').value === 'biomassa') autoHitungBiomassaForm();
             });
 
-            // TAMBAHAN: Update Hektar saat peta DIEDIT
             mapLapangan.on(L.Draw.Event.EDITED, function (e) {
                 const layers = drawnItemsLapangan.getLayers();
                 if (layers.length > 0) {
@@ -901,15 +1444,18 @@ const kamusData =[
                     document.getElementById('form-area-ha').value = areaHectares;
                     document.getElementById('form-area-status').innerText = `${areaHectares} Hektar`;
                     document.getElementById('form-area-status').className = 'text-xs text-green-600 font-bold';
+                    
+                    if (document.getElementById('form-type').value === 'biomassa') autoHitungBiomassaForm();
                 }
             });
 
-            // TAMBAHAN: Reset Hektar saat peta DIHAPUS
             mapLapangan.on(L.Draw.Event.DELETED, function (e) {
                 currentGeoJSONLapangan = null;
                 document.getElementById('form-area-ha').value = 0;
                 document.getElementById('form-area-status').innerText = '0 Hektar';
                 document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
+                
+                if (document.getElementById('form-type').value === 'biomassa') autoHitungBiomassaForm();
             });
         }
 
@@ -983,39 +1529,96 @@ const kamusData =[
             document.getElementById('modal-peta').classList.remove('flex');
         }
 
-        // --- LOGIC SAVE / LOAD GAME (JSON) ---
+// --- LOGIC SAVE / LOAD GAME (JSON) ---
         function exportDataJSON() {
             const data = { reports: reports, ideas: ideas, savedAt: new Date().toISOString() };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            
+            // --- KODE BARU: Penamaan File Dinamis ---
+            // 1. Ambil nama profil. Jika kosong, gunakan "Anonim". Hapus spasi dan ganti dengan underscore (_).
+            let namaTim = userProfile.nama ? userProfile.nama.trim().replace(/\s+/g, '_') : "Anonim";
+            
+            // 2. Buat format tanggal, misal: 11Mei2026
+            const dateObj = new Date();
+            const tgl = dateObj.getDate();
+            const bulanArr =["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            const bulan = bulanArr[dateObj.getMonth()];
+            const tahun = dateObj.getFullYear();
+            
+            // 3. Rangkai nama file
+            const fileName = `PK_${namaTim}_${tgl}${bulan}${tahun}.json`;
+            // ----------------------------------------
+
             const dlNode = document.createElement('a');
             dlNode.setAttribute("href", dataStr);
-            dlNode.setAttribute("download", "pesisir_savegame.json");
-            document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+            dlNode.setAttribute("download", fileName);
+            document.body.appendChild(dlNode); 
+            dlNode.click(); 
+            dlNode.remove();
         }
 
         function triggerLoadJSON() {
             document.getElementById('load-json-input').click();
         }
 
-        function handleLoadJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.reports && Array.isArray(data.reports)) {
-                        reports = data.reports; ideas = data.ideas || [];
-                        localStorage.setItem('pesisir_reports', JSON.stringify(reports));
-                        localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
-                        updateDashboard(); switchTab('dashboard');
-                        alert("Data game (JSON) berhasil dimuat!");
-                    } else { alert("Format JSON tidak dikenali."); }
-                } catch (err) { alert("Gagal membaca file JSON."); }
-            };
-            reader.readAsText(file);
-            event.target.value = ''; // Reset file input
+function handleLoadJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.reports && Array.isArray(data.reports)) {
+                
+                // --- LOGIKA PILIHAN LOAD: ADD ATAU REPLACE ---
+                const isMerge = confirm("Data berhasil dibaca!\n\nKlik [OK] jika ingin MENGGABUNGKAN (Add) data baru ini dengan data di HP.\n\nKlik [Batal/Cancel] jika ingin melihat opsi TIMPA (Replace).");
+                
+                if (isMerge) {
+                    // 1. MODE ADD (GABUNGKAN DATA)
+                    // Menggunakan Set untuk mengecek ID, mencegah duplikasi jika file yang sama di-load 2x
+                    const existingReportIds = new Set(reports.map(r => r.id));
+                    const newReports = data.reports.filter(r => !existingReportIds.has(r.id));
+                    reports = [...reports, ...newReports]; // Gabungkan array
+                    
+                    const existingIdeaIds = new Set(ideas.map(i => i.id));
+                    const incomingIdeas = data.ideas || [];
+                    const newIdeas = incomingIdeas.filter(i => !existingIdeaIds.has(i.id));
+                    ideas = [...ideas, ...newIdeas]; // Gabungkan array
+
+                    alert(`✅ Berhasil! Ditambahkan ${newReports.length} Laporan dan ${newIdeas.length} Ide baru ke dalam sistem.`);
+                } else {
+                    // 2. MODE REPLACE (TIMPA DATA)
+                    const isReplace = confirm("⚠️ PERHATIAN!\n\nKamu memilih untuk MENIMPA data. Semua data lokal di HP ini akan DIHAPUS dan diganti dengan data dari file JSON.\n\nYakin ingin melanjutkan?");
+                    
+                    if (!isReplace) {
+                        event.target.value = ''; // Reset input file
+                        return; // Batal total, keluar dari fungsi
+                    }
+                    
+                    reports = data.reports; 
+                    ideas = data.ideas || [];
+                    alert("✅ Data lama berhasil ditimpa seluruhnya dengan data baru!");
+                }
+                
+                // --- SIMPAN & RENDER ULANG ---
+                localStorage.setItem('pesisir_reports', JSON.stringify(reports));
+                localStorage.setItem('pesisir_ideas', JSON.stringify(ideas));
+                
+                updateDashboard(); 
+                switchTab('dashboard');
+                
+            } else { 
+                alert("❌ Format JSON tidak dikenali. Pastikan file berasal dari aplikasi PesisirKita."); 
+            }
+        } catch (err) { 
+            alert("❌ Gagal membaca file JSON. File mungkin rusak."); 
         }
+    };
+    
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input agar bisa load file yang sama lagi jika perlu
+}
 
 function loadSampleData() {
             // Polygon Kawasan Mangrove Graha Indah Balikpapan
@@ -1027,6 +1630,20 @@ function loadSampleData() {
             const sampleGeoJSON1 = {
                 "type": "Feature", "properties": {},
                 "geometry": { "type": "Polygon", "coordinates": [[[117.563152,-0.647257],[117.563496,-0.64701],[117.563592,-0.647697],[117.563528,-0.648394],[117.563367,-0.648662],[117.563034,-0.648694],[117.563292,-0.648973],[117.56297,-0.64981],[117.562433,-0.649424],[117.562047,-0.649574],[117.562112,-0.649252],[117.562702,-0.647944],[117.562873,-0.647493],[117.563152,-0.647257]]] }
+            };
+
+
+            const sampleGeoJSONBio1 = {
+                "type": "Feature", "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[[110.414057,-5.846922],[110.41455,-5.84688],[110.414851,-5.846474],[110.415022,-5.8461],[110.415623,-5.846335],[110.41557,-5.847146],[110.415763,-5.847413],[110.416406,-5.847669],[110.416653,-5.847872],[110.416245,-5.848032],[110.416203,-5.848747],[110.417275,-5.849068],[110.417919,-5.849815],[110.417082,-5.850348],[110.416074,-5.850455],[110.415258,-5.850476],[110.4144,-5.850711],[110.413778,-5.850562],[110.413713,-5.850242],[110.41425,-5.849388],[110.414422,-5.848384],[110.414679,-5.848192],[110.414701,-5.848],[110.414314,-5.848011],[110.414057,-5.847936],[110.413896,-5.84768],[110.414186,-5.847627],[110.414186,-5.84736],[110.414014,-5.847157],[110.414057,-5.846922]]]
+                }
+            };
+
+            const sampleGeoJSONBio2 = {
+                "type": "Feature", "properties": {},
+                "geometry": { "type": "Polygon", "coordinates": [[[106.591,-5.711],[106.593,-5.711],[106.592,-5.713],[106.591,-5.711]]] }
             };
 
             const now = Date.now();
@@ -1073,6 +1690,75 @@ function loadSampleData() {
                         areaHa: '0', 
                         geojson: null, 
                         photo: null 
+                    }
+                    , // Jangan lupa koma sebelum menambahkan data baru
+                    { 
+                        id: Date.now() - 3000, 
+                        timestamp: new Date(Date.now() - 259200000).toISOString(), // Simulasi kejadian 3 hari lalu
+                        type: 'early_warning', 
+                        amount: '', 
+                        notes: '🚨 Peringatan Dini Banjir Rob Pantura!\nTerjadi kenaikan muka air laut yang tidak wajar di kawasan pesisir utara. Air laut mulai menggenangi akses jalan utama dan merendam area pemukiman warga pesisir. Air naik secara perlahan sejak dini hari tanpa didahului hujan ekstrem. Ini merupakan titik genangan baru yang sebelumnya jarang terdampak separah ini. Tanggul pembatas juga mulai menunjukkan indikasi rembesan.', 
+                        lat: '-6.1023', // Koordinat simulasi sekitar pesisir Pantura Jakarta/Jabar
+                        lng: '106.9032', 
+                        areaHa: '0', 
+                        geojson: null, 
+                        
+                        // INI HASIL MULTI-MEDIA NYA (Link digabung koma & spasi)
+                        photo: 'https://drive.google.com/file/d/1EyJJYK4aq7GORVcYNTtn424NwmC7-bLh/view?usp=sharing, https://youtu.be/b--__eI67ak?si=k480GYWEuIpU43R4', 
+                        
+                        // METADATA SPESIFIK EARLY WARNING
+                        kategoriAnomali: 'Hidrologis',
+                        urgensi: 'Kritis',
+                        metadataAnomali: {
+                            cepat: 'Perlahan (Jam)',
+                            tinggi: '45',
+                            hujan: false,
+                            berulang: true
+                        }
+                    }, // Jangan lupa koma jika menaruhnya setelah objek laporan sebelumnya
+                    { 
+                        id: now - 4000, 
+                        timestamp: new Date(now - 345600000).toISOString(), 
+                        type: 'biomassa', 
+                        amount: '', 
+                        notes: 'Sensus UVC dilakukan di lereng karang (reef slope) Taman Nasional Karimunjawa dengan kemiringan 45 derajat. Rugosity (kekasaran) karang sangat tinggi, didominasi oleh karang bercabang (Acropora) dan karang masif (Porites). Arus sedang. Pencatatan difokuskan pada famili Scaridae (Kakatua) yang terlihat aktif memakan turf algae. Kondisi ekosistem sangat sehat dan terjaga.', 
+                        lat: '-5.8480', // Disesuaikan dengan centroid poligon
+                        lng: '110.4150', // Disesuaikan dengan centroid poligon
+                        areaHa: '12.075', 
+                        geojson: sampleGeoJSONBio1, 
+                        photo: null, 
+                        biomassData: {
+                            metode: 'Belt Transect',
+                            kedalaman: 'Dangkal (3-5m)',
+                            transekP: 50,
+                            transekL: 5,
+                            spesies: 'Herbivora (Scaridae)',
+                            panjang: 35,
+                            jumlah: 25,
+                            estimasiBerat: 16.08
+                        }
+                    },
+                    { 
+                        id: now - 5000, 
+                        timestamp: new Date(now - 432000000).toISOString(), 
+                        type: 'biomassa', 
+                        amount: '', 
+                        notes: 'Sensus UVC di perairan Kepulauan Seribu (area zona pemanfaatan). Kondisi tutupan karang hidup sangat rendah (< 20%), didominasi pecahan karang (rubble) akibat indikasi destructive fishing di masa lalu. Sangat jarang ditemukan ikan predator puncak. Kerapu (Serranidae) yang tercatat rata-rata berukuran kecil (juvenile) yang bersembunyi di sela-sela rubble. Mengindikasikan overfishing kronis.', 
+                        lat: '-5.7120', 
+                        lng: '106.5920', 
+                        areaHa: '1.20', // GIS Area
+                        geojson: sampleGeoJSONBio2, 
+                        photo: null, 
+                        biomassData: {
+                            metode: 'Belt Transect',
+                            kedalaman: 'Sedang (8-10m)',
+                            transekP: 50,
+                            transekL: 5,
+                            spesies: 'Target (Serranidae)',
+                            panjang: 18,
+                            jumlah: 4,
+                            estimasiBerat: 0.35
+                        }
                     }
                 ];
             
@@ -1175,20 +1861,25 @@ function loadSampleData() {
         }
 
         // --- 4. KALKULATOR LOGIC ---
-        function setCalcMode(mode) {
-            ['karbon', 'tanam', 'sampah'].forEach(t => {
-                const btn = document.getElementById('tab-' + t); const view = document.getElementById('calc-' + t);
+        function switchCalcTab(mode) {
+            ['karbon', 'tanam', 'sampah', 'biomassa'].forEach(t => {
+                const btn = document.getElementById('btn-tab-' + t);
+                const view = document.getElementById('calc-' + t);
+
                 if (t === mode) {
-                    btn.className = "py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg bg-white shadow-sm text-teal-700 transition-colors";
+                    // Style untuk tab AKTIF
+                    btn.className = "calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-bold bg-white text-indigo-600 shadow-sm ring-1 ring-slate-900/5 transition-all duration-200";
                     view.classList.remove('hidden');
                 } else {
-                    btn.className = "py-2 px-1 md:py-3 text-[10px] md:text-sm font-semibold rounded-lg text-gray-500 transition-colors";
+                    // Style untuk tab TIDAK AKTIF
+                    btn.className = "calc-tab-btn flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-200/60 hover:text-slate-700 transition-all duration-200";
                     view.classList.add('hidden');
                 }
             });
         }
 
-function hitungKarbon() {
+
+        function hitungKarbon() {
             const jml = parseInt(document.getElementById('input-pohon').value) || 0;
             const co2 = jml * 12; // 1 pohon ~ 12kg co2/tahun
             
@@ -1237,6 +1928,126 @@ function hitungKarbon() {
             }
 
         // --- KALKULATOR URAI SAMPAH (KUMULATIF) ---
+
+        function hitungBiomassaKalkulator() {
+            const panjang = parseFloat(document.getElementById('input-bio-panjang').value) || 0;
+            const jumlah = parseFloat(document.getElementById('input-bio-jumlah').value) || 0;
+            // Rumus alometrik standar Herbivora Karang (a=0.015, b=3.0) -> Hasil dalam gram
+            const beratGram = 0.015 * Math.pow(panjang, 3.0) * jumlah;
+            const beratKg = (beratGram / 1000).toFixed(2);
+            document.getElementById('lbl-bio-hasil').innerText = beratKg;
+        }
+
+
+        function toggleTransekInputs() {
+            const metode = document.getElementById('form-bio-metode').value;
+            const transekBox = document.getElementById('transek-dimensions');
+            if(transekBox) {
+                transekBox.style.display = (metode === 'Belt Transect') ? 'grid' : 'none';
+            }
+        }
+
+        // --- AUTO CALCULATE DI FORM LAPANGAN ---
+        function autoHitungBiomassaForm() {
+            const spesies = document.getElementById('form-bio-spesies').value;
+            const panjang = parseFloat(document.getElementById('form-bio-panjang').value) || 0;
+            const jumlah = parseInt(document.getElementById('form-bio-jumlah').value) || 0;
+            
+            const elMetode = document.getElementById('form-bio-metode');
+            const metode = elMetode ? elMetode.value : 'Belt Transect'; 
+            
+            let a = 0.015; let b = 3.0; // Default
+            if (spesies.includes('Serranidae')) { a = 0.011; b = 3.1; } 
+            else if (spesies.includes('Lutjanidae')) { a = 0.017; b = 3.0; }
+            else if (spesies.includes('Lethrinidae')) { a = 0.014; b = 3.04; }
+            else if (spesies.includes('Chaetodontidae')) { a = 0.022; b = 2.9; }
+            else if (spesies.includes('Scaridae')) { a = 0.015; b = 3.0; }
+            else if (spesies.includes('Acanthuridae')) { a = 0.016; b = 3.0; }
+            else if (spesies.includes('Caesionidae')) { a = 0.012; b = 3.1; }
+            
+            // Hitung Berat Kg Ikan (Mentah)
+            const beratGram = a * Math.pow(panjang, b) * jumlah;
+            const beratKg = (beratGram / 1000);
+            document.getElementById('form-bio-berat').value = beratKg > 0 ? beratKg.toFixed(2) : '';
+
+            // AMBIL LUAS AREA GIS & TRANSEK
+            const areaGIS = parseFloat(document.getElementById('form-area-ha').value) || 0;
+            let areaSamplingHa = 0;
+            let sumberArea = "";
+            let kepadatan = 0;
+
+            const infoBox = document.getElementById('info-kepadatan-bio');
+            if(!infoBox) return;
+            
+            // KALKULASI NORMALISASI (Area Basis)
+            if (metode === 'Belt Transect') {
+                const p = parseFloat(document.getElementById('form-bio-transek-p').value) || 50;
+                const l = parseFloat(document.getElementById('form-bio-transek-l').value) || 5;
+                areaSamplingHa = (p * l) / 10000; // Konversi m2 ke Hektar
+                sumberArea = `Transek Sabuk (${p}x${l}m = ${areaSamplingHa} Ha)`;
+            } else {
+                areaSamplingHa = areaGIS; // Langsung tembak luas GIS
+                sumberArea = `Area Peta GIS (${areaSamplingHa} Ha)`;
+            }
+
+            if (areaSamplingHa > 0 && beratKg > 0) {
+                kepadatan = (beratKg / areaSamplingHa).toFixed(2);
+                
+                let statusKesehatan = kepadatan > 300 ? "Sangat Baik (Sehat)" : (kepadatan >= 100 ? "Sedang (Rentan)" : "Buruk (Terdegradasi)");
+                let warnaStatus = kepadatan > 300 ? "bg-green-100 text-green-800 border-green-300" : (kepadatan >= 100 ? "bg-yellow-100 text-yellow-800 border-yellow-300" : "bg-red-100 text-red-800 border-red-300");
+
+                // ==========================================
+                // EKSTRAPOLASI KE PETA GIS
+                // ==========================================
+                let htmlEkstrapolasi = "";
+                
+                if (metode === 'Belt Transect' && areaGIS > 0) {
+                    // Rumus Ekstrapolasi Ekologi Spasial
+                    const estimasiTotalBiomassa = (kepadatan * areaGIS).toFixed(1);
+                    
+                    htmlEkstrapolasi = `
+                        <div class="mt-3 p-3 bg-indigo-600 rounded-xl text-white text-center shadow-inner relative overflow-hidden">
+                            <i class="ph-fill ph-globe-hemisphere-west absolute -right-2 -top-2 text-6xl opacity-10"></i>
+                            <p class="text-[10px] uppercase font-bold text-indigo-200 tracking-widest mb-1 relative z-10 flex items-center justify-center gap-1">Ekstrapolasi Poligon GIS (${areaGIS} Ha)</p>
+                            <p class="text-2xl font-black drop-shadow-sm relative z-10">${estimasiTotalBiomassa} <span class="text-xs font-normal text-indigo-100">Kg Estimasi Total Area</span></p>
+                        </div>
+                    `;
+                } else if (metode === 'Belt Transect' && areaGIS === 0) {
+                    htmlEkstrapolasi = `
+                        <div class="mt-3 p-2 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-xs text-center flex items-center gap-2">
+                            <i class="ph-bold ph-lightbulb text-orange-500 text-lg"></i>
+                            <span class="font-medium text-left">Gambar Area GIS (Ha) di peta bawah untuk memproyeksikan estimasi total stok ikan di kawasan tersebut!</span>
+                        </div>
+                    `;
+                }
+
+                infoBox.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-indigo-100 pb-2 mb-2">
+                        <span class="font-bold text-indigo-900">Kepadatan Spesies:</span>
+                        <span class="text-base font-black text-indigo-700">${kepadatan} Kg/Ha</span>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500">Status Ekosistem:</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${warnaStatus}">${statusKesehatan}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500">Normalisasi:</span>
+                            <span class="text-[10px] font-semibold text-gray-600">${sumberArea}</span>
+                        </div>
+                    </div>
+                    ${htmlEkstrapolasi}
+                `;
+                infoBox.classList.remove('hidden');
+            } else if (beratKg > 0 && areaSamplingHa === 0) {
+                infoBox.innerHTML = `⚠️ <strong class="text-orange-600">Area tidak valid!</strong><br><span class="text-[10px] text-gray-500">Pastikan dimensi transek diisi atau peta GIS digambar.</span>`;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+        }
+
+
         function tambahSampahUrai() {
             const select = document.getElementById('input-jenis-sampah');
             const beratInput = document.getElementById('input-berat-sampah');
@@ -1311,23 +2122,195 @@ function hitungKarbon() {
             if(show) resetLapanganForm();
         }
 
-        function toggleFormInputs() {
+
+function toggleFormInputs() {
             const type = document.getElementById('form-type').value;
             const amtBox = document.getElementById('input-amount-container');
             const amtInput = document.getElementById('form-amount');
             const plantingBox = document.getElementById('input-planting-container');
+            const warningBox = document.getElementById('input-warning-container');
+            const biomassBox = document.getElementById('input-biomass-container');
+            const obsBox = document.getElementById('input-observation-container'); 
+            const pollBox = document.getElementById('input-pollution-container'); // BARU
 
-            // Reset semua form terlebih dahulu
+            // Reset semua display
             amtBox.style.display = 'none'; 
             amtInput.required = false; 
             plantingBox.style.display = 'none';
+            warningBox.style.display = 'none';
+            biomassBox.style.display = 'none';
+            obsBox.style.display = 'none'; 
+            pollBox.style.display = 'none'; // BARU
 
             if (type === 'cleanup') {
                 amtBox.style.display = 'block'; 
                 amtInput.required = true;
+                document.getElementById('form-notes').placeholder = "Misal: Banyak ditemukan cangkang kepiting mati atau dominasi botol kaca...";
             } else if (type === 'planting') {
                 plantingBox.style.display = 'block';
-                // Anda bisa buat input bibit required di sini jika mau
+                document.getElementById('form-notes').placeholder = "Misal: Kegiatan berjalan lancar dibantu warga lokal...";
+            } else if (type === 'biomassa') {
+                biomassBox.style.display = 'block';
+                document.getElementById('form-notes').placeholder = "Catat profil kedalaman atau kondisi rugosity karang...";
+            } else if (type === 'early_warning') {
+                warningBox.style.display = 'block';
+                document.getElementById('form-notes').placeholder = "Jelaskan detail anomali yang kamu lihat. Kapan mulai terjadi?";
+                toggleAnomaliInputs();
+            } else if (type === 'observation') {
+                obsBox.style.display = 'block';
+                toggleObsInputs(); 
+            } else if (type === 'pollution') {
+                pollBox.style.display = 'block';
+                document.getElementById('form-notes').placeholder = "Catat visual air limbah (warna, bau), letak buangan akhir (sungai/laut), dan hasil wawancara warga...";
+            }
+        }
+
+        function toggleObsInputs() {
+            const obsType = document.getElementById('form-obs-type').value;
+            document.getElementById('obs-ocean-container').style.display = (obsType === 'oceanography') ? 'block' : 'none';
+            document.getElementById('obs-sandwatch-container').style.display = (obsType === 'sandwatch') ? 'block' : 'none';
+            
+            // Ubah placeholder Catatan berdasarkan Sub-Mode
+            if(obsType === 'narrative') {
+                document.getElementById('form-notes').placeholder = "Misal: Terpantau 3 ekor monyet bekantan sehat di tajuk mangrove...";
+            } else if(obsType === 'oceanography') {
+                document.getElementById('form-notes').placeholder = "Catat kondisi cuaca (cerah/hujan) dan tinggi gelombang saat ambil sampel air...";
+                hitungOceanografi(); // Trigger kalkulator
+            } else if(obsType === 'sandwatch') {
+                document.getElementById('form-notes').placeholder = "Catat apakah ada jejak penyu, lubang kepiting, atau tembok laut (sea defense)...";
+                hitungSandwatch(); // Trigger kalkulator
+            }
+        }
+
+        function hitungPencemaran() {
+            const ph = parseFloat(document.getElementById('poll-ph').value);
+            const bod = parseFloat(document.getElementById('poll-bod').value);
+            const cod = parseFloat(document.getElementById('poll-cod').value);
+            const tss = parseFloat(document.getElementById('poll-tss').value);
+            const infoBox = document.getElementById('info-pollution');
+
+            // Cek jika keempat indikator utama sudah diisi
+            if (!isNaN(ph) && !isNaN(bod) && !isNaN(cod) && !isNaN(tss)) {
+                
+                // Standar Baku Mutu (contoh disederhanakan: Permen LHK Industri Tekstil)
+                const L_ph_min = 6.0, L_ph_max = 9.0;
+                const L_bod = 50, L_cod = 150, L_tss = 50;
+
+                // 1. Hitung rasio Ci/Lij
+                // Untuk pH punya rentang (rumus khusus)
+                let cL_ph = 0;
+                if(ph < 7.0) {
+                    cL_ph = (7.0 - ph) / (7.0 - L_ph_min);
+                } else if(ph > 7.0) {
+                    cL_ph = (ph - 7.0) / (L_ph_max - 7.0);
+                } else {
+                    cL_ph = 0;
+                }
+
+                const cL_bod = bod / L_bod;
+                const cL_cod = cod / L_cod;
+                const cL_tss = tss / L_tss;
+
+                // 2. Cari Maksimum dan Rata-rata dari rasio
+                const cL_array = [cL_ph, cL_bod, cL_cod, cL_tss];
+                const cL_max = Math.max(...cL_array);
+                const sum_cL = cL_array.reduce((a,b) => a + b, 0);
+                const cL_avg = sum_cL / cL_array.length;
+
+                // 3. RUMUS INDEKS PENCEMARAN (IP) KEP.MEN LH No.115/2003
+                const ip = Math.sqrt((Math.pow(cL_max, 2) + Math.pow(cL_avg, 2)) / 2).toFixed(2);
+
+                // 4. Klasifikasi
+                let status = "", warna = "", ringkasan = "";
+                if(ip <= 1.0) { 
+                    status = "Memenuhi Baku Mutu"; warna = "text-green-700 bg-green-100 border-green-300"; 
+                    ringkasan = "Limbah UMKM ini aman untuk ekosistem (Toxicity Index Rendah).";
+                } else if(ip <= 5.0) { 
+                    status = "Tercemar Ringan"; warna = "text-yellow-700 bg-yellow-100 border-yellow-300"; 
+                    ringkasan = "Ada potensi eutrofikasi bertahap pada perairan sekitar.";
+                } else if(ip <= 10.0) { 
+                    status = "Tercemar Sedang"; warna = "text-orange-700 bg-orange-100 border-orange-300"; 
+                    ringkasan = "Berisiko memicu kematian biota lokal. Butuh IPAL segera.";
+                } else { 
+                    status = "Tercemar Berat"; warna = "text-red-700 bg-red-100 border-red-300"; 
+                    ringkasan = "Sangat toksik! Daya dukung sungai/pesisir terlampaui ekstrem.";
+                }
+
+                infoBox.innerHTML = `
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Hasil Analisis Indeks Pencemaran (IP)</p>
+                    <div class="p-2 rounded border ${warna} font-black text-lg shadow-inner mb-2 flex flex-col justify-center items-center">
+                        <span class="text-3xl">${ip}</span>
+                        <span class="text-[10px] uppercase tracking-wider">${status}</span>
+                    </div>
+                    <p class="text-[10px] text-gray-600 font-medium leading-tight">Ekologi: ${ringkasan}</p>
+                `;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+        }
+
+        // Kalkulator Oseanografi Cerdas & Ekstrapolasi GIS
+        function hitungOceanografi() {
+            const sst = parseFloat(document.getElementById('obs-sst').value) || 0;
+            const ph = parseFloat(document.getElementById('obs-ph').value) || 0;
+            const arus = parseFloat(document.getElementById('obs-arus').value) || 0;
+            const areaGIS = parseFloat(document.getElementById('form-area-ha').value) || 0;
+            const infoBox = document.getElementById('info-oceanografi');
+
+            if (sst > 0 && ph > 0) {
+                // Logika Kualitas Air Sederhana
+                let status = "Optimal (Sehat)";
+                let warna = "text-green-600";
+                if (sst > 31 || ph < 7.5) { status = "Warning (Stres Lingkungan)"; warna = "text-orange-600"; }
+                if (sst > 33 || ph < 7.0) { status = "Kritis (Coral Bleaching)"; warna = "text-red-600"; }
+
+                // Ekstrapolasi Aliran Permukaan (Area x Kecepatan Arus x Konstanta Kedalaman)
+                let volumetriHtml = "";
+                if (areaGIS > 0 && arus > 0) {
+                    const volumeM3 = (areaGIS * 10000) * arus * 0.5; // asumsi 0.5m lapis permukaan
+                    volumetriHtml = `
+                    <div class="mt-2 p-2 bg-blue-100 rounded text-blue-800 text-[10px] font-bold">
+                        🌊 Pertukaran Massa Air di Poligon GIS: <br>
+                        <span class="text-sm font-black text-blue-900">${volumeM3.toLocaleString('id-ID')} M³/detik</span>
+                    </div>`;
+                } else {
+                    volumetriHtml = `<p class="text-[9px] text-gray-500 mt-1">*Gambar peta & isi arus untuk hitung volumetri.</p>`;
+                }
+
+                infoBox.innerHTML = `Indeks Perairan: <strong class="${warna}">${status}</strong> ${volumetriHtml}`;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+        }
+
+        // Kalkulator Kesesuaian Habitat Penyu (Berdasarkan PDF Sandwatch)
+        function hitungSandwatch() {
+            const width = parseFloat(document.getElementById('sw-width').value) || 0;
+            const sand = document.getElementById('sw-sand').value;
+            const light = document.getElementById('sw-light').value;
+            const infoBox = document.getElementById('info-sandwatch');
+
+            if (width > 0) {
+                let poin = 0;
+                // Logika berdasarkan PDF manual
+                if (sand === 'Low') poin += 2; // Mudah digali (50cm hole)
+                if (sand === 'Medium') poin += 1;
+                
+                if (light === '1') poin += 2; // Gelap aman untuk hatchling
+                if (light === '2') poin += 0;
+
+                let tingkat = ""; let warna = "";
+                if (poin >= 3) { tingkat = "SANGAT IDEAL untuk Penyu Bertelur 🐢"; warna = "text-emerald-600 bg-emerald-50"; }
+                else if (poin === 2) { tingkat = "CUKUP BAIK, butuh minimasi cahaya ⚠️"; warna = "text-yellow-600 bg-yellow-50"; }
+                else { tingkat = "TIDAK LAYAK, Penyu akan disorientasi 🚫"; warna = "text-red-600 bg-red-50"; }
+
+                infoBox.innerHTML = `<div class="p-2 rounded border border-current ${warna} font-bold">${tingkat}</div>
+                <p class="text-[9px] text-gray-500 mt-1.5">*Berdasarkan standar Sandwatch Manual (UNESCO, 2005)</p>`;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
             }
         }
 
@@ -1345,107 +2328,233 @@ function hitungKarbon() {
         }
 
         // --- KODE BARU (FITUR KOMPRESI CANVAS) ---
-        function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
 
-            // 1. Validasi: Pastikan yang diupload benar-benar file gambar
-            if (!file.type.startsWith('image/')) {
-                alert('Mohon upload file gambar yang valid.');
+        // 1. Fungsi Parser URL (Gdrive & YouTube)
+        function getPreviewData(url) {
+            let previewUrl = url;
+            let isYouTube = false;
+
+            // Regex untuk mendeteksi ID Video YouTube
+            const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+            if (ytMatch && ytMatch[1]) {
+                previewUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                isYouTube = true;
+                return { previewUrl, isYouTube, originalUrl: url };
+            }
+
+            // Regex untuk mendeteksi Google Drive (PATCHED)
+            if(url.includes('drive.google.com/file/d/')) {
+                // Regex yang lebih presisi untuk mengekstrak ID unik (contoh: 1EyJJYK4aq7GORVcYNTtn424NwmC7-bLh)
+                const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if(driveMatch && driveMatch[1]) {
+                    // Menggunakan endpoint 'thumbnail' yang bebas CORS dengan resolusi w800 (width 800px)
+                    previewUrl = `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
+                }
+            }
+            
+            return { previewUrl, isYouTube, originalUrl: url };
+        }
+
+        // 2. Fungsi Tambah Media ke Array
+        function addMediaLink() {
+            const inputEl = document.getElementById('form-media-url');
+            let url = inputEl.value.trim();
+            if(!url) return alert("Silakan paste link terlebih dahulu.");
+
+            const mediaData = getPreviewData(url);
+
+            // Validasi visual menggunakan Image object
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                currentMediaUrls.push(url); // Simpan URL aslinya ke database
+                inputEl.value = ""; 
+                renderMediaPreviews(); // Render ulang UI
+            };
+            tempImg.onerror = function() {
+                // Bypass error khusus YouTube (kadang ada video yg thumbnail HQ-nya di-disable)
+                if(mediaData.isYouTube) {
+                    currentMediaUrls.push(url);
+                    inputEl.value = "";
+                    renderMediaPreviews();
+                } else {
+                    alert("❌ Gagal memuat gambar. Pastikan link bisa diakses publik / bukan link private.");
+                }
+            };
+            tempImg.src = mediaData.previewUrl; // Trigger load
+        }
+
+        // 3. Fungsi Render UI & Hapus Media
+        function renderMediaPreviews() {
+            const container = document.getElementById('media-preview-container');
+            container.innerHTML = ""; 
+
+            if (currentMediaUrls.length === 0) {
+                container.classList.add('hidden');
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                // 2. Buat objek Gambar virtual untuk membaca resolusi aslinya
-                const img = new Image();
-                img.onload = function () {
-                    // 3. Batasan Resolusi (Max 800x800 pixel)
-                    const MAX_WIDTH = 800;
-                    const MAX_HEIGHT = 800;
-                    let width = img.width;
-                    let height = img.height;
+            container.classList.remove('hidden');
 
-                    // 4. Hitung proporsi (aspek rasio) agar foto tidak gepeng
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height = Math.round((height *= MAX_WIDTH / width));
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width = Math.round((width *= MAX_HEIGHT / height));
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    // 5. Buat elemen Canvas sementara di memori (tidak tampil di layar)
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-
-                    // 6. Gambar foto yang sudah di-resize ke dalam Canvas
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // 7. KOMPRESI MAGIS: Ekspor canvas ke Base64 dengan format JPEG dan Kualitas 60% (0.6)
-                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
-
-                    // 8. Tampilkan hasilnya ke UI PesisirKita
-                    document.getElementById('photo-preview').src = currentPhotoBase64;
-                    document.getElementById('photo-preview-container').classList.remove('hidden');
-                    document.getElementById('photo-input-container').classList.add('hidden');
-                };
+            currentMediaUrls.forEach((url, index) => {
+                const mediaData = getPreviewData(url);
                 
-                // Picu pemuatan gambar virtual
-                img.src = e.target.result;
-            };
-            
-            // Mulai baca file dari input kamera/galeri
-            reader.readAsDataURL(file);
-        }
+                // Bikin Kotak Preview
+                const box = document.createElement('div');
+                box.className = "relative w-24 h-24 border border-gray-300 rounded-xl overflow-hidden shadow-sm group";
+                
+                // Tambahkan Label/Badge jika itu YouTube
+                let ytOverlay = "";
+                if(mediaData.isYouTube) {
+                    ytOverlay = `<div class="absolute bottom-1 right-1 bg-red-600 text-white rounded px-1.5 py-0.5 text-[9px] font-bold shadow">YT</div>`;
+                }
 
-        function removePhoto() {
-            currentPhotoBase64 = null; document.getElementById('camera-input').value = "";
-            document.getElementById('photo-preview-container').classList.add('hidden');
-            document.getElementById('photo-input-container').classList.remove('hidden');
+                // Tombol Hapus
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.innerHTML = "✕";
+                btn.className = "absolute top-1 right-1 bg-white/90 text-red-600 h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow hover:bg-red-500 hover:text-white transition-colors z-10";
+                btn.onclick = () => {
+                    currentMediaUrls.splice(index, 1); // Hapus dari array
+                    renderMediaPreviews(); // Render ulang
+                };
+
+                box.innerHTML = `<img src="${mediaData.previewUrl}" class="w-full h-full object-cover">` + ytOverlay;
+                box.appendChild(btn);
+                container.appendChild(box);
+            });
         }
 
         function saveReport(event) {
             event.preventDefault();
+            
+            // TANGKAP DATA PROGRESSIVE FORM JIKA EARLY WARNING
+            let metadataAnomali = null;
+            const jenisKegiatan = document.getElementById('form-type').value;
+            
+            if (jenisKegiatan === 'early_warning') {
+                const kat = document.getElementById('form-kategori-anomali').value;
+                if(kat === 'Geologis') {
+                    metadataAnomali = {
+                        waktu: document.getElementById('geo-waktu').value,
+                        panjang: document.getElementById('geo-panjang').value,
+                        bertambah: document.getElementById('geo-bertambah').checked,
+                        suara: document.getElementById('geo-suara').checked,
+                        pemukiman: document.getElementById('geo-pemukiman').checked
+                    };
+                } else if (kat === 'Hidrologis') {
+                    metadataAnomali = {
+                        cepat: document.getElementById('hidro-cepat').value,
+                        tinggi: document.getElementById('hidro-tinggi').value,
+                        hujan: document.getElementById('hidro-hujan').checked,
+                        berulang: document.getElementById('hidro-berulang').checked
+                    };
+                } else if (kat === 'Biologis') {
+                    metadataAnomali = { kejadian: document.getElementById('bio-kejadian').value };
+                } else if (kat === 'Infrastruktur') {
+                    metadataAnomali = { fokus: document.getElementById('infra-fokus').value };
+                }
+            }
+
+            // 1. BUAT OBJECT DASAR (Hanya data yang pasti ada di semua jenis laporan)
             const newReport = {
                 id: Date.now(), 
                 timestamp: new Date().toISOString(), 
-                type: document.getElementById('form-type').value,
-                amount: document.getElementById('form-amount').value, 
+                type: jenisKegiatan,
                 notes: document.getElementById('form-notes').value,
                 lat: document.getElementById('form-lat').value, 
                 lng: document.getElementById('form-lng').value,
                 areaHa: document.getElementById('form-area-ha').value, 
                 geojson: currentGeoJSONLapangan, 
-                photo: currentPhotoBase64,
-                
-                // TAMBAHAN DATA PENANAMAN
-                bibit: document.getElementById('form-bibit') ? document.getElementById('form-bibit').value : '',
-                jarak: document.getElementById('form-jarak') ? document.getElementById('form-jarak').value : '',
-                jenis: document.getElementById('form-jenis') ? document.getElementById('form-jenis').value : ''
+                photo: currentMediaUrls.length > 0 ? currentMediaUrls.join(', ') : "",
             };
 
-        if (editingReportId) {
-            // JIKA MODE EDIT: Cari data lama, timpa dengan data baru
-            const index = reports.findIndex(r => r.id === editingReportId);
-            newReport.id = editingReportId; // pertahankan ID lama
-            newReport.timestamp = reports[index].timestamp; // pertahankan waktu lama
-            reports[index] = newReport;
-            editingReportId = null; // Selesai edit
-        } else {
-            // JIKA DATA BARU
-            reports.unshift(newReport); 
-        }
+            // 2. TAMBAHKAN DATA SPESIFIK BERDASARKAN TIPE (Mencegah data tercampur)
+            if (jenisKegiatan === 'cleanup') {
+                newReport.amount = document.getElementById('form-amount').value;
+            } 
+            else if (jenisKegiatan === 'planting') {
+                newReport.bibit = document.getElementById('form-bibit').value;
+                newReport.jarak = document.getElementById('form-jarak').value;
+                newReport.jenis = document.getElementById('form-jenis').value;
+            } 
+            else if (jenisKegiatan === 'biomassa') {
+                newReport.biomassData = {
+                    metode: document.getElementById('form-bio-metode').value,
+                    kedalaman: document.getElementById('form-bio-kedalaman').value,
+                    transekP: document.getElementById('form-bio-transek-p').value,
+                    transekL: document.getElementById('form-bio-transek-l').value,
+                    spesies: document.getElementById('form-bio-spesies').value,
+                    panjang: document.getElementById('form-bio-panjang').value,
+                    jumlah: document.getElementById('form-bio-jumlah').value,
+                    estimasiBerat: document.getElementById('form-bio-berat').value
+                };
+            }
+            else if (jenisKegiatan === 'early_warning') {
+                newReport.kategoriAnomali = document.getElementById('form-kategori-anomali').value;
+                const urgensiEl = document.querySelector('input[name="urgensi"]:checked');
+                newReport.urgensi = urgensiEl ? urgensiEl.value : 'Waspada';
+                newReport.metadataAnomali = metadataAnomali;
+            }
 
+            else if (jenisKegiatan === 'observation') {
+                const obsType = document.getElementById('form-obs-type').value;
+                newReport.obsType = obsType; // Simpan tipe (narrative, oceanography, sandwatch)
+                
+                if (obsType === 'oceanography') {
+                    newReport.obsData = {
+                        sst: document.getElementById('obs-sst').value,
+                        salinitas: document.getElementById('obs-salinitas').value,
+                        ph: document.getElementById('obs-ph').value,
+                        arus: document.getElementById('obs-arus').value
+                    };
+                } else if (obsType === 'sandwatch') {
+                    newReport.obsData = {
+                        width: document.getElementById('sw-width').value,
+                        slope: document.getElementById('sw-slope').value,
+                        sand: document.getElementById('sw-sand').value,
+                        light: document.getElementById('sw-light').value
+                    };
+                }
+            }
+
+            else if (jenisKegiatan === 'pollution') {
+                newReport.pollutionData = {
+                    jenis: document.getElementById('poll-jenis').value,
+                    ph: document.getElementById('poll-ph').value,
+                    bod: document.getElementById('poll-bod').value,
+                    cod: document.getElementById('poll-cod').value,
+                    tss: document.getElementById('poll-tss').value,
+                    sosial1: document.getElementById('poll-sosial-1').checked,
+                    sosial2: document.getElementById('poll-sosial-2').checked,
+                    sosial3: document.getElementById('poll-sosial-3').checked,
+                };
+            }
+
+            // 3. LOGIKA SAVE (BARU ATAU EDIT) - Sudah Fix Bug Index -1
+            if (editingReportId) {
+                const index = reports.findIndex(r => r.id === editingReportId);
+                
+                // Pengecekan aman, pastikan data lama benar-benar ada
+                if (index !== -1) {
+                    newReport.id = editingReportId; // pertahankan ID lama
+                    newReport.timestamp = reports[index].timestamp; // pertahankan waktu lama
+                    reports[index] = newReport;
+                } else {
+                    // Jika anehnya tidak ketemu, anggap data baru
+                    reports.unshift(newReport);
+                }
+                editingReportId = null; // Selesai edit, kembalikan ke null
+            } else {
+                // JIKA DATA BARU
+                reports.unshift(newReport); 
+            }
+
+            // 4. SIMPAN KE MEMORI & UPDATE TAMPILAN
             localStorage.setItem('pesisir_reports', JSON.stringify(reports));
             
-            toggleFormLapangan(false); renderReports(); updateDashboard();
+            toggleFormLapangan(false); 
+            renderReports(); 
+            updateDashboard();
         }
 
         function resetLapanganForm() {
@@ -1459,12 +2568,73 @@ function hitungKarbon() {
             document.getElementById('form-area-status').className = 'text-xs text-blue-600 font-medium';
             currentGeoJSONLapangan = null; if(drawnItemsLapangan) drawnItemsLapangan.clearLayers();
             document.getElementById('map-lapangan-wrapper').className = 'hidden'; // Hide map completely when reset
+            currentMediaUrls = [];
+            renderMediaPreviews(); // Ini otomatis akan menyembunyikan container jika array kosong
 
+            // Cukup satu blok ini saja untuk mereset input penanaman
             if(document.getElementById('form-bibit')) document.getElementById('form-bibit').value = '';
             if(document.getElementById('form-jarak')) document.getElementById('form-jarak').value = '';
             if(document.getElementById('form-jenis')) document.getElementById('form-jenis').value = 'Rhizophora';
+            if(document.getElementById('form-bio-spesies')) {
+                document.getElementById('form-bio-spesies').value = 'Herbivora (Parrotfish/Scaridae)';
+                document.getElementById('form-bio-panjang').value = '';
+                document.getElementById('form-bio-berat').value = '';
+            }
+
+            if(document.getElementById('poll-jenis')) {
+                document.getElementById('poll-jenis').value = 'Pewarna Sintetis';
+                document.getElementById('poll-ph').value = '';
+                document.getElementById('poll-bod').value = '';
+                document.getElementById('poll-cod').value = '';
+                document.getElementById('poll-tss').value = '';
+                document.getElementById('poll-sosial-1').checked = false;
+                document.getElementById('poll-sosial-2').checked = false;
+                document.getElementById('poll-sosial-3').checked = false;
+                document.getElementById('info-pollution').classList.add('hidden');
+            }
+
+            // 👇 TAMBAHAN RESET INPUT OBSERVASI 👇
+            if(document.getElementById('form-obs-type')) {
+                document.getElementById('form-obs-type').value = 'narrative';
+                document.getElementById('obs-sst').value = '';
+                document.getElementById('obs-salinitas').value = '';
+                document.getElementById('obs-ph').value = '';
+                document.getElementById('obs-arus').value = '';
+                document.getElementById('sw-width').value = '';
+                document.getElementById('sw-slope').value = '';
+                document.getElementById('sw-sand').value = 'Low';
+                document.getElementById('sw-light').value = '1';
+                document.getElementById('info-oceanografi').classList.add('hidden');
+                document.getElementById('info-sandwatch').classList.add('hidden');
+            }
+
+            // 👇 TAMBAHKAN KODE INI UNTUK RESET ANOMALI 👇
+            if(document.getElementById('form-kategori-anomali')) document.getElementById('form-kategori-anomali').value = 'Geologis';
+            const defaultUrgensi = document.querySelector('input[name="urgensi"][value="Waspada"]');
+            if(defaultUrgensi) defaultUrgensi.checked = true;
+            
+            // Uncheck semua checkbox anomali
+            document.querySelectorAll('#dynamic-anomali-fields input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // 👆 BATAS TAMBAHAN KODE 👆
 
             toggleFormInputs(); removePhoto();
+        }
+
+
+        function toggleAnomaliInputs() {
+            const kategori = document.getElementById('form-kategori-anomali').value;
+            
+            // Sembunyikan semua dulu
+            document.getElementById('dyn-geologis').classList.add('hidden');
+            document.getElementById('dyn-hidrologis').classList.add('hidden');
+            document.getElementById('dyn-biologis').classList.add('hidden');
+            document.getElementById('dyn-infrastruktur').classList.add('hidden');
+
+            // Tampilkan yang sesuai pilihan
+            if(kategori === 'Geologis') document.getElementById('dyn-geologis').classList.remove('hidden');
+            if(kategori === 'Hidrologis') document.getElementById('dyn-hidrologis').classList.remove('hidden');
+            if(kategori === 'Biologis') document.getElementById('dyn-biologis').classList.remove('hidden');
+            if(kategori === 'Infrastruktur') document.getElementById('dyn-infrastruktur').classList.remove('hidden');
         }
 
 
@@ -1503,7 +2673,101 @@ function hitungKarbon() {
                 if (!compact && r.jenis) {
                     extraDetail = `<div class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md mt-2 inline-block font-medium"><i class="ph-bold ph-tree"></i> Jenis: ${r.jenis} | Jarak: ${r.jarak || '-'} m</div>`;
                 }
+            } else if (r.type === 'biomassa') {
+                iconClass = 'ph-scales text-indigo-600 bg-indigo-100';
+                title = 'Sensus Biomassa Karang';
+                if (r.biomassData && r.biomassData.estimasiBerat) highlightStat = `<div class="font-black text-indigo-600">${r.biomassData.estimasiBerat} Kg</div>`;
+                if (!compact && r.biomassData) {
+                    extraDetail = `<div class="text-[11px] bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md mt-2 inline-block font-medium"><i class="ph-bold ph-fish"></i> Kelompok: ${r.biomassData.spesies.split(' ')[0]} | L: ${r.biomassData.panjang}cm</div>`;
+                }
+            } else if (r.type === 'early_warning') {
+                iconClass = 'ph-warning-octagon text-red-600 bg-red-100';
+                title = `Sinyal: ${r.kategoriAnomali || 'Anomali'}`;
+                
+                // Badge Urgensi
+                const urgensiWarna = r.urgensi === 'Bahaya' ? 'bg-red-600 text-white' : (r.urgensi === 'Kritis' ? 'bg-orange-500 text-white' : 'bg-yellow-400 text-yellow-900');
+                highlightStat = `<div class="font-black text-[10px] px-2 py-1 rounded uppercase tracking-widest shadow-sm ${urgensiWarna}">${r.urgensi || 'Waspada'}</div>`;
+                
+                // Render Contextual Tags (Hanya jika tidak di tampilan compact/mini)
+                if (!compact && r.metadataAnomali) {
+                    let tags = [];
+                    const m = r.metadataAnomali;
+                    
+                    if (r.kategoriAnomali === 'Geologis') {
+                        if(m.waktu) tags.push(`<i class="ph-bold ph-clock"></i> ${m.waktu}`);
+                        if(m.panjang) tags.push(`<i class="ph-bold ph-ruler"></i> Panjang ${m.panjang}m`);
+                        if(m.bertambah) tags.push(`<span class="text-red-600">Makin Parah</span>`);
+                        if(m.suara) tags.push(`Ada Suara/Getaran`);
+                        if(m.pemukiman) tags.push(`Dekat Rumah Warga`);
+                    } else if (r.kategoriAnomali === 'Hidrologis') {
+                        if(m.cepat) tags.push(`Naik ${m.cepat}`);
+                        if(m.tinggi) tags.push(`Air ${m.tinggi}cm`);
+                        if(m.hujan) tags.push(`Hujan > 3 Hari`);
+                        if(m.berulang) tags.push(`Titik Baru`);
+                    } else if (r.kategoriAnomali === 'Biologis' && m.kejadian) {
+                        tags.push(m.kejadian);
+                    } else if (r.kategoriAnomali === 'Infrastruktur' && m.fokus) {
+                        tags.push(m.fokus);
+                    }
+                    
+                    if(tags.length > 0) {
+                        extraDetail = `<div class="flex flex-wrap gap-1.5 mt-3 text-[10px] font-bold text-red-800">${tags.map(t => `<span class="bg-red-50 border border-red-200 px-2 py-1 rounded-md shadow-sm">${t}</span>`).join('')}</div>`;
+                    }
+                }
             }
+
+            else if (r.type === 'observation') {
+                if (r.obsType === 'oceanography') {
+                    iconClass = 'ph-waves text-cyan-600 bg-cyan-100';
+                    title = 'Sensus Oseanografi Laut';
+                    if (r.obsData && r.obsData.sst) highlightStat = `<div class="font-black text-cyan-600">${r.obsData.sst} °C</div>`;
+                    
+                    if (!compact && r.obsData) {
+                        extraDetail = `<div class="flex gap-2 mt-2"><span class="text-[11px] bg-cyan-50 text-cyan-700 px-2 py-1 rounded-md font-medium">Salinitas: ${r.obsData.salinitas} ppt</span> <span class="text-[11px] bg-cyan-50 text-cyan-700 px-2 py-1 rounded-md font-medium">pH: ${r.obsData.ph}</span></div>`;
+                    }
+                } else if (r.obsType === 'sandwatch') {
+                    iconClass = 'ph-turtle text-emerald-600 bg-emerald-100'; // Ikon penyu
+                    title = 'Sandwatch Penyu (UNESCO)';
+                    if (r.obsData && r.obsData.width) highlightStat = `<div class="font-black text-emerald-600">${r.obsData.width} m</div>`;
+                    
+                    if (!compact && r.obsData) {
+                        extraDetail = `<div class="flex gap-2 mt-2 flex-wrap">
+                            <span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md font-medium">Pasir: ${r.obsData.sand} Diff.</span>
+                            <span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md font-medium">Lampu: Rank ${r.obsData.light}</span>
+                            <span class="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md font-medium">Slope: ${r.obsData.slope}°</span>
+                        </div>`;
+                    }
+                } else {
+                    // Narrative biasa
+                    iconClass = 'ph-binoculars text-blue-600 bg-blue-100';
+                    title = 'Observasi Kualitatif';
+                }
+            }
+
+            else if (r.type === 'pollution') {
+                iconClass = 'ph-factory text-purple-600 bg-purple-100';
+                title = 'Lapor Pencemaran UMKM';
+                
+                if (r.pollutionData && r.pollutionData.cod) {
+                    highlightStat = `<div class="font-black text-purple-600">COD: ${r.pollutionData.cod}</div>`;
+                }
+                
+                if (!compact && r.pollutionData) {
+                    let socTags = [];
+                    if(r.pollutionData.sosial1) socTags.push('Minat Alami');
+                    if(r.pollutionData.sosial2) socTags.push('Krisis Regenerasi');
+                    if(r.pollutionData.sosial3) socTags.push('Ada IPAL');
+                    
+                    extraDetail = `
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span class="text-[11px] bg-purple-50 text-purple-700 px-2 py-1 rounded-md font-medium border border-purple-200">🧪 ${r.pollutionData.jenis}</span>
+                        <span class="text-[11px] bg-purple-50 text-purple-700 px-2 py-1 rounded-md font-medium border border-purple-200">pH: ${r.pollutionData.ph}</span>
+                    </div>
+                    ${socTags.length > 0 ? `<div class="flex flex-wrap gap-1 mt-2">${socTags.map(t => `<span class="text-[9px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded shadow-sm border border-gray-200">#${t}</span>`).join('')}</div>` : ''}
+                    `;
+                }
+            }
+            
 
             return `
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4 hover:border-teal-300 transition-colors">
@@ -1560,290 +2824,26 @@ function hitungKarbon() {
             </div>`;
         }
 
-// --- 6. EXPORT PDF DASHBOARD KOMPREHENSIF (NEW TAB INJECT) ---
-function exportLaporanLengkap() {
-    // 1. Kumpulkan Semua Data REAL DARI LAPANGAN (Bukan dari Kalkulator)
-    const totalTrash = reports.filter(r => r.type === 'cleanup').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-    const totalPohon = reports.filter(r => r.type === 'observation' || r.type === 'planting').length;
-    const totalBibit = reports.filter(r => r.type === 'planting').reduce((sum, r) => sum + Number(r.bibit || 0), 0);
-    
-    // Hitung Total Karbon berdasarkan REAL BIBIT yang ditanam di lapangan
-    const totalCo2 = totalBibit * 12;
-
-    // 2. Buka Tab Baru
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return alert("Pop-up diblokir oleh browser! Tolong izinkan pop-up untuk mencetak PDF.");
-
-    // 3. Desain HTML (Profesional, Clean, Modern, Berbasis Impact)
-    const html = `
-    <!DOCTYPE html>
-    <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Laporan PesisirKita - Tim Kamu</title>
-        <!-- Inject Tailwind -->
-        <script src="https://cdn.tailwindcss.com"><\/script>
-        <!-- Inject Phosphor Icons -->
-        <script src="https://unpkg.com/@phosphor-icons/web"><\/script>
-        <!-- Inject Leaflet untuk Peta di PDF -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
-        
-        <style>
-            @media print {
-                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .page-break { page-break-before: always; }
-                .no-break { page-break-inside: avoid; }
-                .leaflet-control-container { display: none !important; }
+        // --- 6. EXPORT PDF DASHBOARD KOMPREHENSIF (VIA TOOLPRINT.HTML) ---
+        function exportLaporanLengkap() {
+            // 1. Validasi ketersediaan data
+            if (!reports || reports.length === 0) {
+                alert("Belum ada data laporan lapangan untuk dicetak.");
+                return;
             }
-            body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1e293b; padding: 2rem; }
-        </style>
-    </head>
-    <body class="max-w-4xl mx-auto">
-        
-        <!-- HEADER PROFESIONAL -->
-        <div class="border-b-2 border-teal-600 pb-6 mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight">Laporan Aksi Pesisir</h1>
-                <p class="text-lg font-semibold text-teal-600 mt-1">Tim Pahlawan PesisirKita</p>
-            </div>
-            <div class="text-right">
-                <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">Tanggal Cetak</p>
-                <p class="text-sm text-gray-800 font-medium">${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
-            </div>
-        </div>
 
-        <!-- HIGHLIGHT ANGKA (EXECUTIVE SUMMARY BERDASARKAN DATA LAPANGAN) -->
-        <div class="grid grid-cols-4 gap-4 mb-10">
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Kegiatan</p>
-                <p class="text-2xl font-black text-teal-700">${reports.length}</p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Sampah Diangkut</p>
-                <p class="text-2xl font-black text-orange-600">${totalTrash.toFixed(1)} <span class="text-sm font-medium text-gray-500">Kg</span></p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Bibit Ditanam</p>
-                <p class="text-2xl font-black text-emerald-600">${totalBibit}</p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center no-break">
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Serapan Karbon</p>
-                <p class="text-2xl font-black text-blue-600">${totalCo2} <span class="text-sm font-medium text-gray-500">Kg/Thn</span></p>
-            </div>
-        </div>
+            // 2. Titipkan data dari memori aplikasi ke LocalStorage
+            localStorage.setItem('pesisir_reports_data', JSON.stringify(reports));
+            localStorage.setItem('pesisir_ideas_data', JSON.stringify(ideas));
 
-        <!-- IDE HACKATHON -->
-        <div class="mb-10">
-            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
-                <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">A</span> Rumusan Solusi & Ide Inovasi Tim
-            </h2>
-            <div class="space-y-6">
-                ${ideas.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada ide yang dirumuskan.</p>' : ideas.map((idea, i) => `
-                <div class="border border-gray-200 p-6 rounded-2xl no-break">
-                    
-                    <!-- Label Solusi -->
-                    <span class="text-[10px] font-bold uppercase tracking-widest bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 border border-yellow-200">
-                        <i class="ph-fill ph-lightbulb text-yellow-500 text-sm"></i> Solusi Utama #${i+1}
-                    </span>
-                    
-                    <!-- Teks Solusi (Bukan Bold, dibuat lega seperti di App) -->
-                    <p class="text-gray-800 text-base leading-relaxed text-justify mt-3 font-medium">
-                        ${idea.solusi}
-                    </p>
-                    
-                    <!-- Kotak Detail (Masalah & Alasan) -->
-                    <div class="flex flex-col gap-3 mt-5 pt-4 border-t border-gray-100">
-                        
-                        <!-- Block Masalah (Merah) -->
-                        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl">
-                            <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
-                                <i class="ph-fill ph-warning-circle text-sm"></i> Mengatasi Masalah
-                            </span>
-                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                ${idea.masalah}
-                            </p>
-                        </div>
-                        
-                        <!-- Block Alasan (Biru) -->
-                        ${idea.alasan ? `
-                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-xl">
-                            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
-                                <i class="ph-fill ph-target text-sm"></i> Mengapa Signifikan?
-                            </span>
-                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                ${idea.alasan}
-                            </p>
-                        </div>
-                        ` : ''}
-
-                    </div>
-                </div>
-                `).join('')}
-            </div>
-        </div>
-
-        <div class="page-break"></div>
-
-        <!-- RIWAYAT LAPANGAN DENGAN IMPACT -->
-        <div>
-            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
-                <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">B</span> Log Data Lapangan & Bukti Dampak
-            </h2>
-            <div class="space-y-6">
-                ${reports.length === 0 ? '<p class="text-gray-500 text-sm italic">Belum ada data lapangan yang direkam.</p>' : reports.map((r, i) => {
-                    const isCleanup = r.type === 'cleanup';
-                    const isPlanting = r.type === 'planting';
-                    const typeName = isCleanup ? 'Pembersihan Pesisir' : (isPlanting ? 'Penanaman Mangrove' : 'Observasi Ekosistem');
-                    const date = new Date(r.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-                    
-
-                    // --- LOGIK PERHITUNGAN IMPACT PER REPORT ---
-                    let impactBox = '';
-                    
-                    if (isPlanting && r.bibit) {
-                        const co2Report = Number(r.bibit) * 12;
-                        impactBox = `
-                        <div class="mt-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl px-5 py-4 text-white shadow-sm text-center relative overflow-hidden print:shadow-none">
-                            <h4 class="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">Pahlawan Iklim!</h4>
-                            <p class="text-sm z-10 relative">Melalui penanaman ini, tim kamu menyumbang potensi serapan karbon sebesar:</p>
-                            
-                            <!-- Angka Utama Dibuat Compact -->
-                            <div class="text-4xl font-black my-2 z-10 relative drop-shadow-sm">${co2Report} <span class="text-lg font-medium">Kg CO₂/Thn</span></div>
-                            
-                            <!-- Kotak Bawah Dibuat Lebih Rapat -->
-                            <div class="bg-black/20 rounded-lg p-2.5 mt-3 text-xs border border-white/10 z-10 relative leading-relaxed">
-                                Keren! 🌱 <strong>${r.bibit} Bibit</strong> ini akan tumbuh menjadi benteng alami penahan abrasi dan rumah bagi ribuan biota laut di masa depan.
-                            </div>
-                        </div>`;
-                    } 
-                    else if (isCleanup && r.amount) {
-                        // SMART LOGIC: Deteksi jenis sampah dari catatan laporan
-                        let tahunUrai = 400; // Default plastik umum
-                        const notesLower = (r.notes || '').toLowerCase();
-                        
-                        if(notesLower.includes('kaca')) tahunUrai = 4000;
-                        else if(notesLower.includes('jaring') || notesLower.includes('senar')) tahunUrai = 600;
-                        else if(notesLower.includes('botol') || notesLower.includes('pet') || notesLower.includes('plastik')) tahunUrai = 450;
-                        else if(notesLower.includes('kaleng')) tahunUrai = 200;
-                        else if(notesLower.includes('sterofoam') || notesLower.includes('styrofoam')) tahunUrai = 50;
-                        else if(notesLower.includes('kresek')) tahunUrai = 20;
-
-                        const generasi = Math.ceil(tahunUrai / 25); // 1 Generasi = 25 Tahun
-
-                        impactBox = `
-                        <div class="mt-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl px-5 py-4 text-white shadow-sm text-center relative overflow-hidden print:shadow-none">
-                            <h4 class="text-orange-100 text-xs font-bold uppercase tracking-wider mb-1">Pahlawan Lautan!</h4>
-                            <p class="text-sm z-10 relative">Di area ini, kamu mencegah <strong class="text-yellow-300">${r.amount} Kg</strong> sampah mencemari laut!</p>
-                            <p class="text-[11px] text-orange-50 z-10 relative mt-0.5">Dampak terburuk dari temuanmu memiliki waktu urai hingga:</p>
-                            
-                            <!-- Angka Utama Dibuat Compact -->
-                            <div class="text-4xl font-black my-2 z-10 relative drop-shadow-sm">${tahunUrai} <span class="text-lg font-medium">Tahun</span></div>
-                            
-                            <!-- Kotak Bawah Dibuat Lebih Rapat -->
-                            <div class="bg-black/20 rounded-lg p-2.5 mt-3 text-xs border border-white/10 z-10 relative leading-relaxed">
-                                GILA SIH! 😱 Sampah terburukmu baru hancur setelah <strong class="text-yellow-300 text-sm">${generasi} Generasi</strong> keturunanmu lahir!
-                            </div>
-                        </div>`;
-                    }
-
-                    return `
-                    <div class="border border-gray-200 rounded-2xl overflow-hidden no-break shadow-sm mb-6">
-                        <!-- Card Header -->
-                        <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-base flex items-center gap-2">
-                                    ${isCleanup ? '<i class="ph-fill ph-trash text-orange-500"></i>' : (isPlanting ? '<i class="ph-fill ph-plant text-emerald-500"></i>' : '<i class="ph-fill ph-binoculars text-blue-500"></i>')}
-                                    ${typeName}
-                                </h4>
-                                <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mt-0.5">${date}</p>
-                            </div>
-                            <div class="text-right">
-                                ${r.amount ? `<span class="bg-white text-orange-700 font-bold px-3 py-1.5 rounded-full text-sm border border-orange-200 shadow-sm">${r.amount} Kg</span>` : ''}
-                                ${r.bibit ? `<span class="bg-white text-emerald-700 font-bold px-3 py-1.5 rounded-full text-sm border border-emerald-200 shadow-sm">${r.bibit} Bibit</span>` : ''}
-                            </div>
-                        </div>
-                        
-                        <!-- Card Body -->
-                        <div class="p-5">
-                            <!-- Jika Ada Peta -->
-                            ${r.geojson ? `<div id="print-map-${r.id}" class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mb-4 border border-gray-300 shadow-inner"></div>` : ''}
-
-                            <!-- Catatan Lapangan -->
-                            <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
-                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1"><i class="ph-fill ph-notebook"></i> Catatan Lapangan</span>
-                                <p class="text-sm text-slate-700 leading-relaxed text-justify">${r.notes || 'Tidak ada catatan khusus.'}</p>
-                            </div>
-
-                            <!-- INJEKSI KOTAK IMPACT GAMIFIKASI DI SINI -->
-                            ${impactBox}
-
-                            <!-- Atribut Tambahan (Metadata GPS & Luas) -->
-                            <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
-                                ${parseFloat(r.areaHa) > 0 ? `
-                                <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1.5 rounded flex items-center gap-1"><i class="ph-bold ph-bounding-box"></i> Luas Area: ${r.areaHa} Ha</span>
-                                ` : ''}
-
-                                ${isPlanting && r.jenis ? `
-                                <span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-1.5 rounded flex items-center gap-1"><i class="ph-bold ph-tree"></i> Flora: ${r.jenis} (Jarak ${r.jarak || '-'} m)</span>
-                                ` : ''}
-
-                                ${r.lat ? `
-                                <span class="text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1.5 rounded font-mono flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> GPS: ${r.lat}, ${r.lng}</span>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }).join('')}
-            </div>
-        </div>
-        
-        <!-- FOOTER -->
-        <div class="text-center mt-12 pt-6 border-t-2 border-gray-800 text-gray-500 text-xs font-bold uppercase tracking-widest pb-10">
-            Sistem Operasi Lapangan - PesisirKita © ${new Date().getFullYear()}
-        </div>
-
-        <!-- INJECT SCRIPT UNTUK MENGGAMBAR PETA -->
-        <script>
-            const reportsData = ${JSON.stringify(reports)};
+            // 3. Panggil dan buka file HTML khusus cetak di tab baru
+            const printWindow = window.open('toolprint.html', '_blank');
             
-            reportsData.forEach(r => {
-                if (r.geojson) {
-                    const mapId = 'print-map-' + r.id;
-                    const mapEl = document.getElementById(mapId);
-                    if(mapEl) {
-                        const map = L.map(mapId, {
-                            zoomControl: false, attributionControl: false,
-                            dragging: false, scrollWheelZoom: false,
-                            doubleClickZoom: false, boxZoom: false, touchZoom: false, keyboard: false
-                        });
-                        
-                        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-                        
-                        const polyColor = r.type === 'cleanup' ? '#ea580c' : '#059669';
-                        const layer = L.geoJSON(r.geojson, { 
-                            style: { color: polyColor, weight: 3, fillOpacity: 0.4 } 
-                        }).addTo(map);
-                        
-                        map.fitBounds(layer.getBounds(), { padding: [70, 70], maxZoom: 16 });
-                    }
-                }
-            });
-
-            // TUNGGU 2 DETIK AGAR GAMBAR SATELIT SELESAI LOADING, LALU PRINT
-            setTimeout(() => { window.print(); }, 2000);
-        <\/script>
-    </body>
-    </html>
-    `;
-    
-    // 4. Suntikkan HTML ke Tab Baru
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-}
+            // 4. Fallback: Peringatan jika browser mengeblok pop-up tab baru
+            if (!printWindow) {
+                alert("Pop-up diblokir oleh browser! Tolong izinkan pop-up / buka tab baru untuk mencetak laporan.");
+            }
+        }
 
         // --- 7. KAMUS LOGIC ---
         // --- LOGIKA KAMUS INTERAKTIF ---
@@ -2124,6 +3124,95 @@ function exportLaporanLengkap() {
                 document.getElementById('form-jenis').value = r.jenis || 'Rhizophora';
             }
 
+            if (r.type === 'biomassa' && r.biomassData) {
+                if(document.getElementById('form-bio-metode')) document.getElementById('form-bio-metode').value = r.biomassData.metode || 'Belt Transect';
+                if(document.getElementById('form-bio-kedalaman')) document.getElementById('form-bio-kedalaman').value = r.biomassData.kedalaman || 'Dangkal (3-5m)';
+                if(document.getElementById('form-bio-transek-p')) document.getElementById('form-bio-transek-p').value = r.biomassData.transekP || 50;
+                if(document.getElementById('form-bio-transek-l')) document.getElementById('form-bio-transek-l').value = r.biomassData.transekL || 5;
+                
+                document.getElementById('form-bio-spesies').value = r.biomassData.spesies;
+                document.getElementById('form-bio-panjang').value = r.biomassData.panjang;
+                document.getElementById('form-bio-jumlah').value = r.biomassData.jumlah;
+                document.getElementById('form-bio-berat').value = r.biomassData.estimasiBerat;
+                
+                toggleTransekInputs();
+                setTimeout(() => autoHitungBiomassaForm(), 300); // Kalkulasi ulang otomatis saat diedit
+            }
+
+            if (r.type === 'pollution' && r.pollutionData) {
+                document.getElementById('poll-jenis').value = r.pollutionData.jenis || 'Pewarna Sintetis';
+                document.getElementById('poll-ph').value = r.pollutionData.ph || '';
+                document.getElementById('poll-bod').value = r.pollutionData.bod || '';
+                document.getElementById('poll-cod').value = r.pollutionData.cod || '';
+                document.getElementById('poll-tss').value = r.pollutionData.tss || '';
+                document.getElementById('poll-sosial-1').checked = r.pollutionData.sosial1 || false;
+                document.getElementById('poll-sosial-2').checked = r.pollutionData.sosial2 || false;
+                document.getElementById('poll-sosial-3').checked = r.pollutionData.sosial3 || false;
+                hitungPencemaran(); // Hitung ulang IP
+            }
+
+            // Restore Multi-Media state
+            if (r.photo) {
+                // Pecah kembali string dari Sheets menjadi array berdasarkan koma
+                currentMediaUrls = r.photo.split(',').map(item => item.trim()).filter(item => item !== "");
+            } else {
+                currentMediaUrls = [];
+            }
+            renderMediaPreviews(); // Panggil fungsi render agar gambar langsung muncul
+
+             // 👇 TAMBAHKAN KODE INI UNTUK RESTORE EARLY WARNING 👇
+            if (r.type === 'early_warning') {
+                document.getElementById('form-kategori-anomali').value = r.kategoriAnomali || 'Geologis';
+                
+                // Kembalikan Radio Button Urgensi
+                if(r.urgensi) {
+                    const radio = document.querySelector(`input[name="urgensi"][value="${r.urgensi}"]`);
+                    if (radio) radio.checked = true;
+                }
+
+                toggleAnomaliInputs(); // Munculkan input sesuai kategori
+
+                // Kembalikan inputan detail anomali
+                if (r.metadataAnomali) {
+                    if (r.kategoriAnomali === 'Geologis') {
+                        document.getElementById('geo-waktu').value = r.metadataAnomali.waktu || '';
+                        document.getElementById('geo-panjang').value = r.metadataAnomali.panjang || '';
+                        document.getElementById('geo-bertambah').checked = r.metadataAnomali.bertambah || false;
+                        document.getElementById('geo-suara').checked = r.metadataAnomali.suara || false;
+                        document.getElementById('geo-pemukiman').checked = r.metadataAnomali.pemukiman || false;
+                    } else if (r.kategoriAnomali === 'Hidrologis') {
+                        document.getElementById('hidro-cepat').value = r.metadataAnomali.cepat || '';
+                        document.getElementById('hidro-tinggi').value = r.metadataAnomali.tinggi || '';
+                        document.getElementById('hidro-hujan').checked = r.metadataAnomali.hujan || false;
+                        document.getElementById('hidro-berulang').checked = r.metadataAnomali.berulang || false;
+                    } else if (r.kategoriAnomali === 'Biologis') {
+                        document.getElementById('bio-kejadian').value = r.metadataAnomali.kejadian || '';
+                    } else if (r.kategoriAnomali === 'Infrastruktur') {
+                        document.getElementById('infra-fokus').value = r.metadataAnomali.fokus || '';
+                    }
+                }
+            }
+
+            // 👇 TAMBAHAN RESTORE DATA OBSERVASI SAAT DIEDIT 👇
+            if (r.type === 'observation') {
+                document.getElementById('form-obs-type').value = r.obsType || 'narrative';
+                toggleObsInputs(); // Munculkan sub-form yang sesuai
+
+                if (r.obsType === 'oceanography' && r.obsData) {
+                    document.getElementById('obs-sst').value = r.obsData.sst || '';
+                    document.getElementById('obs-salinitas').value = r.obsData.salinitas || '';
+                    document.getElementById('obs-ph').value = r.obsData.ph || '';
+                    document.getElementById('obs-arus').value = r.obsData.arus || '';
+                    hitungOceanografi();
+                } else if (r.obsType === 'sandwatch' && r.obsData) {
+                    document.getElementById('sw-width').value = r.obsData.width || '';
+                    document.getElementById('sw-slope').value = r.obsData.slope || '';
+                    document.getElementById('sw-sand').value = r.obsData.sand || 'Low';
+                    document.getElementById('sw-light').value = r.obsData.light || '1';
+                    hitungSandwatch();
+                }
+            }
+
             // Restore Map/GeoJSON state
             currentGeoJSONLapangan = r.geojson || null;
         }
@@ -2296,16 +3385,17 @@ function exportLaporanLengkap() {
             }
         }
 
-        window.onload = () => {
-            switchTab('dashboard'); 
-            updateDashboard();
-            
-            // Init Kamus
-            setTermOfTheDay(); // <-- Baris baru yang sangat penting
-            renderKamus(); 
-            
-            renderIdeas();
-        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('dashboard'); 
+            updateDashboard();
+            
+            // Init Kamus
+            setTermOfTheDay(); 
+            renderKamus(); 
+            
+            renderIdeas();
+        });
 
 
         // --- LOGIKA CAROUSEL PESISIRKITA ---
@@ -2348,6 +3438,203 @@ function exportLaporanLengkap() {
             });
         });
         }
+
+
+        // =========================================================================
+        // SCRIPT PENGATURAN DATA DIRI & SINKRONISASI
+        // =========================================================================
+
+        // --- FUNGSI DATA DIRI ---
+        function openProfileModal() {
+            document.getElementById('profile-name').value = userProfile.nama || '';
+            document.getElementById('profile-org').value = userProfile.organisasi || '';
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function saveProfile() {
+            const nama = document.getElementById('profile-name').value.trim();
+            const org = document.getElementById('profile-org').value.trim();
+            
+            if(!nama || !org) return alert("Nama dan Asal Sekolah/Organisasi wajib diisi!");
+            
+            userProfile = { nama, organisasi: org };
+            localStorage.setItem('pesisir_profile', JSON.stringify(userProfile));
+            closeProfileModal();
+            
+            // Cek jika habis simpan data diri mau lanjut kirim form
+            if (!document.getElementById('sync-modal').classList.contains('hidden')) {
+                document.getElementById('sync-user-display').innerText = `${userProfile.nama} (${userProfile.organisasi})`;
+            } else {
+                alert("✅ Data Diri berhasil disimpan!");
+            }
+        }
+        
+        // --- FUNGSI SINKRONISASI ---
+
+        function openSyncModal(type) {
+            // Cek apakah profil sudah diisi
+            if (!userProfile.nama || !userProfile.organisasi) {
+                alert("Mohon lengkapi Data Diri (Profil Tim) terlebih dahulu sebelum melakukan sinkronisasi.");
+                openProfileModal();
+                return;
+            }
+
+            document.getElementById('sync-type').value = type;
+            const count = type === 'report' ? reports.length : ideas.length;
+            document.getElementById('sync-count').innerText = count;
+            document.getElementById('sync-user-display').innerText = `${userProfile.nama} (${userProfile.organisasi})`;
+            
+            document.getElementById('sync-modal').classList.remove('hidden');
+        }
+
+        function closeSyncModal() {
+            document.getElementById('sync-modal').classList.add('hidden');
+        }
+
+        function submitDataToServer() {
+            // Ambil data dari input yang baru kita buat di HTML
+            const kabupaten = document.getElementById('sync-kabupaten').value.trim();
+            const kode = document.getElementById('sync-kode').value.trim();
+            
+            // Validasi: Wajib diisi
+            if (!kabupaten || !kode) {
+                const errEl = document.getElementById('sync-error');
+                errEl.innerText = "Kabupaten dan Kode Pelaporan wajib diisi!";
+                errEl.classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('sync-error').classList.add('hidden');
+            
+            // Ubah tampilan tombol agar terlihat sedang 'loading'
+            const btnSubmit = document.getElementById('btn-submit-sync');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Mengirim...`;
+            btnSubmit.disabled = true;
+
+            // PANGGIL FUNGSI KIRIM KE GOOGLE FORM
+            kirimKeGoogleForm(userProfile.nama, userProfile.organisasi, kabupaten, kode);
+            
+            // Kembalikan tombol seperti semula setelah 2 detik
+            setTimeout(() => {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                closeSyncModal();
+            }, 2000);
+        }
+
+       // --- FUNGSI SHARE LOKAL ANTAR HP (BLUETOOTH / NEARBY) ---
+        async function shareDataLokal() {
+            const allData = { 
+                reports: reports, 
+                ideas: ideas, 
+                savedAt: new Date().toISOString() 
+            };
+            
+            const jsonString = JSON.stringify(allData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            
+            let namaTim = userProfile.nama ? userProfile.nama.trim().replace(/\s+/g, '_') : "Anonim";
+            const dateObj = new Date();
+            const tgl = dateObj.getDate();
+            const bulanArr =["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            const fileName = `PK_${namaTim}_${tgl}${bulanArr[dateObj.getMonth()]}${dateObj.getFullYear()}.json`;
+
+            const file = new File([blob], fileName, { type: 'application/json' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: 'Transfer Data PesisirKita',
+                        text: `Data Laporan Lapangan dari Tim ${namaTim}. Buka aplikasi lalu klik 'Load' untuk menggabungkan data ini.`,
+                        files: [file]
+                    });
+                    console.log('Dialog Share OS berhasil dibuka.');
+                    closeSyncModal();
+                } catch (error) {
+                    console.log('Share gagal atau dibatalkan:', error);
+                    
+                    // JIKA ERROR DI PC (NotAllowedError), LANGSUNG DOWNLOAD FILENYA
+                    if (error.name === 'NotAllowedError') {
+                        alert('Karena kamu menggunakan PC/Laptop, fitur Share OS tidak didukung. File akan langsung di-download ke komputermu.');
+                        exportDataJSON(); // Panggil fungsi Download/Save biasa
+                        closeSyncModal();
+                    }
+                }
+            } else {
+                alert('Fitur share langsung tidak didukung di perangkat ini. File akan di-download.');
+                exportDataJSON();
+                closeSyncModal();
+            }
+        }
+
+
+                function kirimKeGoogleForm(nama, organisasi, kabupaten, kode) {
+            // 1. Ambil seluruh data lokal (Reports & Ideas)
+            const allData = {
+                reports: reports, // Asumsi variabel reports dari localStorage Anda
+                ideas: ideas      // Asumsi variabel ideas dari localStorage Anda
+            };
+            
+            // Ubah ke format string JSON
+            const jsonString = JSON.stringify(allData);
+
+            // 2. Logika Splitting (Pemisahan) JSON
+            // Limit aman diset di 45.000 karakter per payload untuk menghindari limit 50k Sheets
+            const MAX_CHUNK = 45000; 
+            const payload1 = jsonString.substring(0, MAX_CHUNK);
+            const payload2 = jsonString.substring(MAX_CHUNK, MAX_CHUNK * 2);
+            const payload3 = jsonString.substring(MAX_CHUNK * 2, MAX_CHUNK * 3);
+
+            if (jsonString.length > MAX_CHUNK * 3) {
+                console.warn("Peringatan: Data sangat besar, mungkin terpotong di Payload 3!");
+            }
+
+            // 3. Siapkan Data Form (Mapping dengan Entry ID Google Form Anda)
+            const formData = new URLSearchParams();
+            formData.append('entry.123233163', nama);
+            formData.append('entry.2052232250', organisasi);
+            formData.append('entry.169445120', kabupaten);
+            formData.append('entry.881817325', kode);
+            formData.append('entry.524932299', payload1 || "{}"); // Default {} jika kosong
+            formData.append('entry.1118429947', payload2 || "");
+            formData.append('entry.1064683855', payload3 || "");
+
+            // 4. URL Endpoint Google Forms
+            // PERHATIKAN: Ubah '/viewform' menjadi '/formResponse'
+            const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd-yTEDpWJtDvs9LgmvHgndm-jqIIF0JZa9refJal1VewMghA/formResponse';
+
+            // 5. Eksekusi Pengiriman (Mode 'no-cors' sangat krusial di sini)
+            // Tampilkan indikator loading jika perlu
+            
+            fetch(formUrl, {
+                method: 'POST',
+                mode: 'no-cors', // Penting agar tidak diblokir oleh sistem keamanan browser
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(() => {
+                // Karena no-cors, kita tidak mendapat status 200, tapi jika masuk ke 'then' berarti request terkirim
+                alert("✅ Data sinkronisasi berhasil dikirim ke server pusat!");
+                
+                // Opsional: Reset data lokal setelah berhasil kirim
+                // reports = []; ideas = [];
+                // localStorage.setItem('pesisir_reports', JSON.stringify([]));
+                // localStorage.setItem('pesisir_ideas', JSON.stringify([]));
+                // updateDashboard();
+            })
+            .catch((error) => {
+                console.error('Error saat mengirim ke GForm:', error);
+                alert("❌ Gagal mengirim data. Pastikan koneksi internet stabil.");
+            });
+        }
+
 
     </script>
 
